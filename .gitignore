@@ -1,0 +1,19 @@
+# The check script is dependency-free by design, but a contributor may still
+# install tooling locally. Keep it out of the repository.
+node_modules/
+
+# Local, machine-specific agent configuration. The tracked parts of .claude/
+# are deliberate; personal overrides are not.
+.claude/settings.local.json
+
+# Editor and OS noise.
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Scratch space. Anything a session needs temporarily goes here and is never
+# committed — the repository stays small because it is cloned for every task.
+scratch/
+*.log

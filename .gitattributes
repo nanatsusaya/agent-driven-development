@@ -1,0 +1,15 @@
+# Normalise line endings in the repository to LF regardless of the platform a
+# contributor works on. Without this, a Windows checkout commits CRLF and every
+# diff on a shared file becomes unreadable.
+* text=auto eol=lf
+
+# Files whose content is not text and must never be normalised or diffed.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.woff binary
+*.woff2 binary
