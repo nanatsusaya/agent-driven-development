@@ -84,8 +84,8 @@ methodological moment from the method log only if it bears on today.
 
 If the project keeps a calendar-driven maintenance list, compare each entry's
 due date to today and **report** what is due. Do not run it here: running
-maintenance is work, and work starts after the decider says so. If nothing is due,
-say so explicitly with the next date — never skip it silently.
+maintenance is work, and work starts after the decider says so. If nothing is
+due, say so explicitly with the next date — never skip it silently.
 
 ## 6. The next step
 

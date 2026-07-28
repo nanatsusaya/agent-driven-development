@@ -45,8 +45,9 @@ consequences has not been thought about, and the reader can tell.»
 
 ## Open questions
 
-«The choices that belong to a person rather than to the agent, numbered so they can be answered by
-reference. Recommend a default for each. Do not answer them yourself.
+«The choices that belong to a person rather than to the agent, numbered so they
+can be answered by reference. Recommend a default for each. Do not answer them
+yourself.
 
 Once answered, replace this whole section with:
 

@@ -14,7 +14,7 @@ the rest in your own words.
 | [`pull-request.md`](pull-request.md) | `.github/PULL_REQUEST_TEMPLATE.md` | — |
 | [`issue-templates/`](issue-templates) | `.github/ISSUE_TEMPLATE/` | — |
 
-## Why the operating-rules template restates the rules instead of linking to them
+## Why the operating-rules template restates the rules
 
 Rule [C3](../method/rules.md#c3) says the documentation has to be
 self-supporting: the agent working a task has your repository and nothing else.

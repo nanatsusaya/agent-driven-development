@@ -95,7 +95,8 @@ the next session will helpfully restore the rule you deliberately removed.
 ## Discussion
 
 This is a reference, and it is also an argument. The parts most worth attacking
-are in [`method/rationale.md`](method/rationale.md#where-it-is-most-likely-wrong):
+are collected under *where it is most likely wrong* in
+[the rationale](method/rationale.md#where-it-is-most-likely-wrong):
 whether the catalogue is really domain-independent, whether an adversarial
 second agent would beat the self-assessment rule, and how much of the ceremony
 is earning its keep.

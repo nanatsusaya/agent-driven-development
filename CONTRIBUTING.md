@@ -53,8 +53,8 @@ pull request is a different project.
 ## If you open a pull request
 
 - **One concern per pull request.**
-- **British spelling** throughout. **Prose wraps at roughly 80 columns**, and a
-  link is never broken across lines.
+- **British spelling** throughout, and **prose wraps at 80 columns**. Both are
+  checked by `npm run lint`.
 - **No project names.** Every rule stands on its own reasoning, and evidence
   takes the form of the failure a rule prevents, never a case study — yours
   included. This is not modesty; a rule justified by an anecdote is a rule

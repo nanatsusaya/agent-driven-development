@@ -83,9 +83,9 @@ guess who to ask will guess the nearest person or nobody.»
 
 - **Surface decisions that belong to a person rather than to the agent before
   acting**: direction and sequencing, anything legal or contractual, anything
-  outward-facing, anything expensive to reverse. Number them `O1..On`, recommend
-  a default for each, and **do not answer them yourself**. Once answered, rewrite
-  them in place as `R1..Rn` with what was decided and why.
+  outward-facing, anything expensive to reverse. Number them `O1..On`,
+  recommend a default for each, and **do not answer them yourself**. Once
+  answered, rewrite them in place as `R1..Rn` with what was decided and why.
 - **Stop and ask** in particular before: «amending an accepted decision · going
   outward-facing (publishing, deploying, changing a public URL) · introducing
   external network calls, secrets or telemetry · a major dependency upgrade».
@@ -116,10 +116,10 @@ guess who to ask will guess the nearest person or nobody.»
   every future session.
 - Comments explain **why**, not what. Verbose is fine — clarity for an agent
   with no context outweighs brevity.
-- «method-log artefact» records *why the way we work looks like this*: corrections
-  and their reasoning, workflow experiments, mistakes that produced a rule. Write
-  an entry only for a genuinely methodological moment. The test: would an agent
-  with no memory of that session decide worse without it?
+- «method-log artefact» records *why the way we work looks like this*:
+  corrections and their reasoning, workflow experiments, mistakes that produced
+  a rule. Write an entry only for a genuinely methodological moment. The test:
+  would an agent with no memory of that session decide worse without it?
 
 ## Tickets
 

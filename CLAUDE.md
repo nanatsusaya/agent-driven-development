@@ -26,8 +26,8 @@ goes in its *Binding*, marked as such.
 ## Commands
 
 ```bash
-npm run lint    # this repository's own links, anchors and British spelling
-npm test        # the counter-test for the coherence check
+npm run lint    # line width, then this repository's own links and spelling
+npm test        # the counter-tests for both checks
 ```
 
 Zero dependencies, Node 18 or later. There is nothing to install. Both must be
@@ -63,8 +63,9 @@ that has a `method.json`: `node checks/check-method.mjs <path>`.
   to correct them.
 - **Rules are anchored by identifier, not by heading text** — `<a id="c2"></a>`
   above each heading. Rewording a rule must not break every link to it.
-- **Prose is hard-wrapped at roughly 80 columns**, and a link is never broken
-  across lines.
+- **Prose is hard-wrapped at 80 columns**, and a link is never broken across
+  lines. Checked by `npm run lint`. Tables, fenced code, YAML frontmatter and
+  lines a single long URL pushes over are exempt; nothing else is.
 - **Every fact has one authority.** The catalogue defines the rules; nothing
   else restates them. Where a document needs a rule, it links to it.
 - Comments in the check explain **why**, not what — particularly why a check
@@ -75,7 +76,8 @@ that has a `method.json`: `node checks/check-method.mjs <path>`.
 
 - **Surface decisions that belong to the owner before acting.** Number them
   `O1..On`, recommend a default for each, and **do not answer them yourself**.
-  Once answered, rewrite them in place as `R1..Rn` with what was decided and why.
+  Once answered, rewrite them in place as `R1..Rn` with what was decided and
+  why.
 - **Stop and ask** before: changing or withdrawing a rule in the catalogue ·
   renaming a rule identifier · publishing anything (pushing to the public
   remote, changing the marketplace manifest, cutting a release) · changing the

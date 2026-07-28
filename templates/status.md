@@ -46,8 +46,8 @@ the decision log reads as if the work were done.»
 
 ## Open questions for the deciders
 
-«Numbered `O1..On`, each naming who it is for and a recommended default. Move them out when
-answered — a resolved question left here is read as still open.»
+«Numbered `O1..On`, each naming who it is for and a recommended default. Move
+them out when answered — a resolved question left here is read as still open.»
 
 ## Next step
 

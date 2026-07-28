@@ -1,4 +1,19 @@
-# The coherence check
+# Checks
+
+Two of them. [`check-method.mjs`](check-method.mjs) is the coherence check,
+described below and meant for any project adopting the method.
+[`line-width.mjs`](line-width.mjs) enforces this repository's own 80-column
+convention and is house style rather than method — run it if you want it.
+
+```bash
+node checks/line-width.mjs <project-path> [--limit 80]
+```
+
+It reports; it never reformats. A reformatter run over this repository once
+corrupted prose by splitting punctuation away from the links it touched, and
+the damage was invisible line by line.
+
+## The coherence check
 
 ```bash
 node checks/check-method.mjs <project-path>
@@ -117,13 +132,14 @@ read.
 The code in this directory is under [MIT](LICENSE), not the CC BY 4.0 that
 covers the rest of the repository. Take it, vendor it, change it.
 
-## The counter-test
+## The counter-tests
 
 ```bash
-node checks/check-method.test.mjs
+npm test
 ```
 
-55 cases, each building a throwaway project and asserting both the exit code and
+55 cases for the coherence check and 13 for the line-width check, each building
+a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 

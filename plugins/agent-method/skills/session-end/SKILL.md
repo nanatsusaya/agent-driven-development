@@ -37,8 +37,8 @@ nothing else; anything you leave unsaid is lost.
   prune.
 - List every change still awaiting review, with its state, so the decider knows
   what is queued.
-- End on the trunk with a clean tree — unless a branch is deliberately parked and
-  named in the handoff.
+- End on the trunk with a clean tree — unless a branch is deliberately parked
+  and named in the handoff.
 
 ## 2. Finish what is finishable
 
@@ -49,9 +49,10 @@ Apply the project's definition of done before calling anything done:
   passing build says the thing compiles.
 - The work and its documentation changed together. Stale documentation is a
   defect.
-- Claim a task done only if you believe it is correct, complete and safe. If you
-  are not there, park it and hand off the **specific** uncertainty — what exactly
-  is unverified, and what would settle it — rather than declaring it finished.
+- Claim a task done only if you believe it is correct, complete and safe. If
+  you are not there, park it and hand off the **specific** uncertainty — what
+  exactly is unverified, and what would settle it — rather than declaring it
+  finished.
 
 ## 3. Bring the living documents current
 
@@ -61,11 +62,11 @@ Apply the project's definition of done before calling anything done:
   change through review.
 - **Method log:** only for a genuinely methodological moment — a correction and
   its reasoning, a workflow experiment and its outcome, a mistake worth not
-  repeating. The test: would an agent with no memory of this session decide worse
-  without the entry? Routine execution is what the commit history is for.
-- **Memory**, if your tooling has one: save durable facts worth carrying forward.
-  Not what the repository already records, and not what mattered only to this
-  conversation.
+  repeating. The test: would an agent with no memory of this session decide
+  worse without the entry? Routine execution is what the commit history is for.
+- **Memory**, if your tooling has one: save durable facts worth carrying
+  forward. Not what the repository already records, and not what mattered only
+  to this conversation.
 
 ## 4. Maintenance
 
