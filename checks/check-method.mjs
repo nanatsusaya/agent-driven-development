@@ -48,6 +48,24 @@ const ROLES = ['operating-rules', 'decisions', 'state', 'method-log'];
 const CHANGES = ['dropped', 'narrowed', 'replaced', 'deferred'];
 
 /**
+ * Adaptation kinds that switch a rule's automated check off.
+ *
+ * `dropped` and `deferred` mean the rule does not apply — at all, or not yet —
+ * so its check has nothing to decide. `replaced` means the project meets the
+ * rule's concern by a mechanism this check knows nothing about, and a check
+ * aimed at the wrong mechanism reports findings that are not defects.
+ *
+ * `narrowed` is deliberately **not** in this set, and that is the whole point
+ * of having the set. An earlier version asked only whether an adaptation
+ * existed, so declaring a rule `narrowed` switched its check off completely —
+ * a project could state that it had merely tightened a rule and silently stop
+ * verifying it. A narrowed rule is still in force; only its scope shrank.
+ * Where the narrowing genuinely puts documents outside the rule, `ignore` is
+ * the field that names them.
+ */
+const SUSPENDS_CHECK = new Set(['dropped', 'replaced', 'deferred']);
+
+/**
  * The rule each role exists to serve.
  *
  * Leaving a role out is a decision, and A2 says a decision is recorded. The
@@ -533,7 +551,8 @@ if (withdrawn.length === 0) {
 // 6. Structural checks for the automated rules
 // ---------------------------------------------------------------------------
 
-const inForce = (id) => rules.has(id) && !adapted.has(id);
+const inForce = (id) =>
+  rules.has(id) && !SUSPENDS_CHECK.has(adapted.get(id)?.change);
 
 // --- C5: relative links and anchors resolve.
 // Gated like every other rule check. Before C5 existed this block ran
@@ -800,11 +819,27 @@ if (findings.length) {
   console.log('');
 }
 
+/** Adaptations that stopped an automated check from running at all. */
+const suspended = [...adapted.entries()].filter(
+  ([id, a]) => SUSPENDS_CHECK.has(a.change) && rules.get(id)?.check === 'automated'
+);
+
 if (decl && !quiet) {
-  const inForceCount = rules.size - adapted.size;
-  console.log(`\nrules: ${inForceCount} in force, ${adapted.size} adapted`);
+  const notInForce = [...adapted.values()].filter((a) =>
+    SUSPENDS_CHECK.has(a.change)
+  ).length;
+  console.log(`\nrules: ${rules.size - notInForce} in force, ${adapted.size} adapted`);
   for (const [id, a] of adapted) {
-    console.log(`  ${id} ${a.change.padEnd(8)} ${rules.get(id).title}`);
+    // Whether the check still runs is the part a reader cannot infer from the
+    // change kind alone, and it is the part that decides how much this report
+    // is worth. A narrowed rule keeps its check; the other three kinds do not.
+    const marker =
+      rules.get(id).check !== 'automated'
+        ? ''
+        : SUSPENDS_CHECK.has(a.change)
+          ? '  · check off'
+          : '  · check still runs';
+    console.log(`  ${id} ${a.change.padEnd(8)} ${rules.get(id).title}${marker}`);
   }
 }
 
@@ -828,6 +863,13 @@ if (decl && !quiet) {
     );
   }
   for (const line of skipped) console.log(line);
+  // A check the project itself switched off is the blind spot most likely to be
+  // forgotten, because nothing in a passing run hints at it. It used to appear
+  // only in the listing above, which --quiet suppresses — so the quietest run
+  // was the one that hid the most.
+  for (const [id, a] of suspended) {
+    console.log(`  ${id} — ${a.change} by this project's declaration, so its check did not run`);
+  }
   console.log(`  ${manual} rule(s) in force are marked \`manual\` and depend on review`);
   for (const n of notes) console.log(`  ${n}`);
 }

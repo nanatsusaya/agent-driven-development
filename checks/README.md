@@ -45,9 +45,15 @@ Nine checks:
 | `withdrawn` | no document still teaches a rule the catalogue has withdrawn | [M2](../method/rules.md#m2) |
 | `language` | one spelling regime, if the project declares one | [L1](../method/rules.md#l1) |
 
-A check tied to a rule runs only while that rule is in force. Declare the rule
-adapted and the check stops — that is [A1](../method/rules.md#a1) working, not
-a hole.
+A check tied to a rule runs only while that rule is in force, and the kind of
+adaptation decides that. `dropped`, `replaced` and `deferred` switch the check
+off — that is [A1](../method/rules.md#a1) working, not a hole. **`narrowed`
+does not**: a narrowed rule is still in force, and treating it as though it
+were not would let a project declare that it had tightened a rule while
+silently ceasing to verify it. Use `ignore` to put paths outside a scan.
+
+Every check an adaptation switched off is named in the report, in the section
+that `--quiet` cannot suppress.
 
 ## What it deliberately does not do
 

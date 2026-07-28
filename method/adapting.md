@@ -59,9 +59,18 @@ Every rule is in force unless the project says otherwise. To say otherwise:
 the same purpose — say what), or **`deferred`** (it will apply, but not yet —
 say what triggers it).
 
+The kind decides what happens to the rule's automated check, so it is not a
+label chosen for tone. `dropped`, `replaced` and `deferred` switch the check
+off: the rule does not apply, or is met by a mechanism the check knows nothing
+about, and findings from it would not be defects. **`narrowed` keeps the check
+running**, because a narrowed rule is still in force — only its scope shrank.
+Where the narrowing genuinely puts documents outside the rule, name them in
+`ignore` rather than reaching for a kind that switches the whole check off.
+
 The check verifies that every rule is accounted for and that every adaptation
 carries a reason and a date. Whether the reason is a *good* one stays a review
-question; that is [E2](rules.md#e2).
+question; that is [E2](rules.md#e2). The report names every check an adaptation
+switched off, so a rule that stopped being verified cannot do so quietly.
 
 ## Archetypes
 

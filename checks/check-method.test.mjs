@@ -133,6 +133,34 @@ function expect(
   }
 }
 
+/**
+ * Assert that the report *says* something, rather than that it exited a certain
+ * way. Some of what this check owes its reader is not a verdict at all — it is
+ * naming what went unchecked, and a verdict-only test cannot see that.
+ *
+ * @param label   what this case is testing
+ * @param project project directory
+ * @param pattern must appear in the output
+ * @param args    extra arguments; `--quiet` is already passed
+ */
+function expectSays(label, project, pattern, args = []) {
+  ran++;
+  const r = spawnSync(
+    process.execPath,
+    [CHECK, project, '--catalogue', REAL_CATALOGUE, '--quiet', ...args],
+    { encoding: 'utf8' }
+  );
+  const out = (r.stdout ?? '') + (r.stderr ?? '');
+  if (pattern.test(out)) {
+    console.log(`ok    ${label}`);
+  } else {
+    failures++;
+    console.log(`FAIL  ${label}`);
+    console.log(`        expected the report to match ${pattern}`);
+    console.log(out.split('\n').map((l) => `      | ${l}`).join('\n'));
+  }
+}
+
 // --- the legitimate baseline must pass, or every failure below is meaningless
 expect('a complete, coherent project passes', baseline('good'), true);
 
@@ -320,6 +348,70 @@ expect('a complete, coherent project passes', baseline('good'), true);
   });
   put(d, 'docs/STATUS.md', '# Status\n\nSee [the plan](../PLAN.md).\n');
   expect('an adapted C5 stops the link scan', d, true);
+}
+{
+  // The bug this closes, reproduced exactly: the gate asked only whether an
+  // adaptation existed, so declaring a rule `narrowed` — a claim that it still
+  // applies — switched its check off as completely as `dropped` would. A
+  // project could tighten a rule on paper and stop verifying it entirely.
+  const d = baseline('narrowed-keeps-the-check', {
+    adaptations: [
+      { rule: 'L1', change: 'narrowed', reason: 'British spelling is required in docs/ only; drafts elsewhere are free', decided: '2026-01-01' },
+    ],
+  });
+  put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior and color of it.\n');
+  expect('a narrowed rule keeps its check running', d, false, ['language']);
+}
+{
+  // The nearest legitimate case to the one above: `replaced` means the concern
+  // is met by a mechanism this check does not know, so its findings would not
+  // be defects. It must still switch the check off.
+  const d = baseline('replaced-stops-the-check', {
+    adaptations: [
+      { rule: 'L1', change: 'replaced', reason: 'a house style tool owns spelling and runs on every change', decided: '2026-01-01' },
+    ],
+  });
+  put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior and color of it.\n');
+  expect('a replaced rule stops its check', d, true);
+}
+{
+  const d = baseline('deferred-stops-the-check', {
+    adaptations: [
+      { rule: 'L1', change: 'deferred', reason: 'drafting in mixed variants until the first release is cut', decided: '2026-01-01' },
+    ],
+  });
+  put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior and color of it.\n');
+  expect('a deferred rule stops its check', d, true);
+}
+{
+  // A switched-off check used to be visible only in the listing --quiet
+  // suppresses, so the quietest run was the one that hid the most. It belongs
+  // in the blind-spot section, which is always printed.
+  const d = baseline('suspended-is-named', {
+    adaptations: [
+      { rule: 'L1', change: 'dropped', reason: 'contributors write in several variants and that is fine here', decided: '2026-01-01' },
+    ],
+  });
+  expectSays(
+    'a check switched off by the declaration is named even under --quiet',
+    d,
+    /not verified here[\s\S]*L1 — dropped by this project's declaration/
+  );
+}
+{
+  // The mirror: a narrowed rule keeps its check, so it must *not* appear as a
+  // blind spot. Reporting one that did run is the same defect in the other
+  // direction — it teaches the reader to skim the section.
+  const d = baseline('narrowed-is-not-named', {
+    adaptations: [
+      { rule: 'L1', change: 'narrowed', reason: 'British spelling is required in docs/ only; drafts elsewhere are free', decided: '2026-01-01' },
+    ],
+  });
+  expectSays(
+    'a narrowed rule is not listed among the checks that did not run',
+    d,
+    /^(?![\s\S]*L1 — narrowed by this project's declaration)[\s\S]*$/
+  );
 }
 
 // --- 5. decisions
