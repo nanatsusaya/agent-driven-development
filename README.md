@@ -44,7 +44,7 @@ happens in whatever language you think in.
 
 | | |
 |---|---|
-| [`method/rules.md`](method/rules.md) | **The catalogue.** 26 rules in nine clusters, each with the failure it prevents and whether a command can decide it. |
+| [`method/rules.md`](method/rules.md) | **The catalogue.** 30 rules in eleven clusters, each with the failure it prevents and whether a command can decide it. |
 | [`method/adapting.md`](method/adapting.md) | How to reshape the rules for your project, by archetype. |
 | [`method/rationale.md`](method/rationale.md) | Why the method looks like this, what it costs, and where it is most likely wrong. |
 | [`templates/`](templates/README.md) | Starting points for the four artefacts, plus review and ticket forms. |

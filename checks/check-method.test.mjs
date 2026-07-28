@@ -270,6 +270,18 @@ expect('a complete, coherent project passes', baseline('good'), true);
   put(d, 'docs/STATUS.md', '# Status\n\nSee [it](method-log.md#unerwünschtes-verhalten).\n');
   expect('a link to a heading that really is absent still fails', d, false, ['links']);
 }
+{
+  // The link scan belongs to C5, so a project that declares C5 adapted is not
+  // held to it. Without this case the gate could be removed and every other
+  // link case would still pass.
+  const d = baseline('links-adapted', {
+    adaptations: [
+      { rule: 'C5', change: 'dropped', reason: 'the documents are generated and the generator owns cross-references', decided: '2026-01-01' },
+    ],
+  });
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the plan](../PLAN.md).\n');
+  expect('an adapted C5 stops the link scan', d, true);
+}
 
 // --- 5. decisions
 {

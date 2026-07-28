@@ -1,15 +1,15 @@
 ---
-name: weiterimtext
+name: after-merge
 description: >-
   Use mid-session to move cleanly from a just-merged change to the next task — the seam between two
-  units of work, and the counterpart to moin (bring-up) and feierabend (wind-down). Confirm the
+  units of work, and the counterpart to session-start (bring-up) and session-end (wind-down). Confirm the
   change actually landed, tidy the branch state, bring the living documents current, then
   re-validate the next task against current reality and start it ONLY if it is genuinely ready and
   decision-free; otherwise surface the decision and stop. Keeps the session's context; re-verifies
   the external world before writing.
 ---
 
-# Weiter im Text — the seam after a merged change
+# After merge — the seam between two units of work
 
 Between finishing one unit of work and starting the next there is a seam, and
 the seam is where things quietly go wrong: a branch is left dangling, the state

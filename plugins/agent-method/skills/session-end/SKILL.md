@@ -1,13 +1,13 @@
 ---
-name: feierabend
+name: session-end
 description: >-
   Use at the end of a working session to wind down cleanly: tidy the branch state, finish or safely
   park in-flight work at an honest stopping point, bring the living documents current, run any
   maintenance that has come due, then give a handoff summary. This is a wind-down, NOT a trigger to
-  start new work. The counterpart to moin.
+  start new work. The counterpart to session-start.
 ---
 
-# Feierabend — session wind-down
+# Session end — wind-down
 
 Closing a session cleanly is a procedure. The goal is to leave the repository
 and the handoff at an **honest stopping point**: everything genuinely finished

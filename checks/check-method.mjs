@@ -9,14 +9,10 @@
  * not a defect. What is a defect is a rule that vanished without anyone
  * deciding it should.
  *
- * Six checks:
- *
- *   1. the declaration exists and is well formed
- *   2. every bound artefact exists, and every unbound role is explained
- *   3. every adaptation is complete and names a real rule
- *   4. no rule is silently absent, and no rule is adapted twice
- *   5. no document still teaches a withdrawn rule
- *   6. the structurally checkable parts of the `automated` rules hold
+ * Eight checks: `declaration`, `artefacts`, `adaptations`, `accounting`,
+ * `links`, `decisions`, `withdrawn`, `language`. The last four belong to rules
+ * (C5, D2, M2, L1) and run only while that rule is in force; the first four
+ * are about the declaration itself. See checks/README.md for the table.
  *
  * The report ends by naming what it could *not* check. A check that stays quiet
  * about its own blind spots reads as a clean bill of health, which is rule H1
@@ -433,9 +429,11 @@ if (withdrawn.length === 0) {
 
 const inForce = (id) => rules.has(id) && !adapted.has(id);
 
-// --- relative links resolve (supports C1, C2 and C4: a dead link is a fact
-// --- whose authority has moved without the reference following it)
-{
+// --- C5: relative links and anchors resolve.
+// Gated like every other rule check. Before C5 existed this block ran
+// unconditionally, which meant the check producing the most findings in a real
+// repository belonged to no rule and could not be adapted away under A1.
+if (inForce('C5')) {
   const anchorCache = new Map();
   const anchorsFor = (rel) => {
     if (!anchorCache.has(rel)) {

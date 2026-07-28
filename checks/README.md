@@ -16,17 +16,22 @@ obey the catalogue*. [A1](../method/rules.md#a1) expects the rules to be
 reshaped, so a narrowed rule with a stated reason is a correct state. What is
 not correct is a rule that vanished without anyone deciding it should.
 
-Six checks:
+Eight checks:
 
-| | |
-|---|---|
-| `declaration` | `method.json` exists and is well formed |
-| `artefacts` | every bound role exists; every unbound role is explained |
-| `adaptations` | each is complete, names a real rule, and gives a reason and a date |
-| `links` | relative links and anchors resolve |
-| `decisions` | every decision appears in its index, with a matching status |
-| `withdrawn` | no document still teaches a rule the catalogue has withdrawn |
-| `language` | one spelling regime, if the project declares one |
+| Check | Asks | Rule |
+|---|---|---|
+| `declaration` | `method.json` exists and is well formed | — |
+| `artefacts` | every bound role exists | — |
+| `adaptations` | each is complete, names a real rule, and gives a reason and a date | [A2](../method/rules.md#a2) |
+| `accounting` | an unbound role is explained by an adaptation | [A2](../method/rules.md#a2) |
+| `links` | relative links and anchors resolve | [C5](../method/rules.md#c5) |
+| `decisions` | every decision appears in its index, with a matching status | [D2](../method/rules.md#d2) |
+| `withdrawn` | no document still teaches a rule the catalogue has withdrawn | [M2](../method/rules.md#m2) |
+| `language` | one spelling regime, if the project declares one | [L1](../method/rules.md#l1) |
+
+A check tied to a rule runs only while that rule is in force. Declare the rule
+adapted and the check stops — that is [A1](../method/rules.md#a1) working, not
+a hole.
 
 ## What it deliberately does not do
 
@@ -86,7 +91,7 @@ read.
 node checks/check-method.test.mjs
 ```
 
-34 cases, each building a throwaway project and asserting both the exit code and
+35 cases, each building a throwaway project and asserting both the exit code and
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 

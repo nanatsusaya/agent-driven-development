@@ -1,15 +1,15 @@
 ---
-name: moin
+name: session-start
 description: >-
   Use at the start of a working session to bring up cleanly and orient: read what this project is,
   the standing rules and available procedures, the last few units of work, and — above all — the
   current state and the single clearest next step, all read fresh from the project's own living
   documents. Flag but do not run any maintenance that has come due, then ask whether to continue as
   planned. This is orientation, NOT a trigger to start work — it ends with a question, not an
-  action. The counterpart to feierabend.
+  action. The counterpart to session-end.
 ---
 
-# Moin — session bring-up
+# Session start — bring-up
 
 Starting a session cleanly is a procedure, not something reconstructed from
 memory. Improvised bring-up fails in a consistent way: something is skipped, and

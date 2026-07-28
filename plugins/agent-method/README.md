@@ -10,31 +10,38 @@ packaged as a Claude Code plugin.
 
 | Skill | When |
 |---|---|
-| `/agent-method:moin` | Session bring-up. Orients from the project's living documents and **ends with a question, never an action**. |
-| `/agent-method:weiterimtext` | The seam after a merged change. Keep your context, re-verify the world, start the next task only if it is decision-free. |
-| `/agent-method:feierabend` | Session wind-down. Tidy the branches, finish or park work honestly, bring the living documents current. |
+| `/agent-method:session-start` | Session bring-up. Orients from the project's living documents and **ends with a question, never an action**. |
+| `/agent-method:after-merge` | The seam after a merged change. Keep your context, re-verify the world, start the next task only if it is decision-free. |
+| `/agent-method:session-end` | Session wind-down. Tidy the branches, finish or park work honestly, bring the living documents current. |
 | `/agent-method:decision-record` | Writing or reworking a decision record, and the cycle it goes through. |
 | `/agent-method:adopt` | Introducing the method into a project, or reviewing how well an existing one fits. |
 
-## About the names, and the language rule behind them
+## Rename them into your own language
 
-Three of them are German: *moin · weiterimtext · feierabend* — roughly *morning
-· carry on · knocking-off time*.
+The names above are English because everything committed here is English. That
+is one half of rule
+[L1](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#l1).
+The other half is that you talk to an agent in your own language — and a skill
+name is something you type in conversation, not something you read in a
+document.
 
-That is not an oddity, it is the method's language rule applied to itself.
-[L1](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
-splits two decisions that are easy to conflate:
+So the name is yours to change. Nothing depends on it: rename the directory,
+and the `name:` field at the top of its `SKILL.md`. Something short and
+colloquial works better than a translation, because you type it many times a
+day:
 
-- **Everything committed is written in one language** — one spelling standard,
-  machine-checked. Here that is English: these skills, their descriptions and
-  every document in the repository.
-- **Conversation with a person happens in that person's own language.** A skill
-  name is typed by a person in conversation, so it sits on that side of the
-  line.
+| English | Deutsch | Español | Italiano |
+|---|---|---|---|
+| `session-start` | `moin` | `buenas` | `buondi` |
+| `after-merge` | `weiterimtext` | `seguimos` | `avanti` |
+| `session-end` | `feierabend` | `hasta-luego` | `stacco` |
 
-Rename the folders to whatever you type — nothing depends on them. What the
-rule asks is that you do not let the choice leak the other way, into the
-artefacts.
+These are plain ASCII on purpose. Whether the runtime accepts accented
+characters in a skill name is not something this repository has verified.
+
+What the rule asks is only that the choice does not leak the other way. The
+headings, the descriptions and every document stay in the one language
+everybody reads.
 
 ## What the skills assume
 
@@ -48,7 +55,7 @@ procedure needs to know about your project it learns from your project.
 **The rule catalogue and the coherence check.** A plugin is copied into a cache
 when it is installed, so bundling them would create a second copy of the
 catalogue that drifts from the first — the exact defect rule
-[C2](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+[C2](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c2)
 exists to prevent, shipped inside the tooling meant to enforce it.
 
 So the catalogue stays in one place, and the check runs from a clone:

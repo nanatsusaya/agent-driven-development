@@ -1,6 +1,6 @@
 # The rule catalogue
 
-Twenty-six rules in nine clusters, identified as `<cluster><number>`. The
+Thirty rules in eleven clusters, identified as `<cluster><number>`. The
 identifier is permanent and never reused, even for a withdrawn rule: projects
 refer to rules by identifier, so renumbering would silently change what a
 project claims to follow.
@@ -123,6 +123,22 @@ the inside, because every individual document is accurate.
 *planned · designed · draft · complete · live* — and say which stage an
 accepted decision alone confers.
 
+<a id="d4"></a>
+### D4 — Do not implement ahead of a decision
+
+Read before you write: the state artefact, and the decision that owns the area
+you are about to change. If the task would settle in code something a
+still-open decision owns, write the decision first. Do not invent structures no
+decision covers.
+
+**Why.** [D1](#d1) is written for the person deciding. This is the same rule at
+the moment of acting, which is where it actually gets broken. An agent that
+meets an undecided question mid-task resolves it in the implementation, and a
+choice embodied in code is much harder to see, and much harder to reverse, than
+one written down. It does not announce itself as a decision at all.
+
+**Check:** `manual`
+
 ---
 
 ## C — Documentation
@@ -155,7 +171,7 @@ data and just as exactly to process rules — with the extra difficulty that
 copies of a rule are invisible from inside the document being changed, so
 "where else does this live?" is a question nobody thinks to ask.
 
-**Check:** `automated` in part — see [M2](#m2).
+**Check:** `automated` in part — see [C5](#c5) and [M2](#m2).
 
 <a id="c3"></a>
 ### C3 — The documentation is self-supporting
@@ -190,6 +206,23 @@ consistent with something untrue. Deferring the update to a follow-up leaves
 the window open for exactly as long as the backlog is.
 
 **Check:** `manual`
+
+<a id="c5"></a>
+### C5 — References resolve
+
+A reference to another document, section or artefact points at something that
+exists. When the authority for a fact moves, every reference to it moves in the
+same change.
+
+**Why.** [C2](#c2) puts every fact in one place and tells everything else to
+refer to it, which turns every reference into load-bearing structure. A dead
+link is that structure failing silently: the reader is sent to the authority
+and arrives nowhere, and the fact reverts to whatever the referring document
+happened to say about it. This is the part of C2 a command can decide.
+
+**Check:** `automated` — relative links and anchors resolve. External links are
+not fetched: whether a URL is reachable is a network question, and a check that
+fails for the wrong reason gets ignored for the right ones.
 
 ---
 
@@ -436,6 +469,48 @@ and treating them alike means choosing between an agent that asks about
 everything and one that asks about nothing.
 
 **Check:** `manual`
+
+---
+
+## W — Work
+
+<a id="w1"></a>
+### W1 — A task carries its own definition of done
+
+A task states, before it starts, what would make it finished: the problem or
+goal and why it exists, the scope, and either the decisions to be made or
+testable acceptance criteria. It is done when those criteria have been
+**verified**, not when the work feels complete. Agents write tasks too, and are
+held to the same bar.
+
+**Why.** [H2](#h2) says hand work back only at high confidence and
+[H3](#h3) says verify by exercising it. Neither says confident *of what*.
+Without criteria fixed in advance, "done" is settled afterwards by whoever is
+tired — and an agent will supply a plausible standard that the work it has just
+produced happens to meet.
+
+**Check:** `manual`
+
+---
+
+## P — What never enters the repository
+
+<a id="p1"></a>
+### P1 — Real secrets and personal data never enter the repository
+
+No credential, token, key or personal datum is ever committed. Not in code, not
+in fixtures, tests, logs, examples or documentation. Use fake values, and make
+them obviously fake.
+
+**Why.** Almost every other rule here protects something recoverable: a bad
+decision can be superseded, a stale document corrected, a wrong merge reverted.
+This one is different. A pushed secret is compromised the moment it exists in
+the history, and reverting the commit does not change that. In a method whose
+premise is that an agent writes with a person's own credentials, this is the
+failure class with no undo.
+
+**Check:** `automated` — secret scanning on the trunk, and a scan of fixtures
+and examples for values shaped like real credentials.
 
 ---
 
