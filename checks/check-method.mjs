@@ -291,7 +291,12 @@ if (!exists(declPath)) {
   }
 } else {
   try {
-    decl = JSON.parse(readFileSync(declPath, 'utf8'));
+    // Normalised like every document, and for the same reason. `JSON.parse`
+    // rejects a leading byte-order mark outright, so a declaration written by a
+    // Windows editor — several write one by default — failed as "not valid
+    // JSON" against a file that reads as perfectly valid. The message sent the
+    // reader hunting for a syntax error that was not there.
+    decl = JSON.parse(normaliseEol(readFileSync(declPath, 'utf8')));
   } catch (e) {
     fail('declaration', 'method.json', `Not valid JSON — ${e.message}`);
   }

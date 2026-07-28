@@ -16,7 +16,7 @@
  * Usage: node check-method.test.mjs
  */
 
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, cpSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -175,6 +175,19 @@ expect('a complete, coherent project passes', baseline('good'), true);
   const d = baseline('bad-json');
   put(d, 'method.json', '{ not json ');
   expect('unparseable method.json fails', d, false, ['declaration']);
+}
+{
+  // Several Windows editors write a byte-order mark by default, and JSON.parse
+  // rejects one outright — so a valid-looking declaration failed as "not valid
+  // JSON", sending the reader after a syntax error that was not there. Every
+  // document already goes through the same normalisation on the way in.
+  const d = baseline('bom-declaration');
+  const decl = readFileSync(join(d, 'method.json'), 'utf8');
+  // Written as an escape, never as the character itself: a literal BOM in a
+  // source file is invisible, and the next person to touch this line would have
+  // no way to see what makes the case a case.
+  writeFileSync(join(d, 'method.json'), '\uFEFF' + decl, 'utf8');
+  expect('a method.json with a byte-order mark still parses', d, true);
 }
 
 // --- 2. artefacts
