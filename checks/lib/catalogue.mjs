@@ -60,6 +60,23 @@ export function parseRules(path) {
       );
     }
 
+    // Identifiers are permanent and never reused, which is what lets a project
+    // refer to a rule by identifier and mean something stable. A duplicate
+    // breaks exactly that: `Map.set` kept the last definition silently, so the
+    // catalogue said one thing to a reader scrolling past the first heading and
+    // another to every check, every adaptation and every link resolving the
+    // anchor. Refusing to parse is the only honest response — there is no way
+    // to decide which of the two the project meant.
+    if (rules.has(headingId)) {
+      throw new Error(
+        `rules.md: rule ${headingId} is defined twice. Identifiers are permanent ` +
+          'and never reused, so a duplicate is either a copied heading or a ' +
+          'renumbering that half happened. Nothing here can tell which of the ' +
+          'two definitions a project referring to ' +
+          `${headingId} meant.`
+      );
+    }
+
     rules.set(headingId, {
       id: headingId,
       title,

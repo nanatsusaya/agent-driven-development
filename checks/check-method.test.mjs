@@ -694,24 +694,76 @@ function bare(name, files) {
 }
 
 // --- 9. the check must refuse to report success on a broken catalogue
+
+/** Assert that a catalogue is refused outright, rather than read and believed. */
+function expectRefused(label, catalogue, project) {
+  ran++;
+  const r = spawnSync(process.execPath, [CHECK, project, '--catalogue', catalogue], {
+    encoding: 'utf8',
+  });
+  if (r.status === 2) {
+    console.log(`ok    ${label}`);
+  } else {
+    failures++;
+    console.log(`FAIL  ${label}`);
+    console.log(`        expected exit 2, got ${r.status}`);
+    console.log(((r.stdout ?? '') + (r.stderr ?? '')).split('\n').map((l) => `      | ${l}`).join('\n'));
+  }
+}
+
 {
   const cat = join(root, 'cat-empty');
   mkdirSync(cat, { recursive: true });
   writeFileSync(join(cat, 'rules.md'), '# Nothing here\n', 'utf8');
   writeFileSync(join(cat, 'withdrawn.md'), '# Withdrawn\n', 'utf8');
-  ran++;
-  const r = spawnSync(
-    process.execPath,
-    [CHECK, baseline('vs-empty-catalogue'), '--catalogue', cat],
-    { encoding: 'utf8' }
+  expectRefused(
+    'an empty catalogue is refused rather than passed',
+    cat,
+    baseline('vs-empty-catalogue')
   );
-  if (r.status === 2) {
-    console.log('ok    an empty catalogue is refused rather than passed');
-  } else {
-    failures++;
-    console.log(`FAIL  an empty catalogue is refused rather than passed`);
-    console.log(`        expected exit 2, got ${r.status}`);
-  }
+}
+{
+  // Map.set kept the last definition silently, so a duplicated identifier gave
+  // a reader one rule and every check another. Identifiers are permanent, which
+  // is the whole reason a project may refer to one.
+  const cat = join(root, 'cat-duplicate');
+  mkdirSync(cat, { recursive: true });
+  writeFileSync(
+    join(cat, 'rules.md'),
+    readFileSync(join(REAL_CATALOGUE, 'rules.md'), 'utf8') +
+      '\n<a id="g1"></a>\n### G1 — A second rule wearing the same identifier\n\n' +
+      '**Why.** It should never be read.\n\n**Check:** `manual`\n',
+    'utf8'
+  );
+  cpSync(join(REAL_CATALOGUE, 'withdrawn.md'), join(cat, 'withdrawn.md'));
+  expectRefused(
+    'a duplicated rule identifier is refused rather than silently overwritten',
+    cat,
+    baseline('vs-duplicate-catalogue')
+  );
+}
+{
+  // The nearest legitimate case: the same anchor and heading inside a fenced
+  // example, which is how the catalogue would show an adopter what a rule looks
+  // like. Fenced content is not a definition, and a check that could not tell
+  // the difference would make the catalogue unable to document its own format.
+  const cat = join(root, 'cat-fenced-example');
+  mkdirSync(cat, { recursive: true });
+  writeFileSync(
+    join(cat, 'rules.md'),
+    readFileSync(join(REAL_CATALOGUE, 'rules.md'), 'utf8') +
+      '\n## Format\n\n```markdown\n<a id="g1"></a>\n### G1 — The human is the gate\n\n' +
+      '**Check:** `manual`\n```\n',
+    'utf8'
+  );
+  cpSync(join(REAL_CATALOGUE, 'withdrawn.md'), join(cat, 'withdrawn.md'));
+  expect(
+    'the same identifier inside a fenced example is not a duplicate',
+    baseline('vs-fenced-example-catalogue'),
+    true,
+    [],
+    cat
+  );
 }
 
 rmSync(root, { recursive: true, force: true });
