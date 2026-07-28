@@ -11,6 +11,10 @@ description: >-
 
 # Session start — bring-up
 
+*Carries out rules S1, S2 and H1. The
+[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+is the authority; this file is only the procedure.*
+
 Starting a session cleanly is a procedure, not something reconstructed from
 memory. Improvised bring-up fails in a consistent way: something is skipped, and
 the skip goes unnoticed because there was no list to skip from.
@@ -23,7 +27,7 @@ review, a red build or an overdue task is stated plainly.
 
 - **Orient, do not start work.** This ends with a **question**, never an action.
   If the briefing surfaces a task, name it and wait. Opening a session by
-  starting work chooses the session's direction on the human's behalf.
+  starting work chooses the session's direction on the decider's behalf.
 - **Read-only.** No commits, no branches, no edits to living documents.
 - **The living documents are the source of truth for state** — not this file,
   not memory, not what was true last session.
@@ -50,8 +54,7 @@ or `AGENTS.md`, `docs/adr/` or `docs/decisions/`, `docs/STATUS.md`,
 
 - The project and its goal, from the top of the operating-rules artefact. One or
   two sentences, not a wall of text.
-- How long it has been running: `git log --reverse --format=%ad --date=short`,
-  first line.
+- How long it has been running, from the date of the first commit.
 - Name the working directory, so it is unambiguous which project this is.
 
 ## 2. Standing rules and available procedures
@@ -64,14 +67,9 @@ or `AGENTS.md`, `docs/adr/` or `docs/decisions/`, `docs/STATUS.md`,
 
 ## 3. Recent work
 
-The last handful of completed units — merged changes rather than raw commits,
-because the merge is the unit that passed review:
-
-```bash
-git log --merges --format="%ad %s" --date=short -6
-```
-
-Fall back to `git log --oneline -6` where there are few merges. Mention a
+The last handful of completed units — changes that passed review, rather than
+raw commits, because review is what makes a change a unit. Where the history
+holds few of those, fall back to the most recent commits. Mention a
 methodological moment from the method log only if it bears on today.
 
 ## 4. Where we stand
@@ -86,7 +84,7 @@ methodological moment from the method log only if it bears on today.
 
 If the project keeps a calendar-driven maintenance list, compare each entry's
 due date to today and **report** what is due. Do not run it here: running
-maintenance is work, and work starts after the human says so. If nothing is due,
+maintenance is work, and work starts after the decider says so. If nothing is due,
 say so explicitly with the next date — never skip it silently.
 
 ## 6. The next step

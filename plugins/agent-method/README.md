@@ -47,8 +47,14 @@ everybody reads.
 
 They read the project's `method.json` to find out which of its files answer
 which question, and fall back to the conventional names when there is no
-declaration. They contain **no** stack, domain or tooling specifics: anything a
-procedure needs to know about your project it learns from your project.
+declaration. They assume **nothing** about your stack, your domain or your
+tooling: anything a procedure needs to know about your project it learns from
+your project. The only command any of them names is the one in `adopt` for
+running this method's own check.
+
+They say **the decider** rather than "the human", because who decides varies —
+a maintainer, whoever owns the area, the team — and a procedure that assumes
+one person is useless the moment there are several.
 
 ## What is deliberately not in here
 

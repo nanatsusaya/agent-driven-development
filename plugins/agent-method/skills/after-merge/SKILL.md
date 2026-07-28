@@ -11,6 +11,10 @@ description: >-
 
 # After merge — the seam between two units of work
 
+*Carries out rules S1, S2, G1 and C4. The
+[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+is the authority; this file is only the procedure.*
+
 Between finishing one unit of work and starting the next there is a seam, and
 the seam is where things quietly go wrong: a branch is left dangling, the state
 artefact drifts, or the task you had in mind was closed by something that merged
@@ -38,7 +42,7 @@ you worked out this session and prevents nothing.
 
 - **Gated autonomy — the crux.** Steps 1 to 3 run autonomously. Starting the
   next task in step 5 does not. Begin only if the task is genuinely ready and
-  decision-free. If it needs a judgement that belongs to the human, is too large
+  decision-free. If it needs a judgement that belongs to the decider, is too large
   to start without agreeing its shape first, or is ambiguous — **stop and ask.**
 - **Never merge.** This runs *after* a merge someone else performed. Step 1
   verifies that; if it did not happen, this stops.
@@ -53,7 +57,7 @@ rather than assuming it:
 - Confirm the change is **actually merged** — not merely opened, approved or
   green.
 - If it is not merged, or there is uncommitted work that was not part of it,
-  **stop here.** Report the real state and let the human resolve it. Cleaning up
+  **stop here.** Report the real state and let the decider resolve it. Cleaning up
   on a false premise destroys work.
 
 ## 2. Branch hygiene

@@ -9,6 +9,10 @@ description: >-
 
 # Session end — wind-down
 
+*Carries out rules S1, W1 and H1. The
+[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+is the authority; this file is only the procedure.*
+
 Closing a session cleanly is a procedure. The goal is to leave the repository
 and the handoff at an **honest stopping point**: everything genuinely finished
 is finished, everything unfinished is parked visibly and handed off.
@@ -31,7 +35,7 @@ nothing else; anything you leave unsaid is lost.
   named in the handoff. Never leave it dangling and unmentioned.
 - If something merged this session: sync the trunk, delete the merged branch,
   prune.
-- List every change still awaiting review, with its state, so the human knows
+- List every change still awaiting review, with its state, so the decider knows
   what is queued.
 - End on the trunk with a clean tree — unless a branch is deliberately parked and
   named in the handoff.

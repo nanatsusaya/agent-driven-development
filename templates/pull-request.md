@@ -1,8 +1,9 @@
 <!--
 Copy to .github/PULL_REQUEST_TEMPLATE.md.
 
-One concern per change. The human merges. Delete any section that is genuinely
-not applicable — an empty heading reads as "considered and found empty".
+One concern per change. The decider merges, never the author. Delete any section
+that is genuinely not applicable — an empty heading reads as "considered and
+found empty".
 -->
 
 ## What

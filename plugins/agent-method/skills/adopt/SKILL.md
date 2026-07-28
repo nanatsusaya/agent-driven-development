@@ -10,6 +10,10 @@ description: >-
 
 # Adopting the method into a project
 
+*Carries out rules A1, A2 and C1. The
+[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+is the authority; this file is only the procedure.*
+
 Adoption is a proposal, not an installation. What the method looks like here is
 a decision about how this project will be worked, which puts it squarely in the
 human's domain.
@@ -78,7 +82,7 @@ could act on. "Not applicable" is not a reason.
 
 ## 4. Present the proposal and wait
 
-Show the human:
+Show the decider:
 
 - which existing file plays which role, and which roles are unbound
 - every rule you propose to narrow, drop, replace or defer, with its reason

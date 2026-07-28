@@ -10,6 +10,10 @@ description: >-
 
 # Writing a decision record
 
+*Carries out rules D1, D2, D3 and G2. The
+[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+is the authority; this file is only the procedure.*
+
 Authoring a decision is a repeatable procedure. Follow it exactly: decisions are
 **normative** and everything built later rests on them.
 
@@ -20,7 +24,7 @@ should say which choice was made and why the alternatives were not.
 **Guardrails (do not violate):**
 
 - **Do not answer the open questions yourself.** They exist because they belong
-  to the human.
+  to the decider.
 - **Do not edit an accepted decision.** See step 1.
 - **Do not implement what this decision is still deciding.**
 
@@ -104,6 +108,6 @@ says the thing exists.
 - Is every dependency on another decision cited by section?
 - Are the negative consequences real ones, or reassurance?
 - Could any decision here have been phrased so a command could check it?
-- Are the open questions genuinely the human's to answer — and are they
+- Are the open questions genuinely the decider's to answer — and are they
   unanswered?
 - Does the index row exist, with the right status?
