@@ -35,10 +35,17 @@ boundary the agent decides, and an agent that can classify its own change as
 mechanical can reach the trunk unreviewed. The rule survives only while it is
 absolute.
 
-**Check:** `automated` — trunk protection that requires a reviewed change and
-applies to administrators as well. An agent usually runs with a human's own
-credentials, so a protection administrators may bypass is one the agent may
-bypass.
+**Check:** `automated` in part — trunk protection that requires a change to
+arrive through review and applies to administrators as well. An agent usually
+runs with a human's own credentials, so a protection administrators may bypass
+is one the agent may bypass.
+
+What the setting proves is that the boundary was there, not that anyone stopped
+at it. Where the approving-review requirement is zero — which the *Binding*
+below recommends wherever the same account authors and merges — a change still
+reaches the trunk through a pull request nobody read. No setting closes that
+gap, and a rule that claimed otherwise would be worse than one that names it:
+the boundary is machine-enforced, the reading is not.
 
 **Binding.** In a team the ordinary approving-review requirement already does
 this, and the rule adds only that the agent is never one of the approvers.

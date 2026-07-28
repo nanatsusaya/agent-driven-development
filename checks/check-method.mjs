@@ -87,7 +87,9 @@ const ROLE_RULES = {
  * verified".
  */
 const NOT_LOCALLY_CHECKABLE = {
-  G1: 'trunk protection is a hosting-platform setting; verify it there',
+  G1:
+    'trunk protection is a hosting-platform setting; verify it there. Even then ' +
+    'it proves a change arrived through review, not that anyone read it',
   P1: 'secret scanning belongs to the platform; this check does not look for credentials',
 };
 
