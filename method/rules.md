@@ -1,6 +1,6 @@
 # The rule catalogue
 
-Thirty rules in eleven clusters, identified as `<cluster><number>`. The
+Thirty-one rules in eleven clusters, identified as `<cluster><number>`. The
 identifier is permanent and never reused, even for a withdrawn rule: projects
 refer to rules by identifier, so renumbering would silently change what a
 project claims to follow.
@@ -71,6 +71,35 @@ resolution is occasionally wrong in a way that is expensive and invisible —
 invisible precisely because it was never presented as a choice.
 
 **Check:** `manual`
+
+<a id="g3"></a>
+### G3 — The gate reviews direction and coherence, not lines
+
+At the boundary a person decides two things: whether the change moves towards
+the goal, and whether it fits what already exists rather than working by making
+an exception to it. Line-level correctness is not one of them. That is what
+[H3](#h3) is for — verification by exercising the thing — and what [E1](#e1)
+turns into a command wherever a command can decide it.
+
+**Why.** [G1](#g1) makes the boundary absolute without saying what makes it
+survivable. A reviewer who believes the job is to read every line does one of
+two things: burns out, or begins waving changes through while still believing
+otherwise. The second is worse, because from outside the boundary still looks
+like a boundary.
+
+With an agent this stops being a question of discipline and becomes one of
+arithmetic. An agent produces more in an hour than anyone can read in an hour,
+so a gate defined as *read everything* fails by volume rather than by neglect —
+and it fails silently, at whichever moment the reviewer quietly stops.
+
+Naming the two questions is what makes the gate cheap enough to hold every
+time, without exception, which is the only form [G1](#g1) survives in. It also
+guards the opposite failure: a reviewer deep in the lines who never asks
+whether the change was worth making at all.
+
+**Check:** `manual`, and necessarily. A check deciding whether direction *had
+been considered* would be a quality measure, which is what [E2](#e2) exists to
+forbid.
 
 ---
 
