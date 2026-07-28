@@ -600,6 +600,25 @@ expect('a complete, coherent project passes', baseline('good'), true);
   put(d, 'docs/STATUS.md', '# Status\n\nThe organizer left an organizational note.\n');
   expect('-izer and -izational endings are caught', d, false, ['language']);
 }
+{
+  // The operating-rules artefact was exempt as a whole file, on the reasoning
+  // that a document stating L1 must contain the spellings it forbids. The
+  // reasoning holds for the mention, not for the file — and the operating rules
+  // are often a project's longest document, unscanned end to end.
+  const d = baseline('operating-rules-scanned');
+  put(d, 'CLAUDE.md', '# Rules\n\nWe analyze the behavior of every change.\n');
+  expect('the operating-rules artefact is scanned like any other', d, false, ['language']);
+}
+{
+  // The exemption that is actually needed, and it already existed: naming the
+  // forbidden spelling in a code span. This is how the catalogue states L1
+  // about itself, so a check that fired here would make the rule unstatable.
+  const d = baseline('operating-rules-quoting');
+  put(d, 'CLAUDE.md',
+    '# Rules\n\nBritish spelling: write `colour`, never `color`.\n\n' +
+      '> Legacy wording: analyze the behavior.\n');
+  expect('a forbidden spelling named in a code span or blockquote passes', d, true);
+}
 
 // --- 7b. placeholders left in a bound artefact
 {

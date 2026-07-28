@@ -739,12 +739,23 @@ if (decl && inForce('D2') && bound.decisions) {
       );
     }
 
-    const declaresRule = new Set(
-      [bound['operating-rules'], 'method/rules.md'].filter(Boolean)
-    );
+    // Every finding says how to exempt a legitimate mention, because a document
+    // that *names* a spelling rather than using it is common enough — a style
+    // note, a glossary, a rule being stated — that a reader meeting the finding
+    // without the escape hatch would file it as a false alarm.
+    const howToQuote =
+      ' If this names the spelling rather than uses it, put it in a code span ' +
+      'or a blockquote; neither is scanned.';
 
+    // No document is exempt as a whole. The operating-rules artefact and the
+    // catalogue used to be, on the reasoning that a document stating rule L1
+    // necessarily contains the spellings it forbids — true, but the exemption
+    // was granted to the entire file rather than to the mention. A project's
+    // operating rules are often its longest document, and it went unscanned
+    // from the first line to the last. The per-mention exemption already
+    // exists: a code span is blanked and a blockquote is not an assertion,
+    // which is how this repository's own documents name a forbidden spelling.
     for (const { rel, text } of docs) {
-      if (declaresRule.has(rel)) continue;
       for (const { n, text: raw } of assertedLines(text)) {
         // A URL or link target is not prose and keeps its own spelling.
         const line = raw
@@ -756,7 +767,8 @@ if (decl && inForce('D2') && bound.decisions) {
             fail(
               'language',
               `${rel}:${n}`,
-              `"${m[0]}" is not ${spelling} spelling — write "${wrongWay[w]}".`
+              `"${m[0]}" is not ${spelling} spelling — write "${wrongWay[w]}".` +
+                howToQuote
             );
           } else if (
             spelling === 'british' &&
@@ -768,7 +780,8 @@ if (decl && inForce('D2') && bound.decisions) {
             fail(
               'language',
               `${rel}:${n}`,
-              `"${m[0]}" uses -ize; this project declares British -ise spelling.`
+              `"${m[0]}" uses -ize; this project declares British -ise spelling.` +
+                howToQuote
             );
           }
         }

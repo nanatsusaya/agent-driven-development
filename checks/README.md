@@ -93,7 +93,10 @@ compares against a word list, so the German word `Liter` reads as a misspelt
 `litre`, and any document quoting material in another language will produce
 findings. (Both are in code spans here for a reason: this paragraph is a
 document stating the rule, so it necessarily contains an example of what the
-rule forbids, and the scan caught it. Leave the backticks.) This
+rule forbids, and the scan caught it. Leave the backticks.) No document is
+exempt as a whole — not the operating-rules artefact, not the catalogue — so a
+code span or a blockquote is how any document names a spelling without using
+it. This
 matters because rule [L2](../method/rules.md#l2) requires quoted source material
 to stay unmodified — the check would push you to break a rule to satisfy it. Put
 such directories in `ignore`, which is what that field is for.
