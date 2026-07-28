@@ -101,6 +101,15 @@ whether the change was worth making at all.
 been considered* would be a quality measure, which is what [E2](#e2) exists to
 forbid.
 
+**Binding.** In a software project the two questions are the ones a *product
+owner* and a *software architect* ask, and borrowing those names is usually the
+quickest way to be understood. They are the local form, not the rule. Where
+there is no code the same two questions are: does this serve the reader we said
+we were writing for, and does it fit the canon or quietly contradict something
+already in it. Neither title has to exist as a job for the questions to be
+someone's — in a team they may sit with different people, and then the
+operating rules say which, for the same reason [G2](#g2) needs an addressee.
+
 ---
 
 ## D — Decisions
