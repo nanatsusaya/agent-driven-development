@@ -112,6 +112,11 @@ actually withdrawn, because until then there is nothing to check against.
 Exit codes: `0` coherent · `1` findings · `2` the catalogue itself could not be
 read.
 
+## Licence
+
+The code in this directory is under [MIT](LICENSE), not the CC BY 4.0 that
+covers the rest of the repository. Take it, vendor it, change it.
+
 ## The counter-test
 
 ```bash

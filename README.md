@@ -111,6 +111,13 @@ for the arguments, issues for concrete corrections, and see
 
 ## Licence
 
-Copyright © 2026 Daniel Wagner. Licensed under [CC BY 4.0](LICENSE) — copy it,
-adapt it, rewrite it for your own needs, commercially or not. The one condition
-is credit.
+Copyright © 2026 Daniel Wagner. Two licences, because the repository holds two
+kinds of thing.
+
+**The written method** — everything outside `checks/` — is under
+[CC BY 4.0](LICENSE). Copy it, adapt it, rewrite it for your own needs,
+commercially or not. The one condition is credit.
+
+**The code** in [`checks/`](checks/README.md) is under [MIT](checks/LICENSE).
+Creative Commons advises against using CC licences for software, and a check
+you cannot combine with your own project's licence is a check you cannot use.

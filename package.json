@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "A ruleset for running real projects with AI agents.",
-  "license": "CC-BY-4.0",
+  "license": "(MIT AND CC-BY-4.0)",
   "homepage": "https://github.com/nanatsusaya/agent-driven-development",
   "repository": {
     "type": "git",

@@ -78,5 +78,6 @@ pull request is a different project.
 
 ## Licence
 
-Contributions are accepted under [CC BY 4.0](LICENSE), the same terms as the
-rest of the repository.
+Contributions are accepted under the same terms as the part of the repository
+they touch: [CC BY 4.0](LICENSE) for the written method, and
+[MIT](checks/LICENSE) for the code in `checks/`.
