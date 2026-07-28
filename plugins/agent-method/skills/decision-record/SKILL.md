@@ -4,7 +4,7 @@ description: >-
   Use when writing a new decision record (an ADR, or whatever the project calls its decisions
   artefact) or fleshing out one that is still planned. Covers classifying the change — new versus
   amendment versus superseding — the required structure and house style, the branch → Proposed →
-  review-with-open-questions → merge → Accepted cycle, and the index and status updates. Not for
+  review-with-open-questions → Accepted → merge cycle, and the index and status updates. Not for
   implementation work.
 ---
 
@@ -52,7 +52,8 @@ should say which choice was made and why the alternatives were not.
 ## 2. Branch and files
 
 - Branch from the current trunk.
-- Create the record with `Status: Proposed`.
+- Create the record with `Status: Proposed`. It stays `Proposed` only while the
+  open questions are open; step 5 flips it, on this branch.
 - Add its row to the index **in the same change**. An unlisted decision is
   invisible to the index check and to the next session.
 
@@ -89,17 +90,28 @@ nobody notices which ones were skipped.
 ## 5. After the questions are answered
 
 Fold the answers into the decision sections, then convert *Open questions* into
-**Resolved questions**, recording `R1..Rn` — what was decided and why. Push to
-the same change under review; leave a short note that it is ready again.
+**Resolved questions**, recording `R1..Rn` — what was decided and why.
+
+Now flip `Proposed → Accepted` in **both** the record and the index, **on the
+same branch, before the merge.** The questions are answered and the merge is
+what accepts the decision, so the status the change carries in is the status
+that is true the moment it lands.
+
+Do not leave the flip for a second change afterwards. Between the two merges
+the trunk would state `Proposed` about a decision that has in fact been
+accepted — stale documentation, which [C4](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c4)
+calls a defect rather than untidiness — and it would cost a second trip through
+review to record something that already happened.
+
+Push to the same change under review; leave a short note that it is ready
+again.
 
 ## 6. After it merges
 
-Sync the trunk and flip `Proposed → Accepted` in **both** the record and the
-index — as a normal change through review like any other, not as a direct write
-to the trunk. Then delete the branch, and update the state artefact if this
-changed what happens next.
+Sync the trunk, delete the branch, and update the state artefact if this changed
+what happens next.
 
-Remember that **accepted means decided, not built.** Nothing about this flip
+Remember that **accepted means decided, not built.** Nothing about the status
 says the thing exists.
 
 ## Before opening it for review
@@ -111,3 +123,9 @@ says the thing exists.
 - Are the open questions genuinely the decider's to answer — and are they
   unanswered?
 - Does the index row exist, with the right status?
+
+## Before it is merged
+
+- Are the open questions now **Resolved questions**, with `R1..Rn`?
+- Is the status `Accepted` in the record **and** in the index, so that nothing
+  is left for a follow-up change to correct?
