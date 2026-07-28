@@ -26,11 +26,13 @@ goes in its *Binding*, marked as such.
 ## Commands
 
 ```bash
-npm test    # the counter-test for the coherence check
+npm run lint    # this repository's own links, anchors and British spelling
+npm test        # the counter-test for the coherence check
 ```
 
-Zero dependencies, Node 18 or later. There is nothing to install. To run the
-check itself, point it at a project: `node checks/check-method.mjs <path>`.
+Zero dependencies, Node 18 or later. There is nothing to install. Both must be
+green before work is handed back. To run the full check, point it at a project
+that has a `method.json`: `node checks/check-method.mjs <path>`.
 
 ## Structure
 

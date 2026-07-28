@@ -50,6 +50,20 @@ enforce it.
 depends on the network fails for reasons unrelated to the repository, and a
 check that fails for the wrong reason gets ignored for the right ones.
 
+## Linting without adopting
+
+```bash
+node checks/check-method.mjs <project-path> --lint --spelling british
+```
+
+Runs only the checks that read documents — [C5](../method/rules.md#c5),
+[M2](../method/rules.md#m2) and [L1](../method/rules.md#l1) — and needs no
+`method.json`. Use it on a project that has not adopted the method, or does not
+intend to. Everything it did not run is named in the report.
+
+Without `--lint`, a missing declaration is still a finding. Lint mode is opt-in;
+it is not the check quietly relaxing.
+
 ## Known limitations
 
 **The spelling scan cannot tell a foreign word from an American spelling.** It
@@ -80,6 +94,8 @@ actually withdrawn, because until then there is nothing to check against.
 |---|---|
 | `<project-path>` | defaults to the working directory |
 | `--catalogue <path>` | use a different catalogue; defaults to `../method` relative to the script |
+| `--lint` | run the document scans only; no `method.json` needed |
+| `--spelling <regime>` | the spelling regime for `--lint`: `british` or `american` |
 | `--quiet` | omit the in-force listing. The blind-spot section is always printed |
 
 Exit codes: `0` coherent · `1` findings · `2` the catalogue itself could not be
@@ -91,7 +107,7 @@ read.
 node checks/check-method.test.mjs
 ```
 
-41 cases, each building a throwaway project and asserting both the exit code and
+46 cases, each building a throwaway project and asserting both the exit code and
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 

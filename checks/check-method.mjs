@@ -184,15 +184,24 @@ function note(message) {
 const argv = process.argv.slice(2);
 let projectArg = null;
 let catalogueArg = null;
+let spellingArg = null;
 let quiet = false;
+let lint = false;
 
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
   if (a === '--catalogue') catalogueArg = argv[++i];
+  else if (a === '--spelling') spellingArg = argv[++i];
   else if (a === '--quiet') quiet = true;
+  else if (a === '--lint') lint = true;
   else if (a === '--help' || a === '-h') {
     console.log(
-      'Usage: check-method.mjs [project-path] [--catalogue <path>] [--quiet]'
+      'Usage: check-method.mjs [project-path] [--catalogue <path>]\n' +
+        '                       [--lint [--spelling british|american]] [--quiet]\n\n' +
+        '  --lint  run the document scans only, with no method.json: links and\n' +
+        '          anchors resolve, no document teaches a withdrawn rule, and one\n' +
+        '          spelling regime holds. For a project that has not adopted the\n' +
+        '          method, or does not intend to.'
     );
     process.exit(0);
   } else if (!a.startsWith('-')) projectArg = a;
@@ -228,13 +237,16 @@ const declPath = join(project, 'method.json');
 let decl = null;
 
 if (!exists(declPath)) {
-  fail(
-    'declaration',
-    'method.json',
-    'No declaration found. A project adopts the method by binding the four ' +
-      'roles to its own files; without that, there is nothing to check against. ' +
-      'See method/adapting.md for the format.'
-  );
+  if (!lint) {
+    fail(
+      'declaration',
+      'method.json',
+      'No declaration found. A project adopts the method by binding the four ' +
+        'roles to its own files; without that, there is nothing to check against. ' +
+        'See method/adapting.md for the format. To scan the documents without ' +
+        'adopting anything, use --lint.'
+    );
+  }
 } else {
   try {
     decl = JSON.parse(readFileSync(declPath, 'utf8'));
@@ -598,9 +610,11 @@ if (decl && inForce('D2') && bound.decisions) {
 
 // --- L1: one spelling regime, if the project declares one
 {
-  const spelling = decl?.language?.spelling;
+  const spelling = spellingArg ?? decl?.language?.spelling;
   if (!spelling) {
-    if (decl && inForce('L1')) {
+    if (lint) {
+      note('no --spelling given, so rule L1 was not checked');
+    } else if (decl && inForce('L1')) {
       note(
         'no spelling regime declared ("language": { "spelling": "british" | "american" }), ' +
           'so rule L1 was not checked'
@@ -701,6 +715,12 @@ if (decl && !quiet) {
   ).length;
 
   console.log(`\nnot verified here`);
+  if (lint) {
+    console.log(
+      '  --lint: only the document scans ran. The declaration, artefact,\n' +
+        '  adaptation and decision-index checks all need a method.json.'
+    );
+  }
   for (const line of skipped) console.log(line);
   console.log(`  ${manual} rule(s) in force are marked \`manual\` and depend on review`);
   for (const n of notes) console.log(`  ${n}`);
@@ -711,4 +731,4 @@ if (findings.length) {
   console.log(`FAIL · ${findings.length} finding${findings.length === 1 ? '' : 's'}`);
   process.exit(1);
 }
-console.log('OK · the declaration matches the project');
+console.log(lint ? 'OK · the documents scan clean' : 'OK · the declaration matches the project');

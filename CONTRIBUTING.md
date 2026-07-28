@@ -59,7 +59,11 @@ pull request is a different project.
   takes the form of the failure a rule prevents, never a case study — yours
   included. This is not modesty; a rule justified by an anecdote is a rule
   nobody can evaluate.
-- **Run the counter-test and say what it returned:**
+- **Run both commands and say what they returned:**
+
+  ```bash
+  npm run lint
+  ```
 
   ```bash
   npm test

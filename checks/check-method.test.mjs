@@ -97,11 +97,18 @@ function catalogueWithWithdrawal(name, pattern) {
  * @param expectFired check names that must appear in the output when failing
  * @param catalogue   catalogue directory, defaulting to the real one
  */
-function expect(label, project, expectPass, expectFired = [], catalogue = REAL_CATALOGUE) {
+function expect(
+  label,
+  project,
+  expectPass,
+  expectFired = [],
+  catalogue = REAL_CATALOGUE,
+  extraArgs = []
+) {
   ran++;
   const r = spawnSync(
     process.execPath,
-    [CHECK, project, '--catalogue', catalogue, '--quiet'],
+    [CHECK, project, '--catalogue', catalogue, '--quiet', ...extraArgs],
     { encoding: 'utf8' }
   );
   const passed = r.status === 0;
@@ -455,7 +462,66 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('an adapted L1 stops the spelling scan', d, true);
 }
 
-// --- 8. the check must refuse to report success on a broken catalogue
+// --- 8. --lint: the document scans, without a declaration
+function bare(name, files) {
+  const dir = join(root, name);
+  mkdirSync(dir, { recursive: true });
+  for (const [rel, content] of Object.entries(files)) put(dir, rel, content);
+  return dir;
+}
+{
+  const d = bare('lint-clean', {
+    'README.md': '# A project\n\nSee [the notes](notes.md).\n',
+    'notes.md': '# Notes\n\nNothing yet.\n',
+  });
+  expect('--lint passes on a project with no method.json', d, true, [], REAL_CATALOGUE, [
+    '--lint',
+  ]);
+}
+{
+  // Lint mode must stay opt-in. If the absence of a declaration ever stopped
+  // being a finding by default, this case is what notices.
+  const d = bare('lint-not-default', { 'README.md': '# A project\n\nNothing yet.\n' });
+  expect('the same project without --lint fails on the declaration', d, false, [
+    'declaration',
+  ]);
+}
+{
+  const d = bare('lint-dead-link', {
+    'README.md': '# A project\n\nSee [the notes](notes.md).\n',
+  });
+  expect('--lint still catches a dead link', d, false, ['links'], REAL_CATALOGUE, [
+    '--lint',
+  ]);
+}
+{
+  const d = bare('lint-spelling', {
+    'README.md': '# A project\n\nWe will analyze the behavior of the system.\n',
+  });
+  expect(
+    '--lint with --spelling catches an Americanism',
+    d,
+    false,
+    ['language'],
+    REAL_CATALOGUE,
+    ['--lint', '--spelling', 'british']
+  );
+}
+{
+  const d = bare('lint-no-spelling', {
+    'README.md': '# A project\n\nWe will analyze the behavior of the system.\n',
+  });
+  expect(
+    '--lint without --spelling leaves spelling alone',
+    d,
+    true,
+    [],
+    REAL_CATALOGUE,
+    ['--lint']
+  );
+}
+
+// --- 9. the check must refuse to report success on a broken catalogue
 {
   const cat = join(root, 'cat-empty');
   mkdirSync(cat, { recursive: true });

@@ -9,6 +9,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "lint": "node checks/check-method.mjs . --lint --spelling british",
     "test": "node checks/check-method.test.mjs"
   }
 }
