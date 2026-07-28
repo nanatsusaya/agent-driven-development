@@ -31,12 +31,13 @@ obey the catalogue*. [A1](../method/rules.md#a1) expects the rules to be
 reshaped, so a narrowed rule with a stated reason is a correct state. What is
 not correct is a rule that vanished without anyone deciding it should.
 
-Nine checks:
+Ten checks:
 
 | Check | Asks | Rule |
 |---|---|---|
 | `declaration` | `method.json` exists and is well formed | — |
 | `artefacts` | every bound role exists | — |
+| `authorities` | declared external systems name a role the method knows | — |
 | `adaptations` | each is complete, names a real rule, and gives a reason and a date | [A2](../method/rules.md#a2) |
 | `accounting` | an unbound role is explained by an adaptation | [A2](../method/rules.md#a2) |
 | `links` | relative links and anchors resolve | [C5](../method/rules.md#c5) |
@@ -68,9 +69,11 @@ reports "no findings" without saying what it did not look at reads as a clean
 bill of health, which is [H1](../method/rules.md#h1) broken by the tool meant to
 enforce it.
 
-**It does not follow the network.** External links are not fetched. A check that
-depends on the network fails for reasons unrelated to the repository, and a
-check that fails for the wrong reason gets ignored for the right ones.
+**It does not follow the network.** External links are not fetched, and neither
+is anything under `authorities` — the check reads that a `gate` was declared,
+never whether trunk protection is switched on behind it. A check that depends on
+the network fails for reasons unrelated to the repository, and a check that
+fails for the wrong reason gets ignored for the right ones.
 
 ## Linting without adopting
 

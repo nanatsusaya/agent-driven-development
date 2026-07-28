@@ -41,6 +41,39 @@ Binding a role means naming the file or directory that plays it. That is what
 A role you do not use is bound to `null` and listed as an adaptation with the
 reason. That is the difference between a considered omission and a gap.
 
+## Naming what lives outside the repository
+
+`artefacts` covers everything the method needs *in* the repository. Most
+projects also depend on something outside it, and three of those are named by
+rules: the review boundary itself ([G1](rules.md#g1)), where tasks and their
+definitions of done live ([W1](rules.md#w1)), and whatever scans for
+credentials ([P1](rules.md#p1)). Nothing in the repository said where any of
+them were.
+
+```json
+"authorities": {
+  "gate": "https://github.com/your-org/your-repo/settings/branches",
+  "tasks": "https://github.com/your-org/your-repo/issues",
+  "secrets": null
+}
+```
+
+The whole block is optional; so is any line in it. Declaring one buys two
+things. The next session stops guessing where the work is tracked, and where
+the check admits it cannot decide a rule locally, it can say *where* to verify
+instead of only *that* you should.
+
+**Nothing is fetched.** These are addresses a person reads, not instructions an
+agent retrieves. That distinction is what keeps them compatible with
+[C3](rules.md#c3): an instruction you must go and get before you can work is
+not self-supporting, because the fetch can fail, be blocked or be skipped and
+costs something on every task. A line in a local file recording where the issue
+tracker is costs nothing and fails never.
+
+The cost is honest: a pointer nobody maintains rots, and no check will catch it,
+because following it would make the check depend on the network. Declare the
+ones you would actually notice going stale.
+
 ## Declaring an adaptation
 
 Every rule is in force unless the project says otherwise. To say otherwise:

@@ -16,6 +16,19 @@
     "method-log": "docs/method-log.md"
   },
 
+  "$comment-authorities": [
+    "Optional. Systems this project keeps outside the repository, so the next",
+    "session does not have to guess where they are. Nothing is fetched: these",
+    "are addresses a person reads, not instructions an agent retrieves. Delete",
+    "this block, or any line in it, if it does not apply."
+  ],
+
+  "authorities": {
+    "gate": "https://github.com/your-org/your-repo/settings/branches",
+    "tasks": "https://github.com/your-org/your-repo/issues",
+    "secrets": null
+  },
+
   "language": {
     "spelling": "british"
   },

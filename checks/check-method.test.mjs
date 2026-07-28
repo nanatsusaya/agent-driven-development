@@ -209,6 +209,72 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('an invented role fails', d, false, ['artefacts']);
 }
 
+// --- 2b. external authorities
+{
+  // The block is optional, and the baseline proves it: a project that declares
+  // nothing outside the repository must stay coherent. Making it mandatory
+  // would be ceremony charged to every adopter for a need only some have (A3).
+  const d = baseline('no-authorities');
+  expect('a project declaring no external authorities passes', d, true);
+}
+{
+  const d = baseline('authorities-ok', {
+    authorities: {
+      gate: 'https://example.invalid/org/repo/settings/branches',
+      tasks: 'https://example.invalid/org/repo/issues',
+      secrets: null,
+    },
+  });
+  expect('declared authorities pass, and null is a legitimate value', d, true);
+}
+{
+  // Same reasoning as an invented artefact role: a key no rule refers to would
+  // be read by nothing, so accepting it would let a project believe it had
+  // declared something.
+  const d = baseline('authorities-unknown', {
+    authorities: { deployment: 'https://example.invalid/deploys' },
+  });
+  expect('an invented authority fails', d, false, ['authorities']);
+}
+{
+  const d = baseline('authorities-empty', { authorities: { gate: '   ' } });
+  expect('an empty authority fails', d, false, ['authorities']);
+}
+{
+  const d = baseline('authorities-not-object', { authorities: ['a board'] });
+  expect('authorities given as an array fails', d, false, ['authorities']);
+}
+{
+  // method.json is the one file the placeholder check never scans, and the one
+  // most likely to be copied from a template and half filled in.
+  const d = baseline('authorities-placeholder', {
+    authorities: { tasks: '«where your tasks live»' },
+  });
+  expect('an authority left as a template placeholder fails', d, false, ['authorities']);
+}
+{
+  // The point of declaring one: the blind-spot line stops saying "verify it
+  // there" and says where. Asserted on the report, because this is not a
+  // verdict — it is the check telling the reader what it could not decide.
+  const d = baseline('authorities-named-in-report', {
+    authorities: { gate: 'https://example.invalid/org/repo/settings/branches' },
+  });
+  expectSays(
+    'a declared authority is named where the check admits its blind spot',
+    d,
+    /not verified here[\s\S]*G1 —[\s\S]*verify it at: https:\/\/example\.invalid\/org\/repo\/settings\/branches/
+  );
+}
+{
+  // The mirror: with nothing declared, the line must not invent a destination.
+  const d = baseline('authorities-absent-in-report');
+  expectSays(
+    'with no authority declared the blind-spot line offers no destination',
+    d,
+    /^(?![\s\S]*verify it at:)[\s\S]*$/
+  );
+}
+
 // --- 3. adaptations
 {
   const d = baseline('unknown-rule', {

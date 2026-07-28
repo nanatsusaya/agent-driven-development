@@ -60,6 +60,13 @@ A role the project genuinely does not use is bound to `null` **and** explained
 as an adaptation. Leaving it out silently is the one thing that is not allowed:
 the difference between a considered omission and a gap is the record.
 
+Then ask what the project keeps **outside** the repository, and record it under
+`authorities` — where the review boundary is configured, where tasks live, what
+scans for credentials. All three are optional. They are addresses a person
+reads, never something an agent fetches, and the reason to write them down is
+that a session which has to ask where the issue tracker is has already lost the
+thing the declaration exists to carry.
+
 ## 3. Work out which rules need reshaping
 
 Read the catalogue's adaptation guide and match the project to an archetype.
@@ -106,6 +113,11 @@ Once the shape is agreed, write `method.json` at the project root:
     "decisions": "docs/adr/",
     "state": "docs/STATUS.md",
     "method-log": "docs/method-log.md"
+  },
+  "authorities": {
+    "gate": "https://github.com/your-org/your-repo/settings/branches",
+    "tasks": "https://github.com/your-org/your-repo/issues",
+    "secrets": null
   },
   "language": { "spelling": "british" },
   "adaptations": [

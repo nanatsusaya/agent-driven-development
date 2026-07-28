@@ -9,10 +9,11 @@
  * not a defect. What is a defect is a rule that vanished without anyone
  * deciding it should.
  *
- * Nine checks: `declaration`, `artefacts`, `adaptations`, `accounting`,
- * `links`, `placeholders`, `decisions`, `withdrawn`, `language`. The last five
- * belong to rules (C5, C3, D2, M2, L1) and run only while that rule is in
- * force; the first four are about the declaration itself. See checks/README.md.
+ * Ten checks: `declaration`, `artefacts`, `authorities`, `adaptations`,
+ * `accounting`, `links`, `placeholders`, `decisions`, `withdrawn`, `language`.
+ * The last five belong to rules (C5, C3, D2, M2, L1) and run only while that
+ * rule is in force; the first five are about the declaration itself. See
+ * checks/README.md.
  *
  * The report ends by naming what it could *not* check. A check that stays quiet
  * about its own blind spots reads as a clean bill of health, which is rule H1
@@ -79,6 +80,34 @@ const ROLE_RULES = {
   decisions: 'D1',
   state: 'D3',
   'method-log': 'M1',
+};
+
+/**
+ * External systems the method actually talks about, and the rule each serves.
+ *
+ * `artefacts` binds roles to files, which is everything the method needs *in*
+ * the repository. These are the counterpart: three things a project keeps
+ * outside it that a rule depends on. The block is optional — a project that
+ * declares nothing here is not failing anything.
+ *
+ * Declaring one is a pointer, never an instruction to fetch. C3 forbids
+ * instructions the agent must retrieve before it can work, because the retrieval
+ * can fail, be blocked or be skipped and costs something on every task. It does
+ * not forbid the repository from recording *where* the issue tracker is: that
+ * line is local, costs no request, and without it the next session has to guess
+ * or ask. The distinction the method never spelled out is between an
+ * instruction held elsewhere and an address held here.
+ *
+ * Kept to three deliberately. Two are the rules this check already admits it
+ * cannot decide locally, where naming the place turns "verify it there" into
+ * something a reader can act on. The third is where a task's definition of done
+ * usually lives (W1). Inventing a fuller taxonomy would be ceremony bought
+ * against a need nobody has stated (A3).
+ */
+const AUTHORITIES = {
+  gate: 'G1',
+  tasks: 'W1',
+  secrets: 'P1',
 };
 
 /**
@@ -389,6 +418,64 @@ if (decl) {
       continue;
     }
     bound[role] = value;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2b. External authorities
+// ---------------------------------------------------------------------------
+
+/** Declared pointers to systems outside the repository, by role. */
+const authorities = {};
+
+if (decl && decl.authorities !== undefined) {
+  if (typeof decl.authorities !== 'object' || decl.authorities === null || Array.isArray(decl.authorities)) {
+    fail(
+      'authorities',
+      'method.json',
+      '"authorities" must be an object mapping a role to where that system ' +
+        `lives. The method defines: ${Object.keys(AUTHORITIES).join(', ')}.`
+    );
+  } else {
+    for (const [role, value] of Object.entries(decl.authorities)) {
+      if (!(role in AUTHORITIES)) {
+        fail(
+          'authorities',
+          'method.json',
+          `Unknown authority "${role}". The method defines: ` +
+            `${Object.keys(AUTHORITIES).join(', ')}. Adding one here would ` +
+            'declare a relationship no rule refers to, so nothing would read it.'
+        );
+        continue;
+      }
+      // Nothing is verified about where it points, and nothing tries. Following
+      // it would make the check depend on the network, and a check that fails
+      // for reasons unrelated to the repository gets ignored for the right ones.
+      if (value === null) continue;
+      if (typeof value !== 'string' || value.trim() === '') {
+        fail(
+          'authorities',
+          'method.json',
+          `Authority "${role}" must be a non-empty string, or null. It is read ` +
+            'by a person, so a URL, a board name or a queue identifier are all ' +
+            'fine — an empty one is not.'
+        );
+        continue;
+      }
+      // The same failure the placeholder check catches in documents, in the one
+      // file that check never scans: a template copied and not filled in.
+      if (/«[^»]*»/.test(value)) {
+        fail(
+          'authorities',
+          'method.json',
+          `Authority "${role}" still carries the template placeholder ` +
+            `${value.match(/«[^»]*»/)[0]}. It points the next session at ` +
+            'something that was never filled in.'
+        );
+        continue;
+      }
+      authorities[role] = value.trim();
+    }
   }
 }
 
@@ -861,6 +948,16 @@ if (decl && !quiet) {
           : '  · check still runs';
     console.log(`  ${id} ${a.change.padEnd(8)} ${rules.get(id).title}${marker}`);
   }
+
+  // Printed for the reader who is not this check: the next session, which
+  // otherwise has to guess where the work is tracked or ask someone.
+  const declared = Object.entries(authorities);
+  if (declared.length) {
+    console.log('\nexternal authorities');
+    for (const [role, where] of declared) {
+      console.log(`  ${role.padEnd(8)} ${where}`);
+    }
+  }
 }
 
 // Always printed, --quiet included. A report that says nothing about what it
@@ -868,9 +965,21 @@ if (decl && !quiet) {
 // the tool meant to enforce it. --quiet suppresses the listing above, which is
 // a convenience; this section is the point of the report.
 {
+  // Where a rule cannot be decided here, the project's own declaration is what
+  // turns "verify it there" into somewhere a reader can actually go. Without it
+  // the line names a blind spot and leaves finding it as an exercise.
+  const authorityFor = (id) =>
+    authorities[Object.keys(AUTHORITIES).find((k) => AUTHORITIES[k] === id)];
+
   const skipped = [...rules.values()]
     .filter((r) => r.check === 'automated' && NOT_LOCALLY_CHECKABLE[r.id])
-    .map((r) => `  ${r.id} — ${NOT_LOCALLY_CHECKABLE[r.id]}`);
+    .map((r) => {
+      const where = authorityFor(r.id);
+      return (
+        `  ${r.id} — ${NOT_LOCALLY_CHECKABLE[r.id]}` +
+        (where ? `\n      verify it at: ${where}` : '')
+      );
+    });
   const manual = [...rules.values()].filter(
     (r) => r.check === 'manual' && !adapted.has(r.id)
   ).length;

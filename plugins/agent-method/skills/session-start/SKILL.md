@@ -64,6 +64,9 @@ or `AGENTS.md`, `docs/adr/` or `docs/decisions/`, `docs/STATUS.md`,
 - Which procedures are available and when to reach for each.
 - Any adaptations declared in `method.json`: a rule this project deliberately
   narrowed or dropped is exactly the kind of thing a fresh session gets wrong.
+- Any `authorities` declared there — where tasks live, where the review boundary
+  is configured. Read them; do not fetch them. Knowing the address is what stops
+  this session asking a question the last one already answered.
 
 ## 3. Recent work
 
