@@ -5,6 +5,7 @@
 | [`rules.md`](rules.md) | What are the rules? |
 | [`adapting.md`](adapting.md) | How do I reshape them for my project? |
 | [`withdrawn.md`](withdrawn.md) | Which rules no longer apply, and what replaced them? |
+| [`CHANGELOG.md`](CHANGELOG.md) | What changed between versions, and what must I do about it? |
 | [`rationale.md`](rationale.md) | Why does the method look like this, and where is it weak? |
 
 `rules.md` is the only normative one; [`VERSION`](VERSION) is what a project

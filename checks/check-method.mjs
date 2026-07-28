@@ -368,7 +368,9 @@ if (decl) {
   ) {
     note(
       `declared against catalogue version ${decl.version}; this catalogue is ` +
-        `${catalogueVersion}. Re-read the rules that changed, then update the version.`
+        `${catalogueVersion}. method/CHANGELOG.md says which rules moved and ` +
+        'which of them can change your result; update the version once you have ' +
+        'read it.'
     );
   }
 }

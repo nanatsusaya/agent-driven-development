@@ -45,7 +45,7 @@ function baseline(name, overrides = {}) {
   put(dir, 'method.json', JSON.stringify(
     {
       method: 'agent-driven-development',
-      version: '0.1',
+      version: '0.2',
       artefacts: {
         'operating-rules': 'CLAUDE.md',
         decisions: 'docs/adr/',
