@@ -80,7 +80,7 @@ actually withdrawn, because until then there is nothing to check against.
 |---|---|
 | `<project-path>` | defaults to the working directory |
 | `--catalogue <path>` | use a different catalogue; defaults to `../method` relative to the script |
-| `--quiet` | findings only, without the summary |
+| `--quiet` | omit the in-force listing. The blind-spot section is always printed |
 
 Exit codes: `0` coherent · `1` findings · `2` the catalogue itself could not be
 read.
@@ -91,7 +91,7 @@ read.
 node checks/check-method.test.mjs
 ```
 
-35 cases, each building a throwaway project and asserting both the exit code and
+41 cases, each building a throwaway project and asserting both the exit code and
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 

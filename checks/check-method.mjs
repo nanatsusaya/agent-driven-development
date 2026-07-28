@@ -24,7 +24,7 @@
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve, posix } from 'node:path';
+import { basename, dirname, join, resolve, posix } from 'node:path';
 import {
   DEFAULT_IGNORES,
   listMarkdownFiles,
@@ -47,12 +47,29 @@ const ROLES = ['operating-rules', 'decisions', 'state', 'method-log'];
 const CHANGES = ['dropped', 'narrowed', 'replaced', 'deferred'];
 
 /**
+ * The rule each role exists to serve.
+ *
+ * Leaving a role out is a decision, and A2 says a decision is recorded. The
+ * recording has to name *this* role's rule: an earlier version accepted any
+ * adaptation at all, so a project could unbind three roles, declare one
+ * unrelated change, and pass — which is precisely the silent absence A2 exists
+ * to prevent, shipped as a passing check.
+ */
+const ROLE_RULES = {
+  'operating-rules': 'C3',
+  decisions: 'D1',
+  state: 'D3',
+  'method-log': 'M1',
+};
+
+/**
  * Rules whose `automated` check cannot be decided by reading the working tree.
  * Named in the report so that "no findings" is never mistaken for "everything
  * verified".
  */
 const NOT_LOCALLY_CHECKABLE = {
   G1: 'trunk protection is a hosting-platform setting; verify it there',
+  P1: 'secret scanning belongs to the platform; this check does not look for credentials',
 };
 
 /** American spellings and their British counterparts, for the L1 scan. */
@@ -318,6 +335,17 @@ if (decl) {
       fail('adaptations', at, '"rule" is required and must be a rule identifier.');
       return;
     }
+    if (id === 'EXAMPLE') {
+      fail(
+        'adaptations',
+        at,
+        'This is the placeholder entry from templates/method.json. Delete it, or ' +
+          'replace it with a real adaptation. It is deliberately not a rule ' +
+          'identifier, so that a template copied unread fails here rather than ' +
+          'silently switching a rule off.'
+      );
+      return;
+    }
     if (!rules.has(id)) {
       fail(
         'adaptations',
@@ -342,6 +370,10 @@ if (decl) {
         at,
         `"change" must be one of: ${CHANGES.join(', ')} (found ${JSON.stringify(a.change)}).`
       );
+      // Return rather than record it. An entry whose change kind is unreadable
+      // states nothing, and treating it as an adaptation would switch the rule
+      // off on the strength of a malformed line.
+      return;
     }
     if (typeof a.reason !== 'string' || a.reason.trim().length < 20) {
       fail(
@@ -367,16 +399,16 @@ if (decl) {
   });
 
   for (const role of ROLES) {
-    if (decl.artefacts[role] === null) {
-      const relevant = [...adapted.keys()];
-      if (relevant.length === 0) {
-        fail(
-          'accounting',
-          'method.json',
-          `Role "${role}" is unbound but nothing is adapted. Leaving a role out ` +
-            'is a decision; record it as an adaptation of the rule it belongs to.'
-        );
-      }
+    if (decl.artefacts[role] !== null) continue;
+    const owner = ROLE_RULES[role];
+    if (!adapted.has(owner)) {
+      fail(
+        'accounting',
+        'method.json',
+        `Role "${role}" is unbound, but rule ${owner} is still in force. Leaving ` +
+          `a role out is a decision: record it as an adaptation of ${owner}, ` +
+          'with a reason and a date.'
+      );
     }
   }
 }
@@ -510,7 +542,10 @@ if (decl && inForce('D2') && bound.decisions) {
       }
       for (const d of inDir) {
         if (d === indexDoc) continue;
-        const num = d.rel.match(/(\d{4})/);
+        // The number lives in the file name, not the path. Matching the path
+        // would collapse every decision under a directory like docs/2026/ onto
+        // the same number.
+        const num = basename(d.rel).match(/(\d{4})/);
         if (!num) continue;
         if (!claimed.has(num[1])) {
           fail(
@@ -530,6 +565,30 @@ if (decl && inForce('D2') && bound.decisions) {
             d.rel,
             `Status disagreement: the file says "${own[1]}", the index says ` +
               `"${claimed.get(num[1])}". One of them is lying to the next session.`
+          );
+        }
+      }
+
+      // The other direction, which went unchecked: a row claiming a decision
+      // that has no file behind it. A copied index template produces exactly
+      // that. `Planned` is the one declared exception — it means ticketed and
+      // not yet written.
+      const numbered = new Set(
+        inDir
+          .filter((d) => d !== indexDoc)
+          .map((d) => basename(d.rel).match(/(\d{4})/))
+          .filter(Boolean)
+          .map((m) => m[1])
+      );
+      for (const [num, status] of claimed) {
+        if (/^planned$/i.test(status)) continue;
+        if (!numbered.has(num)) {
+          fail(
+            'decisions',
+            indexDoc.rel,
+            `The index claims decision ${num} with status "${status}", but no ` +
+              'file for it exists. A decision that lives only in the index is a ' +
+              'decision nobody can read. Only a "Planned" row may have no file.'
           );
         }
       }
@@ -627,7 +686,13 @@ if (decl && !quiet) {
   for (const [id, a] of adapted) {
     console.log(`  ${id} ${a.change.padEnd(8)} ${rules.get(id).title}`);
   }
+}
 
+// Always printed, --quiet included. A report that says nothing about what it
+// did not look at reads as a clean bill of health, which is rule H1 broken by
+// the tool meant to enforce it. --quiet suppresses the listing above, which is
+// a convenience; this section is the point of the report.
+{
   const skipped = [...rules.values()]
     .filter((r) => r.check === 'automated' && NOT_LOCALLY_CHECKABLE[r.id])
     .map((r) => `  ${r.id} — ${NOT_LOCALLY_CHECKABLE[r.id]}`);

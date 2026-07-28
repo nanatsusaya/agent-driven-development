@@ -2,9 +2,10 @@
 Copy to «decisions»/README.md.
 
 The coherence check reads this file. It expects a table whose first cell carries
-the four-digit number and whose last cell is the status. Every decision file
-must appear here, and the status here must match the status inside the file —
-a disagreement means one of the two is lying to the next session.
+the four-digit number and whose last cell is the status. It checks both
+directions: every decision file appears here, and every row except a `Planned`
+one has a file behind it. The status here must match the status inside the file
+— a disagreement means one of the two is lying to the next session.
 -->
 
 # Decisions
@@ -21,9 +22,10 @@ Every decision file must appear in this table with a status.
 | 0001 | «Title» | Accepted |
 | 0002 | «Title» | Planned |
 
-Link the number to the file once the file exists — `[0001](0001-slug.md)`. A
-`Planned` row has no file yet and stays unlinked, which is how the check tells
-a decision that is still to be written from one that is missing.
+Link the number to the file once the file exists — `[0001](0001-slug.md)`. The
+status, not the link, is what the check reads: every row except a `Planned` one
+must have a file behind it. `Planned` means ticketed and not yet written, so it
+is the one status allowed to stand alone.
 
 Status values: `Proposed` · `Accepted` · `Superseded` · `Planned` (ticketed, not
 yet written).

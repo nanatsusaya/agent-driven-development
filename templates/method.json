@@ -24,9 +24,9 @@
 
   "adaptations": [
     {
-      "rule": "D2",
+      "rule": "EXAMPLE",
       "change": "dropped",
-      "reason": "Example entry — delete it. Say what you changed and why, in a sentence a stranger could act on.",
+      "reason": "Delete this entry, or replace EXAMPLE with a real rule identifier. Say what you changed and why, in a sentence a stranger could act on.",
       "decided": "2026-01-01"
     }
   ]

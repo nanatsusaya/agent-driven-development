@@ -209,6 +209,38 @@ expect('a complete, coherent project passes', baseline('good'), true);
   });
   expect('the same rule adapted twice fails', d, false, ['adaptations']);
 }
+{
+  // The placeholder shipped in templates/method.json. It used to name a real
+  // rule with a valid reason and date, so a template copied unread passed the
+  // check with decision immutability silently switched off.
+  const d = baseline('placeholder-adaptation', {
+    adaptations: [
+      { rule: 'EXAMPLE', change: 'dropped', reason: 'Delete this entry, or replace EXAMPLE with a real rule identifier.', decided: '2026-01-01' },
+    ],
+  });
+  expect('the template placeholder adaptation fails', d, false, ['adaptations']);
+}
+{
+  // An unreadable change kind must not count as an adaptation. If it did, a
+  // malformed line would switch a rule off — and the report would then crash
+  // formatting it.
+  const d = baseline('unknown-change', {
+    artefacts: {
+      'operating-rules': 'CLAUDE.md',
+      decisions: null,
+      state: 'docs/STATUS.md',
+      'method-log': 'docs/method-log.md',
+    },
+    adaptations: [
+      { rule: 'D1', change: null, reason: 'no decision records are kept in this project at all', decided: '2026-01-01' },
+    ],
+  });
+  rmSync(join(d, 'docs/adr'), { recursive: true });
+  expect('an unknown change kind fails and does not adapt the rule', d, false, [
+    'adaptations',
+    'accounting',
+  ]);
+}
 
 // --- 4. links
 {
@@ -303,11 +335,60 @@ expect('a complete, coherent project passes', baseline('good'), true);
       'method-log': 'docs/method-log.md',
     },
     adaptations: [
-      { rule: 'D2', change: 'dropped', reason: 'no formal records; the canon note carries dated changes', decided: '2026-01-01' },
+      { rule: 'D1', change: 'dropped', reason: 'no formal records; the canon note carries dated changes', decided: '2026-01-01' },
     ],
   });
   rmSync(join(d, 'docs/adr'), { recursive: true });
-  expect('an unbound decisions role with a declared adaptation passes', d, true);
+  expect('an unbound decisions role with the owning rule adapted passes', d, true);
+}
+{
+  // The hole this closes: accounting used to accept *any* adaptation for *any*
+  // unbound role, so an unrelated one satisfied all four.
+  const d = baseline('decisions-dropped-wrong-rule', {
+    artefacts: {
+      'operating-rules': 'CLAUDE.md',
+      decisions: null,
+      state: 'docs/STATUS.md',
+      'method-log': 'docs/method-log.md',
+    },
+    adaptations: [
+      { rule: 'L1', change: 'dropped', reason: 'contributors write in several variants and that is fine here', decided: '2026-01-01' },
+    ],
+  });
+  rmSync(join(d, 'docs/adr'), { recursive: true });
+  expect('an unbound role explained by an unrelated adaptation fails', d, false, [
+    'accounting',
+  ]);
+}
+{
+  const d = baseline('index-row-without-file');
+  put(d, 'docs/adr/README.md',
+    '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Accepted |\n| 0002 | Second | Accepted |\n');
+  expect('an index row whose decision file is missing fails', d, false, ['decisions']);
+}
+{
+  const d = baseline('index-planned-row');
+  put(d, 'docs/adr/README.md',
+    '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Accepted |\n| 0002 | Second | Planned |\n');
+  expect('a Planned row with no file yet passes', d, true);
+}
+{
+  // Regression: the number was read from the whole relative path, so a project
+  // filing decisions under a year directory saw every one of them collapse
+  // onto that year.
+  const d = baseline('decisions-in-year-directory', {
+    artefacts: {
+      'operating-rules': 'CLAUDE.md',
+      decisions: 'docs/2026/',
+      state: 'docs/STATUS.md',
+      'method-log': 'docs/method-log.md',
+    },
+  });
+  rmSync(join(d, 'docs/adr'), { recursive: true });
+  put(d, 'docs/2026/README.md',
+    '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Accepted |\n');
+  put(d, 'docs/2026/0001-first.md', '# 0001 — First\n\n- **Status:** Accepted\n');
+  expect('a decision under a four-digit directory is read from its file name', d, true);
 }
 
 // --- 6. withdrawn rules
