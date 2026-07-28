@@ -1,6 +1,8 @@
 # agent-driven-development
 
-**A ruleset for running real projects with AI agents, alone or in a team. Within a session an agent remembers; across sessions, only the repository does.**
+**A ruleset for running real projects with AI agents, alone or in a team.
+Within a session an agent remembers; across sessions, only the repository
+does.**
 
 ## The premise
 

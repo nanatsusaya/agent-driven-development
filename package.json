@@ -4,6 +4,11 @@
   "private": true,
   "description": "A ruleset for running real projects with AI agents.",
   "license": "CC-BY-4.0",
+  "homepage": "https://github.com/nanatsusaya/agent-driven-development",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nanatsusaya/agent-driven-development.git"
+  },
   "type": "module",
   "engines": {
     "node": ">=18"
