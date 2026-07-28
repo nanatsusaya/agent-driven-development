@@ -14,8 +14,25 @@ mechanism.
 
 ## 0.2
 
-No rule was added, withdrawn or renumbered. Thirty rules, eleven clusters,
-unchanged identifiers.
+Thirty-one rules in eleven clusters. One rule added. None withdrawn, none
+renumbered — every identifier you already refer to still means what it meant.
+
+### New rule
+
+**[G3](rules.md#g3) — The gate reviews direction and coherence, not lines.**
+The catalogue referred to "review" across six rules and defined it nowhere:
+[G1](rules.md#g1) said the boundary exists, [G2](rules.md#g2) said which
+questions reach it, and nothing said what happens at it. G3 says the person
+decides whether the change moves towards the goal and whether it fits what
+already exists — and that line-level correctness is explicitly *not* theirs,
+because [H3](rules.md#h3) and [E1](rules.md#e1) carry that.
+
+Nothing you already declared becomes incoherent, and no check changes: G3 is
+`manual` and necessarily so. What it may change is how you review. If your
+operating rules describe review as reading everything, they now disagree with
+the catalogue. In a team, decide whether the two questions sit with one person
+or two, and write down which — [`adapting.md`](adapting.md) says why leaving it
+unsaid means neither reviewer asks the other question.
 
 ### May change your result
 
