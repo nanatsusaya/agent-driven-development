@@ -97,6 +97,14 @@ time, without exception, which is the only form [G1](#g1) survives in. It also
 guards the opposite failure: a reviewer deep in the lines who never asks
 whether the change was worth making at all.
 
+It follows that a change too large to answer both questions about is a change
+that will be waved through, and that the size at which this happens is far
+smaller than the size at which anyone admits it. The reviewer rarely refuses;
+they approve, and quietly stop being the gate. So the practical form of this
+rule is a constraint on what arrives: one concern per change, and a change
+scoped so that "does this fit?" is answerable at all — which is the same
+discipline [W1](#w1) asks of a task before it starts.
+
 **Check:** `manual`, and necessarily. A check deciding whether direction *had
 been considered* would be a quality measure, which is what [E2](#e2) exists to
 forbid.
