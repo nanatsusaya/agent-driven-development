@@ -13,7 +13,7 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { blankFences } from './markdown.mjs';
+import { blankFences, normaliseEol } from './markdown.mjs';
 
 /** Check statuses a rule may declare. */
 export const CHECK_KINDS = new Set(['automated', 'manual', 'n/a']);
@@ -30,7 +30,7 @@ export const CHECK_KINDS = new Set(['automated', 'manual', 'n/a']);
  * @throws when the file yields no rules, which always means the format moved
  */
 export function parseRules(path) {
-  const text = readFileSync(path, 'utf8');
+  const text = normaliseEol(readFileSync(path, 'utf8'));
   const body = blankFences(text);
   const rules = new Map();
 
@@ -89,7 +89,7 @@ export function parseRules(path) {
  * @returns array of `{ id, label, pattern, regex, withdrawn, reason, instead }`
  */
 export function parseWithdrawn(path) {
-  const body = blankFences(readFileSync(path, 'utf8'));
+  const body = blankFences(normaliseEol(readFileSync(path, 'utf8')));
   const entries = [];
 
   const heads = [...body.matchAll(/^###\s+(W\d+)\s+—\s+(.+?)\s*$/gm)];

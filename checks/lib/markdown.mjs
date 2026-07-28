@@ -87,6 +87,20 @@ export function exists(p) {
 }
 
 /**
+ * Strip a byte-order mark and normalise CRLF and lone CR to LF.
+ *
+ * Every document is put through this on the way in. Without it, a Windows
+ * checkout leaves a trailing `\r` on every line, so any pattern anchored to the
+ * end of a line matches nothing — the silent-no-op failure of rule E3, caused
+ * by the platform rather than by the pattern. A BOM has the mirror effect at
+ * the other end: it hides the `#` of the first heading, and with it that
+ * heading's anchor.
+ */
+export function normaliseEol(text) {
+  return text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+}
+
+/**
  * Replace the *contents* of fenced code blocks with empty lines, keeping the
  * fence markers and the total line count. Line numbers stay usable for
  * reporting, which matters more than the few bytes saved by dropping them.
@@ -146,6 +160,45 @@ export function assertedLines(text) {
     .map((line, i) => ({ n: i + 1, text: line }))
     .filter(({ text: t }) => t.trim() !== '' && !isBlockquote(t))
     .map(({ n, text: t }) => ({ n, text: blankCodeSpans(t) }));
+}
+
+/**
+ * The paragraphs of a document that carry the author's own assertions, with
+ * their internal whitespace collapsed to single spaces.
+ *
+ * Line-based scanning cannot see a phrase that a hard wrap has split across two
+ * lines — and prose wrapped at a fixed width splits phrases constantly. A
+ * pattern that can never fire reports success and is believed, which is the
+ * failure rule E3 exists to prevent, so the withdrawn-rule scan works on
+ * paragraphs rather than lines.
+ *
+ * @param text whole document
+ * @returns array of `{ n, text }` with `n` the 1-based line the paragraph opens on
+ */
+export function assertedParagraphs(text) {
+  const lines = blankFences(text).split('\n');
+  const out = [];
+  let buf = [];
+  let start = 0;
+
+  const flush = () => {
+    if (buf.length) {
+      const joined = blankCodeSpans(buf.join(' ')).replace(/\s+/g, ' ').trim();
+      if (joined) out.push({ n: start, text: joined });
+    }
+    buf = [];
+  };
+
+  lines.forEach((line, i) => {
+    if (line.trim() === '' || isBlockquote(line)) {
+      flush();
+      return;
+    }
+    if (buf.length === 0) start = i + 1;
+    buf.push(line);
+  });
+  flush();
+  return out;
 }
 
 /**

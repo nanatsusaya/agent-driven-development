@@ -420,6 +420,24 @@ expect('a complete, coherent project passes', baseline('good'), true);
     '# Status\n\nThe old rule was:\n\n```\nSmall mechanical changes may go straight to the trunk.\n```\n');
   expect('the same wording inside a fenced example passes', d, true, [], cat);
 }
+{
+  // The scan used to test line by line, so a pattern that a hard wrap had split
+  // across two lines could never fire — and prose wrapped at a fixed width
+  // splits phrases constantly. This is the silent no-op E3 warns about, built
+  // into the mechanism meant to prevent it.
+  const cat = catalogueWithWithdrawal('cat-withdrawn-4', 'mechanical changes may go straight');
+  const d = baseline('withdrawn-across-a-wrap');
+  put(d, 'CLAUDE.md',
+    '# Rules\n\nThere is one exception worth stating: small\nmechanical changes may go straight\nto the trunk without review.\n');
+  expect('a withdrawn phrase split across a line break still fails', d, false, ['withdrawn'], cat);
+}
+{
+  const cat = catalogueWithWithdrawal('cat-withdrawn-5', 'mechanical changes may go straight');
+  const d = baseline('withdrawn-quoted-across-a-wrap');
+  put(d, 'docs/STATUS.md',
+    '# Status\n\nPreviously:\n\n> There is one exception: small\n> mechanical changes may go straight\n> to the trunk.\n');
+  expect('the same split phrase quoted in a blockquote passes', d, true, [], cat);
+}
 
 // --- 7. language
 {
@@ -460,6 +478,55 @@ expect('a complete, coherent project passes', baseline('good'), true);
   });
   put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior of the system.\n');
   expect('an adapted L1 stops the spelling scan', d, true);
+}
+{
+  // The allow-list held base forms only, so every inflection of a word that is
+  // correct everywhere fired. A false alarm in the check that enforces L1 is
+  // the worst place for one.
+  const d = baseline('ize-inflections');
+  put(d, 'docs/STATUS.md',
+    '# Status\n\nAfter downsizing the fixtures we prized the resizable output, and nothing capsized.\n');
+  expect('inflections of always-correct -ize words pass', d, true);
+}
+{
+  // The mirror: `-izer`, `-izable` and `-izational` slipped through, because
+  // the pattern only knew the verb endings.
+  const d = baseline('ize-derivations');
+  put(d, 'docs/STATUS.md', '# Status\n\nThe organizer left an organizational note.\n');
+  expect('-izer and -izational endings are caught', d, false, ['language']);
+}
+
+// --- 7b. placeholders left in a bound artefact
+{
+  const d = baseline('placeholder-in-artefact');
+  put(d, 'docs/STATUS.md', '# Status\n\nProgress is tracked in «state artefact».\n');
+  expect('a bound artefact still carrying a placeholder fails', d, false, [
+    'placeholders',
+  ]);
+}
+{
+  // A template is supposed to contain placeholders. Only bound artefacts are
+  // scanned, which is what keeps this from firing on every templates directory.
+  const d = baseline('placeholder-in-template');
+  put(d, 'templates/status.md', '# «Project» status\n\nProgress is in «state artefact».\n');
+  expect('a placeholder in an unbound file is not a finding', d, true);
+}
+
+// --- 7c. declaration hygiene
+{
+  const d = baseline('ignore-as-string', { ignore: 'docs' });
+  expect('"ignore" given as a string fails', d, false, ['declaration']);
+}
+{
+  // `ignore` names paths, not bare directory names: "docs/vendor" used to match
+  // nothing at all.
+  const d = baseline('ignore-as-path', { ignore: ['docs/vendor'] });
+  put(d, 'docs/vendor/imported.md', '# Imported\n\nSee [nothing](../../gone.md).\n');
+  expect('an ignored path is not scanned', d, true, [], REAL_CATALOGUE, []);
+}
+{
+  const d = baseline('version-behind', { version: '0.0' });
+  expect('a version behind the catalogue is reported, not failed', d, true);
 }
 
 // --- 8. --lint: the document scans, without a declaration

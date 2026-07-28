@@ -9,10 +9,10 @@
  * not a defect. What is a defect is a rule that vanished without anyone
  * deciding it should.
  *
- * Eight checks: `declaration`, `artefacts`, `adaptations`, `accounting`,
- * `links`, `decisions`, `withdrawn`, `language`. The last four belong to rules
- * (C5, D2, M2, L1) and run only while that rule is in force; the first four
- * are about the declaration itself. See checks/README.md for the table.
+ * Nine checks: `declaration`, `artefacts`, `adaptations`, `accounting`,
+ * `links`, `placeholders`, `decisions`, `withdrawn`, `language`. The last five
+ * belong to rules (C5, C3, D2, M2, L1) and run only while that rule is in
+ * force; the first four are about the declaration itself. See checks/README.md.
  *
  * The report ends by naming what it could *not* check. A check that stays quiet
  * about its own blind spots reads as a clean bill of health, which is rule H1
@@ -29,10 +29,11 @@ import {
   DEFAULT_IGNORES,
   listMarkdownFiles,
   assertedLines,
+  assertedParagraphs,
   relativeLinks,
   anchors,
   blankFences,
-  blankCodeSpans,
+  normaliseEol,
   exists,
   isDirectory,
 } from './lib/markdown.mjs';
@@ -129,30 +130,35 @@ const SPELLING_PAIRS = {
  * `-ise` preference must not fire on them. Kept deliberately generous: a scan
  * that produces false alarms teaches people to distrust every scan (rule E3).
  */
-const IZE_ALLOWED = new Set([
-  'size',
-  'sizes',
-  'sized',
-  'sizing',
-  'resize',
-  'resized',
-  'resizes',
-  'resizing',
-  'downsize',
-  'upsize',
-  'midsize',
-  'oversize',
-  'oversized',
-  'capsize',
-  'prize',
-  'prizes',
-  'seize',
-  'seizes',
-  'seized',
-  'seizing',
-  'maize',
-  'baptize',
-]);
+const IZE_ALLOWED = new Set(
+  [
+    'size',
+    'resize',
+    'downsize',
+    'upsize',
+    'midsize',
+    'oversize',
+    'capsize',
+    'prize',
+    'seize',
+    'maize',
+    'baptize',
+  ].flatMap((stem) => {
+    // Generated rather than listed. The hand-written list held base forms only,
+    // so `downsizing`, `capsized`, `prized` and `baptized` all fired — false
+    // alarms in the check that enforces L1, which is the worst place for them.
+    const root = stem.slice(0, -1);
+    return [
+      stem,
+      `${stem}s`,
+      `${root}ed`,
+      `${root}ing`,
+      `${root}able`,
+      `${root}er`,
+      `${root}ers`,
+    ];
+  })
+);
 
 // ---------------------------------------------------------------------------
 // Reporting
@@ -190,9 +196,18 @@ let lint = false;
 
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
-  if (a === '--catalogue') catalogueArg = argv[++i];
-  else if (a === '--spelling') spellingArg = argv[++i];
-  else if (a === '--quiet') quiet = true;
+  if (a === '--catalogue' || a === '--spelling') {
+    // An option that swallows a missing value used to fall back to the default
+    // without a word, so a typo in a CI line produced a green run against the
+    // wrong catalogue.
+    const value = argv[++i];
+    if (value === undefined || value.startsWith('-')) {
+      console.error(`${a} needs a value.`);
+      process.exit(2);
+    }
+    if (a === '--catalogue') catalogueArg = value;
+    else spellingArg = value;
+  } else if (a === '--quiet') quiet = true;
   else if (a === '--lint') lint = true;
   else if (a === '--help' || a === '-h') {
     console.log(
@@ -227,6 +242,15 @@ try {
   console.error(`Cannot read the catalogue at ${catalogueDir}`);
   console.error(`  ${e.message}`);
   process.exit(2);
+}
+
+/** The catalogue's own version, if it states one. A catalogue without a
+ * VERSION file is legitimate — it simply cannot be compared against. */
+let catalogueVersion = null;
+try {
+  catalogueVersion = readFileSync(join(catalogueDir, 'VERSION'), 'utf8').trim();
+} catch {
+  catalogueVersion = null;
 }
 
 // ---------------------------------------------------------------------------
@@ -278,6 +302,20 @@ if (decl) {
         'an absent field and a deliberate empty list are different claims.'
     );
     decl.adaptations = [];
+  }
+  // Reported, never enforced: pinning to an older catalogue is a legitimate
+  // decision, and a check that failed on it would punish the project for the
+  // catalogue moving. Without this, `version` was read and then ignored, and
+  // nothing anywhere told an adopter the catalogue had moved at all.
+  if (
+    typeof decl.version === 'string' &&
+    catalogueVersion &&
+    decl.version !== catalogueVersion
+  ) {
+    note(
+      `declared against catalogue version ${decl.version}; this catalogue is ` +
+        `${catalogueVersion}. Re-read the rules that changed, then update the version.`
+    );
   }
 }
 
@@ -429,13 +467,35 @@ if (decl) {
 // Collect the project's documents once
 // ---------------------------------------------------------------------------
 
-const ignores = new Set(DEFAULT_IGNORES);
-for (const extra of decl?.ignore ?? []) ignores.add(extra.replace(/\/+$/, ''));
+// `ignore` names paths relative to the project root, not bare directory names.
+// An earlier version fed them to the walker's name set, so "docs/vendor" never
+// matched anything — and a string given instead of an array was iterated one
+// character at a time, quietly ignoring every directory called "d", "o", "c"
+// or "s".
+let declaredIgnores = [];
+if (decl && decl.ignore !== undefined) {
+  if (Array.isArray(decl.ignore)) {
+    declaredIgnores = decl.ignore.map((p) =>
+      String(p).replace(/^\.?\/+/, '').replace(/\/+$/, '')
+    );
+  } else {
+    fail(
+      'declaration',
+      'method.json',
+      '"ignore" must be an array of paths relative to the project root.'
+    );
+  }
+}
 
-const docs = listMarkdownFiles(project, ignores).map((rel) => ({
-  rel,
-  text: readFileSync(join(project, rel), 'utf8'),
-}));
+const docs = listMarkdownFiles(project, DEFAULT_IGNORES)
+  .filter(
+    (rel) =>
+      !declaredIgnores.some((ig) => ig && (rel === ig || rel.startsWith(ig + '/')))
+  )
+  .map((rel) => ({
+    rel,
+    text: normaliseEol(readFileSync(join(project, rel), 'utf8')),
+  }));
 
 // ---------------------------------------------------------------------------
 // 5. Withdrawn rules
@@ -451,7 +511,9 @@ if (withdrawn.length === 0) {
   );
   for (const { rel, text } of docs) {
     if (rel === definesPatterns) continue;
-    for (const { n, text: line } of assertedLines(text)) {
+    // Paragraphs, not lines: a withdrawn-rule pattern is usually a phrase, and
+    // a phrase in wrapped prose lands across a line break more often than not.
+    for (const { n, text: line } of assertedParagraphs(text)) {
       for (const w of withdrawn) {
         if (w.regex.test(line)) {
           fail(
@@ -571,6 +633,15 @@ if (decl && inForce('D2') && bound.decisions) {
         const own = blankFences(d.text).match(
           /^\s*(?:-\s*)?\*{0,2}Status:?\*{0,2}\s*:?\s*\*{0,2}(\w+)/im
         );
+        if (!own) {
+          // Silence here would mean the most widespread decision-record format
+          // gets no status check at all, with nothing to say so.
+          note(
+            `${d.rel}: no status found on one line, so it was not compared ` +
+              'against the index. A "## Status" heading with the value on the ' +
+              'line below is not read'
+          );
+        }
         if (own && own[1].toLowerCase() !== claimed.get(num[1]).toLowerCase()) {
           fail(
             'decisions',
@@ -634,6 +705,14 @@ if (decl && inForce('D2') && bound.decisions) {
         : Object.fromEntries(
             Object.entries(SPELLING_PAIRS).map(([us, uk]) => [uk, us])
           );
+    if (spelling === 'american') {
+      note(
+        'under an American regime only the listed word pairs are scanned. The ' +
+          'general -ise ending is not: the exception list for it (wise, precise, ' +
+          'promise, exercise…) is long, and one wrong entry is a false alarm'
+      );
+    }
+
     const declaresRule = new Set(
       [bound['operating-rules'], 'method/rules.md'].filter(Boolean)
     );
@@ -655,7 +734,9 @@ if (decl && inForce('D2') && bound.decisions) {
             );
           } else if (
             spelling === 'british' &&
-            /^[a-z]+iz(e|es|ed|ing|ation|ations)$/.test(w) &&
+            // `-izer`, `-izable` and `-izational` used to slip through: the
+            // pattern only knew the verb endings.
+            /^[a-z]+iz(e|es|ed|ing|er|ers|able|ation|ations|ational)$/.test(w) &&
             !IZE_ALLOWED.has(w)
           ) {
             fail(
@@ -665,6 +746,31 @@ if (decl && inForce('D2') && bound.decisions) {
             );
           }
         }
+      }
+    }
+  }
+}
+
+// --- C3: a bound artefact still carrying template placeholders was never
+// finished. Only *bound* artefacts are scanned, and that is the whole trick:
+// a template file is supposed to contain placeholders, and the declaration is
+// the one thing that tells a template apart from a working document. Scanning
+// everything would fire on the templates directory of every project that has
+// one, and a false alarm teaches people to ignore the check (rule E3).
+if (decl && inForce('C3')) {
+  const boundPaths = Object.values(bound).map((v) => v.replace(/\/+$/, ''));
+  for (const { rel, text } of docs) {
+    if (!boundPaths.some((b) => rel === b || rel.startsWith(b + '/'))) continue;
+    for (const { n, text: line } of assertedLines(text)) {
+      const m = line.match(/«[^»\n]*»/);
+      if (m) {
+        fail(
+          'placeholders',
+          `${rel}:${n}`,
+          `Still carries the template placeholder ${m[0]}. A document that was ` +
+            'copied and not finished does not support the next session; it ' +
+            'tells it to look somewhere that was never filled in.'
+        );
       }
     }
   }

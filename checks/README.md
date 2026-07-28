@@ -16,7 +16,7 @@ obey the catalogue*. [A1](../method/rules.md#a1) expects the rules to be
 reshaped, so a narrowed rule with a stated reason is a correct state. What is
 not correct is a rule that vanished without anyone deciding it should.
 
-Eight checks:
+Nine checks:
 
 | Check | Asks | Rule |
 |---|---|---|
@@ -25,6 +25,7 @@ Eight checks:
 | `adaptations` | each is complete, names a real rule, and gives a reason and a date | [A2](../method/rules.md#a2) |
 | `accounting` | an unbound role is explained by an adaptation | [A2](../method/rules.md#a2) |
 | `links` | relative links and anchors resolve | [C5](../method/rules.md#c5) |
+| `placeholders` | no bound artefact still carries `«template placeholders»` | [C3](../method/rules.md#c3) |
 | `decisions` | every decision appears in its index, with a matching status | [D2](../method/rules.md#d2) |
 | `withdrawn` | no document still teaches a rule the catalogue has withdrawn | [M2](../method/rules.md#m2) |
 | `language` | one spelling regime, if the project declares one | [L1](../method/rules.md#l1) |
@@ -83,6 +84,16 @@ still fails; a link that resolves under one platform's rules and not another's
 does not. That trade is on purpose — a false alarm teaches people to distrust
 every check ([E3](../method/rules.md#e3)).
 
+**Under an American regime, only the listed word pairs are scanned.** The
+general `-ise` direction is not, because the exception list it would need
+(`wise`, `precise`, `promise`, `exercise`, and a long tail) is where a wrong
+entry becomes a false alarm. The report says so on every American run rather
+than leaving the gap to be discovered.
+
+**Symlinked directories are never walked.** The directory scan reads real
+directories only, so documents reachable only through a symlink are not
+scanned and not reported as skipped.
+
 **Nothing verifies that a withdrawn rule was accompanied by its entry.**
 [`CLAUDE.md`](../CLAUDE.md) requires the two to land in the same change and no
 check enforces the coupling. It becomes enforceable the first time a rule is
@@ -107,7 +118,7 @@ read.
 node checks/check-method.test.mjs
 ```
 
-46 cases, each building a throwaway project and asserting both the exit code and
+55 cases, each building a throwaway project and asserting both the exit code and
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 

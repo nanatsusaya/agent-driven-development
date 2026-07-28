@@ -192,7 +192,8 @@ hold, the repository relies on somebody happening to remember — and whether
 that is one maintainer or a team, the person who remembers is not always the
 person in the session.
 
-**Check:** `manual`
+**Check:** `manual`, with one automated part: an artefact still carrying the
+placeholders of the template it was copied from was never finished.
 
 <a id="c4"></a>
 ### C4 — Documentation changes in the same commit
