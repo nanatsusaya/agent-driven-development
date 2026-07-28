@@ -1,0 +1,33 @@
+{
+  "$comment": [
+    "Copy to your project root as method.json and delete this $comment block.",
+    "Bind each role to the file or directory that plays it. A role you do not",
+    "use is bound to null and explained as an adaptation. Every rule in the",
+    "catalogue is in force unless listed under adaptations."
+  ],
+
+  "method": "agent-driven-development",
+  "version": "0.1",
+
+  "artefacts": {
+    "operating-rules": "CLAUDE.md",
+    "decisions": "docs/adr/",
+    "state": "docs/STATUS.md",
+    "method-log": "docs/method-log.md"
+  },
+
+  "language": {
+    "spelling": "british"
+  },
+
+  "ignore": [],
+
+  "adaptations": [
+    {
+      "rule": "D2",
+      "change": "dropped",
+      "reason": "Example entry — delete it. Say what you changed and why, in a sentence a stranger could act on.",
+      "decided": "2026-01-01"
+    }
+  ]
+}

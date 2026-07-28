@@ -1,0 +1,14 @@
+{
+  "name": "agent-driven-development",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A ruleset for running real projects with AI agents.",
+  "license": "CC-BY-4.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node checks/check-method.test.mjs"
+  }
+}
