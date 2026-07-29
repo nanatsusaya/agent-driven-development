@@ -3,10 +3,40 @@
 Five procedures for [agent-driven-development](https://github.com/nanatsusaya/agent-driven-development),
 packaged as a Claude Code plugin.
 
+Installing is three steps, not two. Adding a marketplace registers a catalogue
+and installs nothing, and an installed plugin is inert in the running session
+until it is reloaded.
+
+**1. Register this repository as a marketplace.**
+
 ```
 /plugin marketplace add nanatsusaya/agent-driven-development
+```
+
+**2. Install the plugin.** This opens the plugin's details, where you choose a
+scope: yourself across all projects, this repository for everyone, or this
+repository for you alone.
+
+```
 /plugin install agent-method@agent-driven-development
 ```
+
+**3. Activate it in the running session.**
+
+```
+/reload-plugins
+```
+
+Two things that look like failures and are not. `/reload-plugins` reports
+`0 skills`: that counter covers a plugin's `commands/` directory only, and these
+live in `skills/`. And `/plugin` opens an interactive terminal panel, so it is
+unavailable in some environments — the desktop app has a plugin browser, and a
+cloud session takes an `enabledPlugins` entry in `.claude/settings.json`
+instead.
+
+None of this is required. Every procedure below is a plain Markdown file, so
+copying the five directories into `.claude/skills/` gets you the same thing
+without a marketplace.
 
 | Skill | When |
 |---|---|

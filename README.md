@@ -3,16 +3,15 @@
 **AI agents remember the current session. Your repository has to remember the
 rest.**
 
-A catalogue of rules for running real projects with AI agents — alone or in a
-team — plus the tooling to keep a project honest about which of them it
-actually follows.
-
 [![CC BY 4.0](https://img.shields.io/badge/method-CC_BY_4.0-blue)](LICENSE)
 [![MIT](https://img.shields.io/badge/code-MIT-blue)](checks/LICENSE)
 [![Node 18+](https://img.shields.io/badge/node-18+-blue)](package.json)
 [![deps: none](https://img.shields.io/badge/deps-none-blue)](package.json)
 
-## The problem
+## The premise
+
+> Within a session an agent remembers; across sessions, only the repository
+> does.
 
 You close the session. The next one — yours, a colleague's, or the same agent
 tomorrow — starts from nothing. It reads the repository, and that is all it
@@ -20,15 +19,9 @@ reads.
 
 Everything that lived only in the conversation is gone. Why that odd workaround
 exists. Which option you rejected, and what it would cost to revisit. What
-"finished" meant for the thing half-done on the branch.
-
-The agent does not report the gap. It fills it — plausibly, in your own
-register, without flagging that it guessed.
-
-## The premise
-
-> Within a session an agent remembers; across sessions, only the repository
-> does.
+"finished" meant for the thing half-done on the branch. The agent does not
+report the gap. It fills it — plausibly, in your own register, without flagging
+that it guessed.
 
 Both halves matter. Nothing here asks an agent to distrust its own working
 memory. What does not survive is the **seam** between sessions — and longer
@@ -38,45 +31,10 @@ Treat it as a given, and the repository stops being where the work is kept. It
 is the interface every future session arrives through, and it has to be built
 like one.
 
-## Who reads what
+## What follows from it
 
-This page is for you. Most of the rest is written to be read by an agent, in
-your project, with no conversation attached.
-
-| | Written for | Where |
-|---|---|---|
-| **This page** | a visitor deciding whether the idea is worth their time | `README.md` |
-| **The manual** | your agent, once you have copied it into your project | [`agent-manual/`](agent-manual/README.md) |
-| **The catalogue** | you, choosing what to adopt — and your agent, for the reasoning | [`method/rules.md`](method/rules.md) |
-| **The apparatus** | you, keeping an adoption current | [`method/adapting.md`](method/adapting.md) · [`rationale.md`](method/rationale.md) · [`CHANGELOG.md`](method/CHANGELOG.md) · [`checks/`](checks/README.md) |
-
-Nothing here is *optimised* for machine consumption. It is prose, and it stays
-prose. What it is instead is **self-supporting**: an agent can act on the manual
-without anyone explaining it first, which is what [C3](method/rules.md#c3) asks
-for and why the manual spells rules out rather than linking to them.
-
-The catalogue sits in both columns deliberately. Every rule carries the failure
-it prevents, because [M1](method/rules.md#m1) holds that a rule whose origin is
-lost gets dropped by the first session that finds it inconvenient — and that
-session is usually an agent's.
-
-## Try it without adopting anything
-
-Clone it, then point the check at any repository. It scans Markdown for dead
-links and anchors, for stale copies of rules the catalogue has withdrawn, and
-for a mixed spelling regime — then tells you what it did **not** check.
-
-```bash
-git clone https://github.com/nanatsusaya/agent-driven-development
-node agent-driven-development/checks/check-method.mjs . --lint --spelling british
-```
-
-No `method.json`, no adoption, nothing installed. Zero dependencies, Node 18 or
-later. It changes no files.
-
-## Three ideas
-
-Each is a rule, and each carries the failure it prevents.
+Three ideas do most of the work. Each is a rule, and each carries the failure it
+prevents.
 
 **[The human is the gate.](method/rules.md#g1)** Agents propose; a person
 decides, with no exception for the changes an agent is sure are trivial. What
@@ -93,25 +51,6 @@ whichever it read last.
 **[Decide before building.](method/rules.md#d1)** A choice made in conversation
 and never written down is not forgotten. It is re-litigated by the next
 session, differently — and nobody can tell that from a fresh decision.
-
-## What a rule looks like
-
-Each one also says whether a command can decide it, so nobody has to guess
-which half of the method is actually enforced.
-
-> ### C4 — Documentation changes in the same commit
->
-> When behaviour changes, the documents that describe it change in the same
-> commit. Stale documentation is a defect, not untidiness.
->
-> **Why.** It is the most expensive kind of error, because it does not fail: it
-> silently misinforms every future session, and each then produces work
-> consistent with something untrue.
->
-> **Check:** `manual`
-
-That is [C4](method/rules.md#c4) in full. Identifiers are permanent and never
-reused, so a project can point at one and mean something stable.
 
 ## The catalogue
 
@@ -133,52 +72,47 @@ in it. That bar is what keeps the catalogue small.
 | **P** — What never enters | secrets and personal data, kept out of the repository | [P1](method/rules.md#p1) |
 | **A** — Adaptation | changing the rules on purpose rather than by drift | [A1](method/rules.md#a1) · [A2](method/rules.md#a2) · [A3](method/rules.md#a3) |
 
-Read them in [`method/rules.md`](method/rules.md).
+One rule in full, so you can see the shape. Each says whether a command can
+decide it, so nobody has to guess which half of the method is really enforced:
 
-## Three ways to use it
+> ### C4 — Documentation changes in the same commit
+>
+> When behaviour changes, the documents that describe it change in the same
+> commit. Stale documentation is a defect, not untidiness.
+>
+> **Why.** It is the most expensive kind of error, because it does not fail: it
+> silently misinforms every future session, and each then produces work
+> consistent with something untrue.
+>
+> **Check:** `manual`
 
-### 1. Take the manual and rewrite it
+That is [C4](method/rules.md#c4). Identifiers are permanent and never reused, so
+a project can point at one and mean something stable. All thirty-one are in
+[`method/rules.md`](method/rules.md).
 
-[`agent-manual/operating-rules.md`](agent-manual/operating-rules.md) is the
-file your agent reads at the start of every task. Copy it into your project,
-cut what does not apply, and rewrite the rest in your own words.
+## Make it yours
 
-Nothing is installed, and nothing references this repository at runtime. Rule
+The catalogue is a starting point, not a checklist, and
+[A1](method/rules.md#a1) says so normatively. Narrow, replace or drop what does
+not fit. The one requirement is that you write down what you changed and why —
+an undocumented divergence is indistinguishable from carelessness, and the next
+session will helpfully restore the rule you deliberately removed.
+
+**Start from the manual.**
+[`agent-manual/operating-rules.md`](agent-manual/operating-rules.md) is the file
+your agent reads at the start of every task. Copy it into your project, cut what
+does not apply, and rewrite the rest in your own words. Nothing is installed,
+and nothing references this repository at runtime — rule
 [C3](method/rules.md#c3) argues against that.
 
-**⚠️ Most people should stop here.**
+**Reshape the rules for your kind of project.**
+[`method/adapting.md`](method/adapting.md) works through six archetypes —
+including a knowledge base with no code, a team rather than one maintainer, and
+a solo project with no audience yet — and says which rules change shape in each.
 
-### 2. Add the session procedures
-
-Five procedures for the moments a session turns over. The first three are a
-loop you run every working day; the other two come up as needed.
-
-| Procedure | When |
-|---|---|
-| `session-start` | you sit down |
-| `after-merge` | a change has just landed |
-| `session-end` | you stop for the day |
-| `decision-record` | a choice needs writing down |
-| `adopt` | introducing the method, or reviewing an existing fit |
-
-They read your project's own files and assume nothing about your stack. Install
-them from inside Claude Code:
-
-```
-/plugin marketplace add nanatsusaya/agent-driven-development
-/plugin install agent-method@agent-driven-development
-```
-
-Then have a look at
-[`plugins/agent-method/`](plugins/agent-method/README.md): what each procedure
-does in full, and how to rename them into your own language. Each one is plain
-Markdown, so you can adapt them to how you work — or paste them wherever your
-agent already looks, without installing anything.
-
-### 3. Declare the relationship
-
-Add a `method.json` that binds four roles to your actual files, names the
-systems you keep outside the repository, and records where you diverged.
+**Record what you changed.** A `method.json` binds four roles to your actual
+files, names the systems you keep outside the repository, and lists your
+divergences.
 
 | Role | Question it answers |
 |---|---|
@@ -201,82 +135,97 @@ systems you keep outside the repository, and records where you diverged.
 }
 ```
 
-Start from [the template](agent-manual/method.json), then run the check without
-`--lint`. It buys one thing: when a rule here changes, you find out which of
-your projects still teaches the old version — instead of discovering it two
-sessions later.
+Start from [the template](agent-manual/method.json). It buys one thing: when a
+rule here changes, you find out which of your projects still teaches the old
+version — instead of discovering it two sessions later.
 
-## What the check reports
+### Checking that it still holds
 
-Real output, against a project that dropped one rule and narrowed another.
-Trimmed of its absolute paths and wrapped here to fit:
+A command reads your declaration and reports where it and the repository
+disagree. It changes no files, and it needs no adoption to be useful:
+
+```bash
+git clone https://github.com/nanatsusaya/agent-driven-development
+node agent-driven-development/checks/check-method.mjs . --lint --spelling british
+```
+
+Zero dependencies, Node 18 or later. What matters most is how it ends:
 
 ```
-────────────────────────────────────────────────────────────────────────
-agent-driven-development · coherence check
-  catalogue: method (31 rules, 0 withdrawn)
-────────────────────────────────────────────────────────────────────────
-
-rules: 30 in force, 2 adapted
-  M1 dropped  Keep a method log
-  D2 narrowed An accepted decision is immutable  · check still runs
-
-external authorities
-  gate     https://github.com/acme/atlas/settings/branches
-  tasks    https://github.com/acme/atlas/issues
-
 not verified here
   G1 — trunk protection is a hosting-platform setting; verify it there. Even
       then it proves a change arrived through review, not that anyone read it
-      verify it at: https://github.com/acme/atlas/settings/branches
   P1 — secret scanning belongs to the platform; this check does not look for
       credentials
   20 rule(s) in force are marked `manual` and depend on review
   role "method-log" is unbound — checks that depend on it were skipped
-
-────────────────────────────────────────────────────────────────────────
-OK · the declaration matches the project
 ```
 
-The last block is the point. A report that says "no findings" without naming
-what it never looked at reads as a clean bill of health — which is the rule the
-tool exists to enforce, broken by the tool.
+A report that says "no findings" without naming what it never looked at reads
+as a clean bill of health — which is the rule the tool exists to enforce, broken
+by the tool. [`checks/`](checks/README.md) has the ten checks, the options, and
+the limitations it will not pretend away.
 
-Note what it is **not** asking. Not *does this project obey the catalogue*.
-[A1](method/rules.md#a1) expects the rules to be reshaped, so a narrowed rule
-with a stated reason is a correct state. What is not correct is a rule that
-vanished without anyone deciding it should.
+## The five procedures
 
-### What it cannot decide
+The moments a session turns over are where the seam actually bites, so each one
+has a procedure. These are the ones in daily use.
 
-It does not inspect branch-protection settings, scan for real credentials,
-follow external links, or establish that a human review actually happened. It
-does not judge whether a decision is a good one or a document well written —
-that is [E2](method/rules.md#e2), and it stays a review question.
+| Procedure | When you run it |
+|---|---|
+| `session-start` | Bring-up. Orients from the project's own documents, and ends with a question rather than an action. |
+| `after-merge` | The seam after a change lands. Re-verify the world, bring the documents current, start the next task only if it needs no decision. |
+| `session-end` | Wind-down. Tidy the branches, park unfinished work at an honest stopping point, bring the documents current. |
+| `decision-record` | Write a decision down, and take it through its cycle from proposed to accepted. |
+| `adopt` | Introduce the method to a project, or review how well an existing one fits. |
 
-A passing run means the declaration matches the repository. It does not mean
-the project is correct. Every check it could not perform is named in the
-report.
+The first three are the loop: one when you sit down, one every time a change
+lands, one when you stop. The other two come up as needed.
 
-## Adapting it
+They are plain Markdown, they read your project's own files, and they assume
+nothing about your stack. Put them wherever your agent already looks and they
+work. What each one does step by step is in
+[`plugins/agent-method/`](plugins/agent-method/README.md), along with how to
+rename them into your own language.
 
-The catalogue is a starting point, and [A1](method/rules.md#a1) says so
-normatively. Narrow, replace or drop what does not fit — the one requirement is
-that you write down what you changed and why. An undocumented divergence is
-indistinguishable from carelessness, and the next session will helpfully
-restore the rule you deliberately removed.
+## Installing them
 
-[`method/adapting.md`](method/adapting.md) works through six archetypes —
-including a knowledge base with no code, a team rather than one maintainer, and
-a solo project with no audience yet — and says which rules change shape in
-each.
+Optional convenience. The procedures are also packaged as a Claude Code plugin,
+which saves you copying five files by hand. Three steps, from inside Claude
+Code:
 
-## What it is not, and what it costs
+**1. Add this repository as a marketplace.** Nothing is installed yet; this only
+makes the catalogue visible.
+
+```
+/plugin marketplace add nanatsusaya/agent-driven-development
+```
+
+**2. Install the plugin.** You will be asked to choose a scope — yourself
+everywhere, this repository for everyone, or this repository for you alone.
+
+```
+/plugin install agent-method@agent-driven-development
+```
+
+**3. Activate it in the running session.**
+
+```
+/reload-plugins
+```
+
+The skills are then `/agent-method:session-start` and so on. Two things worth
+knowing: `/reload-plugins` reports `0 skills`, because that counter covers a
+plugin's `commands/` directory only and these live in `skills/` — they are
+loaded. And `/plugin` opens a terminal panel, so it is unavailable in some
+environments; the desktop app has a plugin browser, and cloud sessions take an
+`enabledPlugins` entry in `.claude/settings.json` instead.
+
+## What it costs
 
 It is not an agent runtime, a multi-agent orchestration framework, a prompt
 library, a task tracker, a specification format, or a replacement for human
-judgement. The plugin targets one runtime; the rules, templates and check do
-not.
+judgement. The plugin targets one runtime; the rules, manual and check do not.
 
 And the method is not free. Pretending otherwise would break
 [H1](method/rules.md#h1).
@@ -296,24 +245,28 @@ And the method is not free. Pretending otherwise would break
 [`method/rationale.md`](method/rationale.md) has the full version, plus a
 section on where the method is most likely wrong.
 
-## Repository layout
+## Where everything lives
 
-| | |
-|---|---|
-| [`method/rules.md`](method/rules.md) | **The catalogue.** The only normative document here. |
-| [`method/adapting.md`](method/adapting.md) | How to reshape the rules for your project, by archetype. |
-| [`method/rationale.md`](method/rationale.md) | Why the method looks like this, what it costs, where it is weak. |
-| [`method/CHANGELOG.md`](method/CHANGELOG.md) | What changed between versions, and what you have to do about it. |
-| [`method/withdrawn.md`](method/withdrawn.md) | Rules that no longer apply, and what replaced them. |
-| [`agent-manual/`](agent-manual/README.md) | **What you copy into your project.** [`operating-rules.md`](agent-manual/operating-rules.md) is the manual your agent reads; the rest are the shapes it refers to. |
-| [`checks/`](checks/README.md) | The coherence check, and the counter-test that makes it trustworthy. |
-| [`plugins/agent-method/`](plugins/agent-method/README.md) | The five session procedures — plain Markdown, packaged as a Claude Code plugin. |
+This page is for you. Most of the rest is written to be read by an agent, in
+your project, with no conversation attached — which is why the manual spells
+rules out rather than linking to them, as [C3](method/rules.md#c3) asks.
+
+| | Written for | What it is |
+|---|---|---|
+| [`method/rules.md`](method/rules.md) | you, choosing what to adopt — and your agent, for the reasoning | **The catalogue.** The only normative document here. |
+| [`agent-manual/`](agent-manual/README.md) | your agent, once you have copied it into your project | [`operating-rules.md`](agent-manual/operating-rules.md) is the manual it reads; the rest are the shapes it refers to. |
+| [`plugins/agent-method/`](plugins/agent-method/README.md) | you, installing or adapting the procedures | The five procedures — plain Markdown, packaged as a Claude Code plugin. |
+| [`method/adapting.md`](method/adapting.md) | you, reshaping the rules for your project | How each archetype changes which rules apply. |
+| [`method/rationale.md`](method/rationale.md) | you, deciding whether to believe any of it | Why the method looks like this, what it costs, where it is weak. |
+| [`method/CHANGELOG.md`](method/CHANGELOG.md) | you, keeping an adoption current | What changed between versions, and what you have to do about it. |
+| [`method/withdrawn.md`](method/withdrawn.md) | the check, and you | Rules that no longer apply, and what replaced them. |
+| [`checks/`](checks/README.md) | you, verifying an adoption | The coherence check, and the counter-test that makes it trustworthy. |
 
 ## FAQ
 
 **Do I have to install anything?**
-No. Reading the catalogue and copying what fits is option 1 above, and it is a
-complete way to use this.
+No. Reading the catalogue and copying what fits is a complete way to use this.
+The plugin is convenience, not a dependency.
 
 **Does this only work with Claude Code?**
 The catalogue names no tool and no stack. The plugin targets one runtime
