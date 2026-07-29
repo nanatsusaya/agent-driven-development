@@ -11,7 +11,7 @@ description: >-
 
 # Session start — bring-up
 
-*Carries out rules S1, S2 and H1. The
+*Carries out rules S1, S2, S3 and H1. The
 [catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
 is the authority; this file is only the procedure.*
 

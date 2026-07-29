@@ -525,11 +525,10 @@ everything and one that asks about nothing.
 **Check:** `manual`
 
 <a id="s3"></a>
-### S3 — Keep a state artefact, and name one next step
+### S3 — Keep a state artefact
 
-One artefact answers *where do we stand*. It carries the current position and a
-**single** clearest next step, not a list of everything outstanding. Wind-down
-brings it current; bring-up reads it before anything else.
+One artefact answers *where do we stand*. Wind-down brings it current; bring-up
+reads it before anything else.
 
 **Why.** Four rules already read it and none of them requires it to exist.
 [D3](#d3) publishes the decided-versus-built gap beside it, [D4](#d4) makes it
@@ -539,21 +538,24 @@ session arriving at a repository without one reconstructs the position from
 commits and open branches — and a reconstruction is exactly the plausible guess
 the premise says an agent will make without flagging that it guessed.
 
-One next step rather than a list, because a list of everything outstanding is a
-roadmap, and a roadmap answers a different question ([C1](#c1)). An agent handed
-several candidates chooses among them on the decider's behalf, which is
-[G2](#g2) broken by a document instead of by an agent.
-
 **Binding.** Usually one file — `STATUS.md`, or a section of the
 operating-rules artefact where a separate file would be ceremony. What matters
 is that it is the same place every time, because a position that moves is a
 position nobody reads.
 
+Name a **single** clearest next step rather than everything outstanding. A list
+of everything outstanding is a roadmap, and a roadmap answers a different
+question ([C1](#c1)); an agent handed several candidates chooses among them on
+the decider's behalf, which is [G2](#g2) reached through a document rather than
+broken by an agent. This is a binding and not the rule because it is how the
+artefact is written well, not a condition for having one —
+[adapting.md](adapting.md) is where it earns its keep, in a project long enough
+for the position to be the handoff.
+
 **Check:** `automated` in part — `artefacts` fails when the role is bound to a
 file that is not there, and `accounting` fails when it is left unbound with no
-adaptation saying why. Neither can tell whether the artefact is *current*, or
-whether it names one next step or nine. That is [E2](#e2), and it stays a
-review question.
+adaptation saying why. Neither can tell whether the artefact is *current*. That
+is [E2](#e2), and it stays a review question.
 
 ---
 

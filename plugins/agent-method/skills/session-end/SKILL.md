@@ -9,7 +9,7 @@ description: >-
 
 # Session end — wind-down
 
-*Carries out rules S1, W1 and H1. The
+*Carries out rules S1, S3, W1 and H1. The
 [catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
 is the authority; this file is only the procedure.*
 
