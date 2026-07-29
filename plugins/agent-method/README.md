@@ -35,8 +35,10 @@ cloud session takes an `enabledPlugins` entry in `.claude/settings.json`
 instead.
 
 None of this is required. Every procedure below is a plain Markdown file, so
-copying the five directories into `.claude/skills/` gets you the same thing
-without a marketplace.
+copying the five directories into `.claude/skills/` works just as well. What
+changes is the name you type: a skill installed that way is `/session-start`,
+because the `agent-method:` prefix is the plugin's namespace and a copied
+directory has none.
 
 | Skill | When |
 |---|---|
