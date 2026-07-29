@@ -150,8 +150,8 @@ Nothing is installed, and nothing references this repository at runtime. Rule
 
 ### 2. Add the session procedures
 
-Five of them, delivered as a Claude Code plugin. The first three are a loop you
-run every working day; the other two come up as needed.
+Five procedures for the moments a session turns over. The first three are a
+loop you run every working day; the other two come up as needed.
 
 | Procedure | When |
 |---|---|
@@ -161,14 +161,14 @@ run every working day; the other two come up as needed.
 | `decision-record` | a choice needs writing down |
 | `adopt` | introducing the method, or reviewing an existing fit |
 
-```
-/plugin marketplace add nanatsusaya/agent-driven-development
-/plugin install agent-method@agent-driven-development
-```
+They read your project's own files and assume nothing about your stack. Each
+one is plain Markdown, so you can also paste them wherever your agent already
+looks — the same move as taking the manual in step 1.
 
-What each one does is in
-[`plugins/agent-method/`](plugins/agent-method/README.md). So is how to rename
-them into your own language.
+**Or install them.** They are packaged as a Claude Code plugin, which is two
+commands. [`plugins/agent-method/`](plugins/agent-method/README.md) has those,
+what each procedure does in full, and how to rename them into your own
+language.
 
 ### 3. Declare the relationship
 
@@ -302,7 +302,7 @@ section on where the method is most likely wrong.
 | [`method/withdrawn.md`](method/withdrawn.md) | Rules that no longer apply, and what replaced them. |
 | [`agent-manual/`](agent-manual/README.md) | **What you copy into your project.** [`operating-rules.md`](agent-manual/operating-rules.md) is the manual your agent reads; the rest are the shapes it refers to. |
 | [`checks/`](checks/README.md) | The coherence check, and the counter-test that makes it trustworthy. |
-| [`plugins/agent-method/`](plugins/agent-method/README.md) | Five session procedures, as a Claude Code plugin. |
+| [`plugins/agent-method/`](plugins/agent-method/README.md) | The five session procedures — plain Markdown, packaged as a Claude Code plugin. |
 
 ## FAQ
 
