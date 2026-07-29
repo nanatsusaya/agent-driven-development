@@ -214,12 +214,12 @@ everywhere, this repository for everyone, or this repository for you alone.
 /reload-plugins
 ```
 
-The skills are then `/agent-method:session-start` and so on. Two things worth
-knowing: `/reload-plugins` reports `0 skills`, because that counter covers a
-plugin's `commands/` directory only and these live in `skills/` — they are
-loaded. And `/plugin` opens a terminal panel, so it is unavailable in some
-environments; the desktop app has a plugin browser, and cloud sessions take an
-`enabledPlugins` entry in `.claude/settings.json` instead.
+The skills are then `/agent-method:session-start` and so on.
+
+Two of those steps report something that looks like a failure and is not, and
+`/plugin` does not exist in every environment.
+[`plugins/agent-method/`](plugins/agent-method/README.md) covers both, and how
+to skip the plugin entirely.
 
 ## What it costs
 
