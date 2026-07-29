@@ -125,18 +125,29 @@ Nothing is installed, and nothing references this repository at runtime — rule
 
 ### 2. Install the plugin
 
-Five session procedures for Claude Code: bring-up, the seam after a merged
-change, wind-down, writing a decision record, and adopting the method into a
-project. They read your project's own files and assume nothing about your
-stack.
+Five procedures for Claude Code. This is what the method looks like as daily
+work rather than as a document.
+
+| Procedure | When |
+|---|---|
+| `session-start` | Bring-up — and it ends with a question, never an action |
+| `after-merge` | The seam right after a change lands |
+| `session-end` | Wind-down: tidy up, park unfinished work honestly, bring the living documents current |
+| `decision-record` | Writing or reworking a decision |
+| `adopt` | Introducing the method to a project, or reviewing how well an existing one fits |
+
+The first three are the loop: one when you sit down, one every time a change
+lands, one when you stop. The other two come up occasionally.
 
 ```
 /plugin marketplace add nanatsusaya/agent-driven-development
 /plugin install agent-method@agent-driven-development
 ```
 
+They read your project's own files and assume nothing about your stack.
 Details in [`plugins/agent-method/`](plugins/agent-method/README.md), including
-how to rename the commands into your own language.
+how to rename the commands into your own language — you type them all day, and
+[L1](method/rules.md#l1) only asks that the *documents* stay in one language.
 
 ### 3. Declare the relationship
 
