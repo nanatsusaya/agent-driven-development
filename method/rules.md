@@ -1,6 +1,6 @@
 # The rule catalogue
 
-Thirty-one rules in eleven clusters, identified as `<cluster><number>`. The
+Thirty-two rules in eleven clusters, identified as `<cluster><number>`. The
 identifier is permanent and never reused, even for a withdrawn rule: projects
 refer to rules by identifier, so renumbering would silently change what a
 project claims to follow.
@@ -523,6 +523,37 @@ and treating them alike means choosing between an agent that asks about
 everything and one that asks about nothing.
 
 **Check:** `manual`
+
+<a id="s3"></a>
+### S3 — Keep a state artefact, and name one next step
+
+One artefact answers *where do we stand*. It carries the current position and a
+**single** clearest next step, not a list of everything outstanding. Wind-down
+brings it current; bring-up reads it before anything else.
+
+**Why.** Four rules already read it and none of them requires it to exist.
+[D3](#d3) publishes the decided-versus-built gap beside it, [D4](#d4) makes it
+the first thing read before writing, [C1](#c1) names *where we stand* among the
+questions an artefact must answer, and [S1](#s1)'s bring-up reads it fresh. A
+session arriving at a repository without one reconstructs the position from
+commits and open branches — and a reconstruction is exactly the plausible guess
+the premise says an agent will make without flagging that it guessed.
+
+One next step rather than a list, because a list of everything outstanding is a
+roadmap, and a roadmap answers a different question ([C1](#c1)). An agent handed
+several candidates chooses among them on the decider's behalf, which is
+[G2](#g2) broken by a document instead of by an agent.
+
+**Binding.** Usually one file — `STATUS.md`, or a section of the
+operating-rules artefact where a separate file would be ceremony. What matters
+is that it is the same place every time, because a position that moves is a
+position nobody reads.
+
+**Check:** `automated` in part — `artefacts` fails when the role is bound to a
+file that is not there, and `accounting` fails when it is left unbound with no
+adaptation saying why. Neither can tell whether the artefact is *current*, or
+whether it names one next step or nine. That is [E2](#e2), and it stays a
+review question.
 
 ---
 

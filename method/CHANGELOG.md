@@ -12,6 +12,40 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## 0.3
+
+Thirty-two rules in eleven clusters. One rule added. None withdrawn, none
+renumbered — every identifier you already refer to still means what it meant.
+
+### New rule
+
+**[S3](rules.md#s3) — Keep a state artefact, and name one next step.** The
+method names four roles and required three of them. [D1](rules.md#d1) is why a
+project has `decisions`; [M1](rules.md#m1) is why it has a `method-log`;
+[C3](rules.md#c3) is why it has operating rules an agent can act on. `state` was
+read by four rules and required by none — [D3](rules.md#d3) publishes the
+decided-versus-built gap beside it, [D4](rules.md#d4) makes it the first thing
+read before writing, [C1](rules.md#c1) names *where we stand* among the
+questions an artefact answers, and [S1](rules.md#s1)'s bring-up reads it fresh.
+A project could satisfy the entire catalogue and leave all four pointing at
+nothing.
+
+**What you have to do.** If you already bind `state` to a status artefact,
+nothing: you were following S3 before it was written. If you left the role
+unbound, the `accounting` check already required an adaptation explaining why,
+so your declaration stays coherent as it is — S3 is simply the rule that
+adaptation is now against.
+
+What is new is the second half. The artefact carries **one** next step, not a
+list of everything outstanding. A status file that is really a backlog was
+satisfying nothing before, and does not satisfy S3 now.
+
+**No check changed.** S3 is `automated` in part through machinery that already
+existed: `artefacts` fails when a bound role names a file that is not there, and
+`accounting` fails when a role is unbound with nothing explaining it. Whether
+the artefact is *current*, and whether it names one next step or nine, stays a
+review question under [E2](rules.md#e2).
+
 ## 0.2
 
 Thirty-one rules in eleven clusters. One rule added. None withdrawn, none

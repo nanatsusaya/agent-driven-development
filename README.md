@@ -54,7 +54,7 @@ session, differently — and nobody can tell that from a fresh decision.
 
 ## The catalogue
 
-Thirty-one rules in eleven clusters. A rule enters only if it holds regardless
+Thirty-two rules in eleven clusters. A rule enters only if it holds regardless
 of domain — for a software product as much as for a knowledge base with no code
 in it. That bar is what keeps the catalogue small.
 
@@ -67,7 +67,7 @@ in it. That bar is what keeps the catalogue small.
 | **E** — Enforcement | turning rules into commands, and what a check may claim | [E1](method/rules.md#e1) · [E2](method/rules.md#e2) · [E3](method/rules.md#e3) |
 | **H** — Honesty | what may be reported, and when work is handed back | [H1](method/rules.md#h1) · [H2](method/rules.md#h2) · [H3](method/rules.md#h3) · [H4](method/rules.md#h4) · [H5](method/rules.md#h5) |
 | **L** — Language | one language in the repository, yours in conversation | [L1](method/rules.md#l1) · [L2](method/rules.md#l2) |
-| **S** — Sessions | how a session starts, resumes and ends | [S1](method/rules.md#s1) · [S2](method/rules.md#s2) |
+| **S** — Sessions | how a session starts, resumes and ends | [S1](method/rules.md#s1) · [S2](method/rules.md#s2) · [S3](method/rules.md#s3) |
 | **W** — Work | what "done" means, fixed before the work starts | [W1](method/rules.md#w1) |
 | **P** — What never enters | secrets and personal data, kept out of the repository | [P1](method/rules.md#p1) |
 | **A** — Adaptation | changing the rules on purpose rather than by drift | [A1](method/rules.md#a1) · [A2](method/rules.md#a2) · [A3](method/rules.md#a3) |
@@ -87,7 +87,7 @@ decide it, so nobody has to guess which half of the method is really enforced:
 > **Check:** `manual`
 
 That is [C4](method/rules.md#c4). Identifiers are permanent and never reused, so
-a project can point at one and mean something stable. All thirty-one are in
+a project can point at one and mean something stable. All thirty-two are in
 [`method/rules.md`](method/rules.md).
 
 ## Make it yours
@@ -124,7 +124,7 @@ divergences.
 ```json
 {
   "method": "agent-driven-development",
-  "version": "0.2",
+  "version": "0.3",
   "artefacts": {
     "operating-rules": "CLAUDE.md",
     "decisions": "docs/adr/",
@@ -273,7 +273,7 @@ The catalogue names no tool and no stack. The plugin targets one runtime
 because that is what the author uses; the `method.json` roles exist so the
 check never needs to know what is reading the repository.
 
-**Thirty-one rules sounds like a lot.**
+**Thirty-two rules sounds like a lot.**
 It is a catalogue to choose from, not a checklist to satisfy. Every rule you
 adopt spends context on every task, which is exactly why the bar for admission
 is high and why [A1](method/rules.md#a1) tells you to drop what does not fit.
