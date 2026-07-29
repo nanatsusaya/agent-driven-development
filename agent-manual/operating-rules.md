@@ -64,8 +64,14 @@ section is the transferable core.»
 - **Every change goes on a branch and through review. Never write to «trunk»
   directly, and never merge your own work.** There is no exception — not for a
   status flip, not for a log file, not for a change that looks mechanical.
+- **What the reviewer decides is direction and coherence**: does this move
+  towards the goal, and does it fit what already exists rather than working by
+  making an exception to it. Line-level correctness is not theirs — that is the
+  definition of done below. A gate defined as *read every line* stops being a
+  gate as soon as the volume rises.
 - **One concern per change.** Do not fold refactors, formatting churn or
-  dependency bumps into unrelated work.
+  dependency bumps into unrelated work. A change too large to answer those two
+  questions about is a change that gets waved through.
 - «Commit and branch conventions: message format, branch prefixes.»
 - **Definition of done:** «the local chain» is green; anything with observable
   behaviour has been **exercised**, not merely built; docs changed in the same
@@ -111,6 +117,8 @@ guess who to ask will guess the nearest person or nobody.»
   need.)
 - **Every fact has exactly one authority.** Refer to it; do not restate it. A
   fact duplicated away from its authority degrades into an assertion.
+- **When an authority moves, the references to it move in the same change.** A
+  reference is only load-bearing while it resolves.
 - **Docs change in the same commit as what they describe.** Stale documentation
   is a defect, and the most expensive kind: it does not fail, it misinforms
   every future session.
