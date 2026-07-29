@@ -1,44 +1,8 @@
 # agent-method
 
 Five procedures for [agent-driven-development](https://github.com/nanatsusaya/agent-driven-development),
-packaged as a Claude Code plugin.
-
-Installing is three steps, not two. Adding a marketplace registers a catalogue
-and installs nothing, and an installed plugin is inert in the running session
-until it is reloaded.
-
-**1. Register this repository as a marketplace.**
-
-```
-/plugin marketplace add nanatsusaya/agent-driven-development
-```
-
-**2. Install the plugin.** This opens the plugin's details, where you choose a
-scope: yourself across all projects, this repository for everyone, or this
-repository for you alone.
-
-```
-/plugin install agent-method@agent-driven-development
-```
-
-**3. Activate it in the running session.**
-
-```
-/reload-plugins
-```
-
-Two things that look like failures and are not. `/reload-plugins` reports
-`0 skills`: that counter covers a plugin's `commands/` directory only, and these
-live in `skills/`. And `/plugin` opens an interactive terminal panel, so it is
-unavailable in some environments — the desktop app has a plugin browser, and a
-cloud session takes an `enabledPlugins` entry in `.claude/settings.json`
-instead.
-
-None of this is required. Every procedure below is a plain Markdown file, so
-copying the five directories into `.claude/skills/` works just as well. What
-changes is the name you type: a skill installed that way is `/session-start`,
-because the `agent-method:` prefix is the plugin's namespace and a copied
-directory has none.
+packaged as a Claude Code plugin. They cover the moments a session turns over,
+which is where the seam between sessions actually bites.
 
 | Skill | When |
 |---|---|
@@ -47,6 +11,25 @@ directory has none.
 | `/agent-method:session-end` | Session wind-down. Tidy the branches, finish or park work honestly, bring the living documents current. |
 | `/agent-method:decision-record` | Writing or reworking a decision record, and the cycle it goes through. |
 | `/agent-method:adopt` | Introducing the method into a project, or reviewing how well an existing one fits. |
+
+## What the skills assume
+
+They read the project's `method.json` for two things. Which of its files answer
+which question — and which systems it keeps outside the repository, under
+`authorities`: where tasks live, where the review boundary is configured. Those
+are addresses to know, never things to fetch. A procedure that has to retrieve
+something before it can work is not self-supporting, which is what
+[C3](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c3)
+forbids. Where there is no declaration they fall back to the conventional names.
+
+They assume **nothing** about your stack, your domain or your tooling: anything
+a procedure needs to know about your project it learns from your project. The
+only command any of them names is the one in `adopt` for running this method's
+own check.
+
+They say **the decider** rather than "the human", because who decides varies —
+a maintainer, whoever owns the area, the team — and a procedure that assumes
+one person is useless the moment there are several.
 
 ## Rename them into your own language
 
@@ -75,24 +58,44 @@ What the rule asks is only that the choice does not leak the other way. The
 headings, the descriptions and every document stay in the one language
 everybody reads.
 
-## What the skills assume
+## Installing them
 
-They read the project's `method.json` for two things. Which of its files answer
-which question — and which systems it keeps outside the repository, under
-`authorities`: where tasks live, where the review boundary is configured. Those
-are addresses to know, never things to fetch. A procedure that has to retrieve
-something before it can work is not self-supporting, which is what
-[C3](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c3)
-forbids. Where there is no declaration they fall back to the conventional names.
+None of this is required. Every procedure above is a plain Markdown file, so
+copying the five directories into `.claude/skills/` works just as well. What
+changes is the name you type: a skill installed that way is `/session-start`,
+because the `agent-method:` prefix is the plugin's namespace and a copied
+directory has none.
 
-They assume **nothing** about your stack, your domain or your tooling: anything
-a procedure needs to know about your project it learns from your project. The
-only command any of them names is the one in `adopt` for running this method's
-own check.
+Installing as a plugin is three steps, not two. Adding a marketplace registers
+a catalogue and installs nothing, and an installed plugin is inert in the
+running session until it is reloaded.
 
-They say **the decider** rather than "the human", because who decides varies —
-a maintainer, whoever owns the area, the team — and a procedure that assumes
-one person is useless the moment there are several.
+**1. Register this repository as a marketplace.**
+
+```
+/plugin marketplace add nanatsusaya/agent-driven-development
+```
+
+**2. Install the plugin.** This opens the plugin's details, where you choose a
+scope: yourself across all projects, this repository for everyone, or this
+repository for you alone.
+
+```
+/plugin install agent-method@agent-driven-development
+```
+
+**3. Activate it in the running session.**
+
+```
+/reload-plugins
+```
+
+Two things that look like failures and are not. `/reload-plugins` reports
+`0 skills`: that counter covers a plugin's `commands/` directory only, and these
+live in `skills/`. And `/plugin` opens an interactive terminal panel, so it is
+unavailable in some environments — the desktop app has a plugin browser, and a
+cloud session takes an `enabledPlugins` entry in `.claude/settings.json`
+instead.
 
 ## What is deliberately not in here
 
