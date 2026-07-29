@@ -161,14 +161,19 @@ loop you run every working day; the other two come up as needed.
 | `decision-record` | a choice needs writing down |
 | `adopt` | introducing the method, or reviewing an existing fit |
 
-They read your project's own files and assume nothing about your stack. Each
-one is plain Markdown, so you can also paste them wherever your agent already
-looks — the same move as taking the manual in step 1.
+They read your project's own files and assume nothing about your stack. Install
+them from inside Claude Code:
 
-**Or install them.** They are packaged as a Claude Code plugin, which is two
-commands. [`plugins/agent-method/`](plugins/agent-method/README.md) has those,
-what each procedure does in full, and how to rename them into your own
-language.
+```
+/plugin marketplace add nanatsusaya/agent-driven-development
+/plugin install agent-method@agent-driven-development
+```
+
+Then have a look at
+[`plugins/agent-method/`](plugins/agent-method/README.md): what each procedure
+does in full, and how to rename them into your own language. Each one is plain
+Markdown, so you can adapt them to how you work — or paste them wherever your
+agent already looks, without installing anything.
 
 ### 3. Declare the relationship
 
