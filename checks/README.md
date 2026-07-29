@@ -1,30 +1,18 @@
 # Checks
 
 Three of them, and only the first is meant for your project.
-[`check-method.mjs`](check-method.mjs) is the coherence check, described below.
-The other two are this repository's own house style, and neither knows anything
-about an adopting project — run them if you want them.
+[`check-method.mjs`](check-method.mjs) is the coherence check. The other two are
+[this repository's own house style](#this-repositorys-own-checks) and know
+nothing about an adopting project.
 
-```bash
-node checks/line-width.mjs <project-path> [--limit 80]
-```
+## What the coherence check is asking
 
-[`line-width.mjs`](line-width.mjs) enforces the 80-column convention. It
-reports; it never reformats. A reformatter run over this repository once
-corrupted prose by splitting punctuation away from the links it touched, and
-the damage was invisible line by line.
+**Does this project's declaration match this project?** Not *does this project
+obey the catalogue*. [A1](../method/rules.md#a1) expects the rules to be
+reshaped, so a narrowed rule with a stated reason is a correct state. What is
+not correct is a rule that vanished without anyone deciding it should.
 
-```bash
-node checks/documented-counts.mjs
-```
-
-[`documented-counts.mjs`](documented-counts.mjs) compares the case counts
-stated under [the counter-tests](#the-counter-tests) against what the runs
-report. It runs both counter-tests to find out, so it costs what they cost.
-That figure is the argument for trusting everything else on this page, and it
-had gone eighteen cases stale before anybody read it against a run.
-
-## The coherence check
+## Running it
 
 ```bash
 node checks/check-method.mjs <project-path>
@@ -34,13 +22,6 @@ Zero dependencies, Node 18 or later. It reads
 [`method/rules.md`](../method/rules.md) and
 [`method/withdrawn.md`](../method/withdrawn.md) as data, reads the project's
 `method.json`, and reports where the two disagree.
-
-## What it is asking
-
-**Does this project's declaration match this project?** Not *does this project
-obey the catalogue*. [A1](../method/rules.md#a1) expects the rules to be
-reshaped, so a narrowed rule with a stated reason is a correct state. What is
-not correct is a rule that vanished without anyone deciding it should.
 
 Ten checks:
 
@@ -150,10 +131,29 @@ actually withdrawn, because until then there is nothing to check against.
 Exit codes: `0` coherent · `1` findings · `2` the catalogue itself could not be
 read.
 
-## Licence
+## This repository's own checks
 
-The code in this directory is under [MIT](LICENSE), not the CC BY 4.0 that
-covers the rest of the repository. Take it, vendor it, change it.
+Neither is part of the method. They enforce conventions this repository holds
+itself to, and an adopting project is free to ignore both.
+
+```bash
+node checks/line-width.mjs <project-path> [--limit 80]
+```
+
+[`line-width.mjs`](line-width.mjs) enforces the 80-column convention. It
+reports; it never reformats. A reformatter run over this repository once
+corrupted prose by splitting punctuation away from the links it touched, and
+the damage was invisible line by line.
+
+```bash
+node checks/documented-counts.mjs
+```
+
+[`documented-counts.mjs`](documented-counts.mjs) compares the case counts
+stated under [the counter-tests](#the-counter-tests) against what the runs
+report. It runs both counter-tests to find out, so it costs what they cost.
+That figure is the argument for trusting everything else on this page, and it
+had gone eighteen cases stale before anybody read it against a run.
 
 ## The counter-tests
 
@@ -180,3 +180,8 @@ to trip it. The cases that matter most are the ones asserting a
 **non**-finding: a withdrawn rule quoted in a blockquote, an Americanism inside
 a code span, a dead link inside a fenced example. Those are the false alarms
 that would teach people to distrust the check.
+
+## Licence
+
+The code in this directory is under [MIT](LICENSE), not the CC BY 4.0 that
+covers the rest of the repository. Take it, vendor it, change it.
