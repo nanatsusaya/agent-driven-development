@@ -45,12 +45,18 @@ everybody reads.
 
 ## What the skills assume
 
-They read the project's `method.json` to find out which of its files answer
-which question, and fall back to the conventional names when there is no
-declaration. They assume **nothing** about your stack, your domain or your
-tooling: anything a procedure needs to know about your project it learns from
-your project. The only command any of them names is the one in `adopt` for
-running this method's own check.
+They read the project's `method.json` for two things. Which of its files answer
+which question — and which systems it keeps outside the repository, under
+`authorities`: where tasks live, where the review boundary is configured. Those
+are addresses to know, never things to fetch. A procedure that has to retrieve
+something before it can work is not self-supporting, which is what
+[C3](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c3)
+forbids. Where there is no declaration they fall back to the conventional names.
+
+They assume **nothing** about your stack, your domain or your tooling: anything
+a procedure needs to know about your project it learns from your project. The
+only command any of them names is the one in `adopt` for running this method's
+own check.
 
 They say **the decider** rather than "the human", because who decides varies —
 a maintainer, whoever owns the area, the team — and a procedure that assumes
