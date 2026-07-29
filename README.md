@@ -148,10 +148,10 @@ Nothing is installed, and nothing references this repository at runtime. Rule
 
 **⚠️ Most people should stop here.**
 
-### 2. Install the plugin
+### 2. Add the session procedures
 
-Five procedures for Claude Code. The first three are a loop you run every
-working day; the other two come up as needed.
+Five of them, delivered as a Claude Code plugin. The first three are a loop you
+run every working day; the other two come up as needed.
 
 | Procedure | When |
 |---|---|
