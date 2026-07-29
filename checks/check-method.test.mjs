@@ -324,7 +324,7 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('the same rule adapted twice fails', d, false, ['adaptations']);
 }
 {
-  // The placeholder shipped in templates/method.json. It used to name a real
+  // The placeholder shipped in agent-manual/method.json. It used to name a real
   // rule with a valid reason and date, so a template copied unread passed the
   // check with decision immutability silently switched off.
   const d = baseline('placeholder-adaptation', {

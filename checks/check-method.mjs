@@ -503,7 +503,7 @@ if (decl) {
       fail(
         'adaptations',
         at,
-        'This is the placeholder entry from templates/method.json. Delete it, or ' +
+        'This is the placeholder entry from agent-manual/method.json. Delete it, or ' +
           'replace it with a real adaptation. It is deliberately not a rule ' +
           'identifier, so that a template copied unread fails here rather than ' +
           'silently switching a rule off.'

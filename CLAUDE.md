@@ -40,7 +40,7 @@ that has a `method.json`: `node checks/check-method.mjs <path>`.
 |---|---|
 | [`method/`](method/README.md) | the catalogue and its guides — the normative content |
 | [`checks/`](checks/README.md) | the coherence check and its counter-test |
-| [`templates/`](templates/README.md) | starting points a project copies and rewrites |
+| [`agent-manual/`](agent-manual/README.md) | what a project copies and rewrites — `operating-rules.md` is the manual, the rest are the shapes it refers to |
 | [`plugins/agent-method/`](plugins/agent-method/README.md) | the five session procedures, as a Claude Code plugin |
 
 ## Writing conventions

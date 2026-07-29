@@ -175,7 +175,7 @@ systems you keep outside the repository, and records where you diverged.
 }
 ```
 
-Start from [the template](templates/method.json), then run the check without
+Start from [the template](agent-manual/method.json), then run the check without
 `--lint`. It buys one thing: when a rule here changes, you find out which of
 your projects still teaches the old version — instead of discovering it two
 sessions later.
@@ -279,7 +279,7 @@ section on where the method is most likely wrong.
 | [`method/rationale.md`](method/rationale.md) | Why the method looks like this, what it costs, where it is weak. |
 | [`method/CHANGELOG.md`](method/CHANGELOG.md) | What changed between versions, and what you have to do about it. |
 | [`method/withdrawn.md`](method/withdrawn.md) | Rules that no longer apply, and what replaced them. |
-| [`templates/`](templates/README.md) | Starting points for the four artefacts, plus review and ticket forms. |
+| [`agent-manual/`](agent-manual/README.md) | **What you copy into your project.** [`operating-rules.md`](agent-manual/operating-rules.md) is the manual your agent reads; the rest are the shapes it refers to. |
 | [`checks/`](checks/README.md) | The coherence check, and the counter-test that makes it trustworthy. |
 | [`plugins/agent-method/`](plugins/agent-method/README.md) | Five session procedures, as a Claude Code plugin. |
 
