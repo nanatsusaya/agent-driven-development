@@ -1,4 +1,4 @@
-# agent-driven-development
+# Agent Driven Development
 
 **AI agents remember the current session. Your repository has to remember the
 rest.**
@@ -121,7 +121,7 @@ Copy the rules that apply into your own agent instructions, in your own words.
 Nothing is installed, and nothing references this repository at runtime — rule
 [C3](method/rules.md#c3) argues against that.
 
-**Most people should stop here.**
+**⚠️ Most people should stop here.**
 
 ### 2. Install the plugin
 
