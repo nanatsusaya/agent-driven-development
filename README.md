@@ -137,39 +137,38 @@ Read them in [`method/rules.md`](method/rules.md).
 
 ## Three ways to use it
 
-### 1. Read the catalogue and take what fits
+### 1. Take the manual and rewrite it
 
-Copy the rules that apply into your own agent instructions, in your own words.
-Nothing is installed, and nothing references this repository at runtime — rule
+[`agent-manual/operating-rules.md`](agent-manual/operating-rules.md) is the
+file your agent reads at the start of every task. Copy it into your project,
+cut what does not apply, and rewrite the rest in your own words.
+
+Nothing is installed, and nothing references this repository at runtime. Rule
 [C3](method/rules.md#c3) argues against that.
 
 **⚠️ Most people should stop here.**
 
 ### 2. Install the plugin
 
-Five procedures for Claude Code. This is what the method looks like as daily
-work rather than as a document.
+Five procedures for Claude Code. The first three are a loop you run every
+working day; the other two come up as needed.
 
 | Procedure | When |
 |---|---|
-| `session-start` | Bring-up — and it ends with a question, never an action |
-| `after-merge` | The seam right after a change lands |
-| `session-end` | Wind-down: tidy up, park unfinished work honestly, bring the living documents current |
-| `decision-record` | Writing or reworking a decision |
-| `adopt` | Introducing the method to a project, or reviewing how well an existing one fits |
-
-The first three are the loop: one when you sit down, one every time a change
-lands, one when you stop. The other two come up occasionally.
+| `session-start` | you sit down |
+| `after-merge` | a change has just landed |
+| `session-end` | you stop for the day |
+| `decision-record` | a choice needs writing down |
+| `adopt` | introducing the method, or reviewing an existing fit |
 
 ```
 /plugin marketplace add nanatsusaya/agent-driven-development
 /plugin install agent-method@agent-driven-development
 ```
 
-They read your project's own files and assume nothing about your stack.
-Details in [`plugins/agent-method/`](plugins/agent-method/README.md), including
-how to rename the commands into your own language — you type them all day, and
-[L1](method/rules.md#l1) only asks that the *documents* stay in one language.
+What each one does is in
+[`plugins/agent-method/`](plugins/agent-method/README.md). So is how to rename
+them into your own language.
 
 ### 3. Declare the relationship
 
