@@ -38,6 +38,28 @@ Treat it as a given, and the repository stops being where the work is kept. It
 is the interface every future session arrives through, and it has to be built
 like one.
 
+## Who reads what
+
+This page is for you. Most of the rest is written to be read by an agent, in
+your project, with no conversation attached.
+
+| | Written for | Where |
+|---|---|---|
+| **This page** | a visitor deciding whether the idea is worth their time | `README.md` |
+| **The manual** | your agent, once you have copied it into your project | [`agent-manual/`](agent-manual/README.md) |
+| **The catalogue** | you, choosing what to adopt — and your agent, for the reasoning | [`method/rules.md`](method/rules.md) |
+| **The apparatus** | you, keeping an adoption current | [`method/adapting.md`](method/adapting.md) · [`rationale.md`](method/rationale.md) · [`CHANGELOG.md`](method/CHANGELOG.md) · [`checks/`](checks/README.md) |
+
+Nothing here is *optimised* for machine consumption. It is prose, and it stays
+prose. What it is instead is **self-supporting**: an agent can act on the manual
+without anyone explaining it first, which is what [C3](method/rules.md#c3) asks
+for and why the manual spells rules out rather than linking to them.
+
+The catalogue sits in both columns deliberately. Every rule carries the failure
+it prevents, because [M1](method/rules.md#m1) holds that a rule whose origin is
+lost gets dropped by the first session that finds it inconvenient — and that
+session is usually an agent's.
+
 ## Try it without adopting anything
 
 Clone it, then point the check at any repository. It scans Markdown for dead
