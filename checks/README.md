@@ -1,17 +1,28 @@
 # Checks
 
-Two of them. [`check-method.mjs`](check-method.mjs) is the coherence check,
-described below and meant for any project adopting the method.
-[`line-width.mjs`](line-width.mjs) enforces this repository's own 80-column
-convention and is house style rather than method — run it if you want it.
+Three of them, and only the first is meant for your project.
+[`check-method.mjs`](check-method.mjs) is the coherence check, described below.
+The other two are this repository's own house style, and neither knows anything
+about an adopting project — run them if you want them.
 
 ```bash
 node checks/line-width.mjs <project-path> [--limit 80]
 ```
 
-It reports; it never reformats. A reformatter run over this repository once
+[`line-width.mjs`](line-width.mjs) enforces the 80-column convention. It
+reports; it never reformats. A reformatter run over this repository once
 corrupted prose by splitting punctuation away from the links it touched, and
 the damage was invisible line by line.
+
+```bash
+node checks/documented-counts.mjs
+```
+
+[`documented-counts.mjs`](documented-counts.mjs) compares the case counts
+stated under [the counter-tests](#the-counter-tests) against what the runs
+report. It runs both counter-tests to find out, so it costs what they cost.
+That figure is the argument for trusting everything else on this page, and it
+had gone eighteen cases stale before anybody read it against a run.
 
 ## The coherence check
 
@@ -154,6 +165,13 @@ npm test
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
+
+Those two figures are themselves checked, by
+[`documented-counts.mjs`](documented-counts.mjs) under `npm run lint`. A third
+counter-test, [`documented-counts.test.mjs`](documented-counts.test.mjs),
+covers that check in turn and is deliberately not given a figure of its own —
+one more advertised number would be one more thing to keep true, and nothing
+would be checking it.
 
 This exists because of [E3](../method/rules.md#e3). The usual way a check breaks
 is not a wrong verdict but a pattern that silently matches nothing, reports

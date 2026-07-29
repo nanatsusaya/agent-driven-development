@@ -26,8 +26,8 @@ goes in its *Binding*, marked as such.
 ## Commands
 
 ```bash
-npm run lint    # line width, then this repository's own links and spelling
-npm test        # the counter-tests for both checks
+npm run lint    # line width, this repository's links and spelling, documented counts
+npm test        # the counter-tests for all three checks
 ```
 
 Zero dependencies, Node 18 or later. There is nothing to install. Both must be
@@ -39,7 +39,7 @@ that has a `method.json`: `node checks/check-method.mjs <path>`.
 | Where | What |
 |---|---|
 | [`method/`](method/README.md) | the catalogue and its guides — the normative content |
-| [`checks/`](checks/README.md) | the coherence check and its counter-test |
+| [`checks/`](checks/README.md) | the coherence check, two house-style checks, and a counter-test for each |
 | [`agent-manual/`](agent-manual/README.md) | what a project copies and rewrites — `operating-rules.md` is the manual, the rest are the shapes it refers to |
 | [`plugins/agent-method/`](plugins/agent-method/README.md) | the five session procedures, as a Claude Code plugin |
 
