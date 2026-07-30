@@ -103,6 +103,30 @@ still fails; a link that resolves under one platform's rules and not another's
 does not. That trade is on purpose — a false alarm teaches people to distrust
 every check ([E3](../method/rules.md#e3)).
 
+**The link scan reads three forms and no more.** `[text](dest)` with an optional
+title, `[text](<dest>)`, and the reference definition `[label]: dest`. What it
+does not do is match a *use* of a reference against its definition: a
+`[text][label]` whose label was never defined renders as literal text and is not
+reported. The definitions themselves are checked, which is where a broken path
+actually lives. A bare destination containing a space — `[a](my notes/x.md)` —
+is not a link under CommonMark at all, so there is nothing there to resolve;
+write it `<my notes/x.md>` or percent-encode it and it is checked like any
+other.
+
+**A link inside a blockquote is scanned like any other.** Fenced examples and
+code spans are exempt from every scan, and blockquotes are exempt from the
+spelling and withdrawn-rule scans, because those decide what a document
+*asserts* and a quotation asserts nothing. A link is different: it is a
+reference a reader clicks, and a broken one is broken whoever wrote it. The cost
+is that quoting a passage whose links have since moved produces findings, and
+[L2](../method/rules.md#l2) says the quotation may not be edited to silence
+them. Put such documents in `ignore`.
+
+**Link targets are compared as written.** Whether `Docs/x.md` resolves to
+`docs/x.md` is the file system's decision, so a link that only differs in case
+passes on Windows and macOS and fails on Linux. Nothing here normalises case:
+guessing would make the check disagree with the platform it runs on.
+
 **Under an American regime, only the listed word pairs are scanned.** The
 general `-ise` direction is not, because the exception list it would need
 (`wise`, `precise`, `promise`, `exercise`, and a long tail) is where a wrong
@@ -161,7 +185,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-95 cases for the coherence check and 13 for the line-width check, each building
+107 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.

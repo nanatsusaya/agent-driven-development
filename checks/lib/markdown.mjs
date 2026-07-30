@@ -219,9 +219,37 @@ export function assertedParagraphs(text) {
 }
 
 /**
+ * Anything of the form `scheme:` — the shape of a URI, whatever the scheme is.
+ *
+ * The exclusion list used to name three: `https?:`, `mailto:` and `#!`. Every
+ * other scheme was treated as a path relative to the document and reported as a
+ * broken link. `tel:`, `file:`, `ftp:`, `vscode://`, `slack://` and
+ * `obsidian://` all produced findings — and `.obsidian` is in DEFAULT_IGNORES,
+ * so an Obsidian vault is a target this check knows it will meet. False alarms
+ * in the check that produces the most findings in a real repository is the worst
+ * possible place for them (rule E3).
+ *
+ * Written as a shape rather than a list because a list is wrong again the next
+ * time someone invents a scheme. What no scheme can be is a relative path: a
+ * path is relative precisely by having no scheme.
+ */
+const URI_SCHEME = /^[a-z][a-z0-9+.\-]*:/i;
+
+/**
  * Every relative link target in a document, excluding fenced examples. External
  * links are dropped: whether a URL resolves is a network question, and a check
  * that depends on the network fails for reasons unrelated to the repository.
+ *
+ * Three destination forms are read, because all three are links a reader can
+ * click and a reference is only as good as the form it was written in:
+ *
+ *   - `[text](dest)`, with an optional `"title"` after the destination — the
+ *     title used to make the whole link invisible to this scan
+ *   - `[text](<dest>)`, which is how CommonMark permits a destination
+ *     containing spaces
+ *   - `[label]: dest`, a reference definition. A definition pointing nowhere is
+ *     a broken link however many places use it — including none, which is its
+ *     own kind of stale.
  *
  * @param text whole document
  * @returns array of `{ n, target }` where target keeps any `#fragment`
@@ -229,13 +257,25 @@ export function assertedParagraphs(text) {
 export function relativeLinks(text) {
   const out = [];
   const lines = blankFences(text).split('\n');
+  const take = (n, target) => {
+    const t = target.trim();
+    if (t === '' || URI_SCHEME.test(t) || t.startsWith('#!')) return;
+    out.push({ n, target: t });
+  };
   lines.forEach((line, i) => {
     const scannable = blankCodeSpans(line);
-    for (const m of scannable.matchAll(/\[[^\]]*\]\(([^)\s]+)\)/g)) {
-      const target = m[1];
-      if (/^(https?:|mailto:|#!)/i.test(target)) continue;
-      out.push({ n: i + 1, target });
+    for (const m of scannable.matchAll(
+      /\[[^\]]*\]\(\s*(?:<([^<>]*)>|([^)\s]*))\s*(?:"[^"]*"|'[^']*'|\([^)]*\))?\s*\)/g
+    )) {
+      take(i + 1, m[1] ?? m[2] ?? '');
     }
+    // A label opening with `^` is a GFM footnote, whose body is prose rather
+    // than a destination. Reading one as a path would report every footnote in
+    // the document as a broken link.
+    const def = scannable.match(
+      /^ {0,3}\[([^\]^][^\]]*)\]:\s*(?:<([^<>]*)>|(\S+))\s*(?:"[^"]*"|'[^']*')?\s*$/
+    );
+    if (def) take(i + 1, def[2] ?? def[3] ?? '');
   });
   return out;
 }
@@ -266,7 +306,14 @@ export function anchors(text) {
   const body = blankFences(text);
 
   for (const m of body.matchAll(/^#{1,6}\s+(.+?)\s*$/gm)) {
-    const title = m[1].replace(/`/g, '').toLowerCase();
+    const title = m[1]
+      .replace(/`/g, '')
+      // A heading that is itself a link contributes its *text* to the slug, not
+      // its destination. Stripping the punctuation instead glued the two
+      // together, so every link to such a heading was reported as broken.
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/\[([^\]]*)\]\[[^\]]*\]/g, '$1')
+      .toLowerCase();
 
     // Keep letters, numbers, connector punctuation, dash punctuation, spaces.
     const kept = title.replace(/[^\p{L}\p{N}\p{Pc}\p{Pd}\p{Zs}\s]/gu, '');
@@ -282,6 +329,12 @@ export function anchors(text) {
 
     for (const variant of [kept, normalised, dropped]) {
       set.add(variant.trim().replace(/[\s\p{Zs}]/gu, '-'));
+      // The untrimmed form as well. A heading opening or closing with something
+      // the strip removes — an emoji, a bracketed tag, a trailing colon — leaves
+      // a space there, and platforms disagree about whether the resulting slug
+      // keeps the edge hyphen or loses it. Same reasoning as the dash variants:
+      // where the answer cannot be settled by reasoning, accept both.
+      set.add(variant.replace(/[\s\p{Zs}]/gu, '-'));
     }
   }
 

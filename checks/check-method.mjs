@@ -772,19 +772,44 @@ if (inForce('C5')) {
     return anchorCache.get(rel);
   };
 
+  // A target may be percent-encoded — `docs/my%20notes/x.md` is how a path with
+  // a space is written — and the file system knows nothing about that encoding.
+  // Testing the raw form alone reported such a link as broken while the file sat
+  // right there. Both forms are tried, and a malformed escape falls back to the
+  // raw text rather than throwing: it is then not a path, and the raw form is
+  // all there is to report.
+  const decoded = (s) => {
+    try {
+      return decodeURIComponent(s);
+    } catch {
+      return s;
+    }
+  };
+  const forms = (s) => [...new Set([s, decoded(s)])];
+
   for (const { rel, text } of docs) {
     for (const { n, target } of relativeLinks(text)) {
-      const [pathPart, frag] = target.split('#');
-      const targetRel = pathPart
-        ? posix.normalize(posix.join(posix.dirname(rel), pathPart)).replace(/\/$/, '')
-        : rel;
-      if (pathPart && !exists(join(project, targetRel))) {
-        fail('links', `${rel}:${n}`, `Link target does not exist: ${target}`);
-        continue;
+      // Split at the first `#` only. `split('#')` dropped everything after a
+      // second one, so a fragment containing one was silently truncated.
+      const hash = target.indexOf('#');
+      const pathPart = hash === -1 ? target : target.slice(0, hash);
+      const frag = hash === -1 ? '' : target.slice(hash + 1);
+      const asRel = (p) =>
+        posix.normalize(posix.join(posix.dirname(rel), p)).replace(/\/$/, '');
+      let targetRel = rel;
+      if (pathPart) {
+        const hit = forms(pathPart)
+          .map(asRel)
+          .find((r) => exists(join(project, r)));
+        if (!hit) {
+          fail('links', `${rel}:${n}`, `Link target does not exist: ${target}`);
+          continue;
+        }
+        targetRel = hit;
       }
       if (frag && targetRel.toLowerCase().endsWith('.md')) {
         const set = anchorsFor(targetRel);
-        if (set && !set.has(frag)) {
+        if (set && !forms(frag).some((f) => set.has(f))) {
           fail(
             'links',
             `${rel}:${n}`,

@@ -544,6 +544,96 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('a link to a heading that really is absent still fails', d, false, ['links']);
 }
 {
+  // The exclusion list named three schemes, so every other one was read as a
+  // path relative to the document and reported as broken. `.obsidian` is in
+  // DEFAULT_IGNORES, so an Obsidian vault is a target this check knows it will
+  // meet, and `obsidian://` links are ordinary there.
+  const d = baseline('link-uri-schemes');
+  put(d, 'docs/STATUS.md',
+    '# Status\n\nCall [us](tel:+49123456), read [the hosts file](file:///etc/hosts),\n' +
+      'open [the vault](obsidian://open?vault=x), [the editor](vscode://file/x),\n' +
+      '[the channel](slack://channel?id=1) or [the archive](ftp://example.invalid/x).\n');
+  expect('a link with any URI scheme is not a relative path', d, true);
+}
+{
+  // A path with a space is written percent-encoded, and the file system knows
+  // nothing about that encoding. Testing the raw form alone reported the link as
+  // broken while the file sat right there.
+  const d = baseline('link-percent-encoded');
+  put(d, 'docs/my notes/x.md', '# Notes\n\nHere.\n');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the notes](my%20notes/x.md).\n');
+  expect('a percent-encoded target that exists passes', d, true);
+}
+{
+  const d = baseline('link-percent-encoded-dead');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the notes](my%20notes/gone.md).\n');
+  expect('a percent-encoded target that does not exist still fails', d, false, ['links']);
+}
+{
+  // The form CommonMark provides for a destination containing spaces. The
+  // brackets were read as part of the path, so the link failed against a file
+  // that was there.
+  const d = baseline('link-angle-brackets');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the rules](<../CLAUDE.md>).\n');
+  expect('an angle-bracketed target that exists passes', d, true);
+}
+{
+  const d = baseline('link-angle-brackets-dead');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the plan](<../PLAN.md>).\n');
+  expect('an angle-bracketed target that does not exist still fails', d, false, ['links']);
+}
+{
+  // A title after the destination made the whole link invisible to the scan —
+  // a silent no-op rather than a false alarm, which is the failure E3 is about.
+  const d = baseline('link-with-title');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the rules](../CLAUDE.md "the operating rules").\n');
+  expect('a link carrying a title passes when its target exists', d, true);
+}
+{
+  const d = baseline('link-with-title-dead');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the plan](../PLAN.md "the plan").\n');
+  expect('a link carrying a title fails when its target does not', d, false, ['links']);
+}
+{
+  // Reference definitions went unread entirely. A definition pointing nowhere is
+  // a broken link however many places use it — including none.
+  const d = baseline('link-reference-definition-dead');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the plan][1].\n\n[1]: ../PLAN.md\n');
+  expect('a reference definition pointing nowhere fails', d, false, ['links']);
+}
+{
+  const d = baseline('link-reference-definition-live');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the rules][1].\n\n[1]: ../CLAUDE.md\n');
+  expect('a reference definition that resolves passes', d, true);
+}
+{
+  // The nearest legitimate neighbour, and it is not a near miss but a different
+  // syntax: a GFM footnote definition's body is prose. Reading one as a path
+  // would report every footnote in a document as a broken link.
+  const d = baseline('link-footnote-definition');
+  put(d, 'docs/STATUS.md',
+    '# Status\n\nThe gate is the human.[^1]\n\n[^1]: Decided long before this file existed.\n');
+  expect('a footnote definition is not read as a path', d, true);
+}
+{
+  // A heading that is itself a link contributes its text to the slug, not its
+  // destination. The two used to be glued together, so every link to such a
+  // heading failed.
+  const d = baseline('anchor-heading-is-a-link');
+  put(d, 'docs/method-log.md', '# Log\n\n## [The gate](STATUS.md)\n\ntext\n');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [it](method-log.md#the-gate).\n');
+  expect('a link to a heading that is itself a link passes', d, true);
+}
+{
+  // A heading opening with punctuation the slug strips leaves a space there, and
+  // platforms disagree about whether the resulting slug keeps the edge hyphen.
+  // Same trade as the dash variants: accept both rather than guess.
+  const d = baseline('anchor-leading-hyphen');
+  put(d, 'docs/method-log.md', '# Log\n\n## [!] Launch\n\ntext\n');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [it](method-log.md#-launch).\n');
+  expect('a slug with a leading hyphen from stripped punctuation passes', d, true);
+}
+{
   // The link scan belongs to C5, so a project that declares C5 adapted is not
   // held to it. Without this case the gate could be removed and every other
   // link case would still pass.

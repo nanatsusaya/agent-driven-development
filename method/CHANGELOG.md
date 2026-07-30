@@ -51,6 +51,21 @@ rejected.
 describes a directory of records and a project small enough to keep them in one
 file is following the same rule.
 
+**The link scan stops firing on six legitimate forms, and starts seeing two it
+missed.** It read `https:`, `mailto:` and `#!` as external and everything else
+as a path, so `tel:`, `file:`, `ftp:`, `obsidian://`, `vscode://` and `slack://`
+were all reported as broken links. Percent-encoded paths and angle-bracketed
+destinations were reported broken against files that were there. In the other
+direction, a link carrying a `"title"` was invisible to the scan entirely, and
+reference definitions were never read at all. If you had worked around any of
+this, the workaround is no longer needed; if a document has a reference
+definition pointing nowhere, you will now see it.
+
+**Heading slugs accept two more shapes.** A heading that is itself a link
+contributes its text, not its destination. A slug with a leading or trailing
+hyphen left by stripped punctuation is accepted alongside the trimmed form,
+because platforms disagree about which one they generate.
+
 ### Now named in the report
 
 **Bound artefacts with nothing in them.** A zero-byte file passes an existence
