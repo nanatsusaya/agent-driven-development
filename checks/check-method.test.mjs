@@ -141,13 +141,14 @@ function expect(
  * @param label   what this case is testing
  * @param project project directory
  * @param pattern must appear in the output
- * @param args    extra arguments; `--quiet` is already passed
+ * @param args    extra arguments
+ * @param quiet   whether to pass `--quiet`; the in-force listing needs it off
  */
-function expectSays(label, project, pattern, args = []) {
+function expectSays(label, project, pattern, args = [], quiet = true) {
   ran++;
   const r = spawnSync(
     process.execPath,
-    [CHECK, project, '--catalogue', REAL_CATALOGUE, '--quiet', ...args],
+    [CHECK, project, '--catalogue', REAL_CATALOGUE, ...(quiet ? ['--quiet'] : []), ...args],
     { encoding: 'utf8' }
   );
   const out = (r.stdout ?? '') + (r.stderr ?? '');
@@ -159,6 +160,45 @@ function expectSays(label, project, pattern, args = []) {
     console.log(`        expected the report to match ${pattern}`);
     console.log(out.split('\n').map((l) => `      | ${l}`).join('\n'));
   }
+}
+
+/**
+ * Assert a relationship between two runs rather than a verdict about one.
+ *
+ * The one number in the report that is neither a finding nor a verdict is how
+ * many rules in force are marked `manual` — the figure a reader uses to judge
+ * how much a green run is worth. What matters about it is relative: an
+ * adaptation that leaves a rule in force must not change it, and one that takes
+ * a rule out must. Pinning the absolute value instead would tie the suite to the
+ * size of the catalogue, so that adding any manual rule broke a case about
+ * adaptations.
+ *
+ * @param label    what this case is testing
+ * @param actual   the value observed
+ * @param expected the value required
+ */
+function expectEquals(label, actual, expected) {
+  ran++;
+  if (actual === expected) {
+    console.log(`ok    ${label}`);
+  } else {
+    failures++;
+    console.log(`FAIL  ${label}`);
+    console.log(`        expected ${expected}, got ${actual}`);
+  }
+}
+
+/** The manual-rule count a run prints about itself, or null. */
+function manualCount(project) {
+  const r = spawnSync(
+    process.execPath,
+    [CHECK, project, '--catalogue', REAL_CATALOGUE, '--quiet'],
+    { encoding: 'utf8' }
+  );
+  const m = /(\d+) rule\(s\) in force are marked/.exec(
+    (r.stdout ?? '') + (r.stderr ?? '')
+  );
+  return m ? Number(m[1]) : null;
 }
 
 // --- the legitimate baseline must pass, or every failure below is meaningless
@@ -1019,6 +1059,58 @@ expect('a complete, coherent project passes', baseline('good'), true);
     '# Rules\n\nBritish spelling: write `colour`, never `color`.\n\n' +
       '> Legacy wording: analyze the behavior.\n');
   expect('a forbidden spelling named in a code span or blockquote passes', d, true);
+}
+
+// --- 7a2. the honesty figure, and what may move it
+{
+  // H2 is `manual`. The count was built from "has an adaptation at all", so
+  // declaring the rule `narrowed` — a claim that it still applies — took it out
+  // of the figure while the listing above went on saying the check still runs.
+  // The number undermined by the one adaptation kind the project built to stop
+  // exactly that.
+  const reason = 'the confidence bar applies to code, not to exploratory notes';
+  const plain = manualCount(baseline('manual-count-plain'));
+  const narrowed = manualCount(
+    baseline('manual-count-narrowed', {
+      adaptations: [{ rule: 'H2', change: 'narrowed', reason, decided: '2026-01-01' }],
+    })
+  );
+  const dropped = manualCount(
+    baseline('manual-count-dropped', {
+      adaptations: [{ rule: 'H2', change: 'dropped', reason, decided: '2026-01-01' }],
+    })
+  );
+  expectEquals('a narrowed manual rule stays in the honesty figure', narrowed, plain);
+  expectEquals('a dropped manual rule leaves it', dropped, plain - 1);
+}
+{
+  // An adaptation the check has just reported as unreadable used to switch the
+  // rule's check off on the way past — the strongest possible reading of a line
+  // it could not read. The reason here is too thin to be one, so L1's scan must
+  // still run and the Americanism must still be found.
+  const d = baseline('incomplete-adaptation-keeps-the-check', {
+    adaptations: [{ rule: 'L1', change: 'dropped', reason: 'no', decided: '2026-01-01' }],
+  });
+  put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior of the system.\n');
+  expect('an incomplete adaptation does not switch its check off', d, false, [
+    'adaptations',
+    'language',
+  ]);
+}
+{
+  // The mirror, and the reason the fix cannot simply reject the entry: an
+  // adaptation that is complete does switch the check off, and the report has to
+  // say which of the two happened.
+  const d = baseline('incomplete-adaptation-is-marked', {
+    adaptations: [{ rule: 'C5', change: 'dropped', reason: 'no', decided: '2026-01-01' }],
+  });
+  expectSays(
+    'the listing marks an incomplete adaptation as not having taken effect',
+    d,
+    /C5 dropped[^\n]*check still runs — this adaptation is incomplete/,
+    [],
+    false
+  );
 }
 
 // --- 7b. placeholders left in a bound artefact

@@ -68,6 +68,21 @@ const CHANGES = ['dropped', 'narrowed', 'replaced', 'deferred'];
 const SUSPENDS_CHECK = new Set(['dropped', 'replaced', 'deferred']);
 
 /**
+ * Whether an adaptation actually takes a rule's automated check out of the run.
+ *
+ * Two conditions, and the second is easy to leave out. The kind has to be one
+ * that suspends — and the entry has to be *complete*. An adaptation missing its
+ * reason or its date is already a finding, and it used to switch the rule's check
+ * off on the way past: the run reported the malformed entry and then went quiet
+ * about everything that entry claimed, which is the strongest possible reading of
+ * a line the check has just said it cannot read. The same reasoning already
+ * applied to an unreadable `change` kind, which returns before it is recorded.
+ *
+ * @param a an adaptation from `adapted`, or undefined
+ */
+const suspends = (a) => Boolean(a) && a.complete && SUSPENDS_CHECK.has(a.change);
+
+/**
  * The rule each role exists to serve.
  *
  * Leaving a role out is a decision, and A2 says a decision is recorded. The
@@ -677,6 +692,11 @@ if (decl) {
       // off on the strength of a malformed line.
       return;
     }
+    // Every remaining requirement is recorded rather than returned on, because
+    // an entry this incomplete still tells the reader which rule the project
+    // meant to adapt — which is worth reporting against. What it does not do is
+    // switch that rule's check off: see `suspends`.
+    let complete = true;
     if (typeof a.reason !== 'string' || a.reason.trim().length < 20) {
       fail(
         'adaptations',
@@ -685,9 +705,11 @@ if (decl) {
           'divergence is indistinguishable from carelessness, so the next session ' +
           'helpfully restores the rule you deliberately removed (rule A2).'
       );
+      complete = false;
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(a.decided ?? '')) {
       fail('adaptations', at, '"decided" is required, as an ISO date (YYYY-MM-DD).');
+      complete = false;
     }
     if (a.change === 'deferred' && !/trigger|until|once|when|after/i.test(a.reason ?? '')) {
       fail(
@@ -696,8 +718,9 @@ if (decl) {
         'A deferred rule needs a named trigger — what event makes it apply? ' +
           'Deferred without a trigger is dropped with better manners.'
       );
+      complete = false;
     }
-    adapted.set(id, a);
+    adapted.set(id, { ...a, complete });
   });
 
   for (const role of ROLES) {
@@ -785,8 +808,7 @@ if (withdrawn.length === 0) {
 // 6. Structural checks for the automated rules
 // ---------------------------------------------------------------------------
 
-const inForce = (id) =>
-  rules.has(id) && !SUSPENDS_CHECK.has(adapted.get(id)?.change);
+const inForce = (id) => rules.has(id) && !suspends(adapted.get(id));
 
 // --- C5: relative links and anchors resolve.
 // Gated like every other rule check. Before C5 existed this block ran
@@ -1142,24 +1164,25 @@ if (findings.length) {
 
 /** Adaptations that stopped an automated check from running at all. */
 const suspended = [...adapted.entries()].filter(
-  ([id, a]) => SUSPENDS_CHECK.has(a.change) && rules.get(id)?.check === 'automated'
+  ([id, a]) => suspends(a) && rules.get(id)?.check === 'automated'
 );
 
 if (decl && !quiet) {
-  const notInForce = [...adapted.values()].filter((a) =>
-    SUSPENDS_CHECK.has(a.change)
-  ).length;
+  const notInForce = [...adapted.values()].filter(suspends).length;
   console.log(`\nrules: ${rules.size - notInForce} in force, ${adapted.size} adapted`);
   for (const [id, a] of adapted) {
     // Whether the check still runs is the part a reader cannot infer from the
     // change kind alone, and it is the part that decides how much this report
-    // is worth. A narrowed rule keeps its check; the other three kinds do not.
+    // is worth. A narrowed rule keeps its check; the other three kinds do, too,
+    // while the entry claiming them is incomplete.
     const marker =
       rules.get(id).check !== 'automated'
         ? ''
-        : SUSPENDS_CHECK.has(a.change)
+        : suspends(a)
           ? '  · check off'
-          : '  · check still runs';
+          : SUSPENDS_CHECK.has(a.change)
+            ? '  · check still runs — this adaptation is incomplete'
+            : '  · check still runs';
     console.log(`  ${id} ${a.change.padEnd(8)} ${rules.get(id).title}${marker}`);
   }
 
@@ -1194,8 +1217,14 @@ if (decl && !quiet) {
         (where ? `\n      verify it at: ${where}` : '')
       );
     });
+  // Filtered against what actually suspends a check, not against whether an
+  // adaptation exists at all. `narrowed` is deliberately not a suspension — a
+  // narrowed rule is still in force — but it landed in `adapted`, so declaring
+  // one shrank this number. The report then said the rule was in force in the
+  // listing above and left it out of the honesty figure below, which is the one
+  // number a reader uses to judge how much the run is worth.
   const manual = [...rules.values()].filter(
-    (r) => r.check === 'manual' && !adapted.has(r.id)
+    (r) => r.check === 'manual' && !suspends(adapted.get(r.id))
   ).length;
 
   console.log(`\nnot verified here`);

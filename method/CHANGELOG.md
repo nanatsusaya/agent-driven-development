@@ -74,6 +74,21 @@ Two records numbered 0001 that both agreed with the index passed in silence,
 and two index rows for one number kept the last one read. A number is how the
 rest of the project refers to a decision, so it cannot name two things.
 
+**An incomplete adaptation no longer switches its rule's check off.** An entry
+missing its reason or its date is already a finding, and it used to suspend the
+check on the way past — the strongest possible reading of a line the check had
+just said it could not read. The rule's check now runs until the entry is
+complete, and the listing says which of the two happened. If you have a
+half-written adaptation, expect to see the findings it was suppressing.
+
+**A `narrowed` manual rule counts as in force again.** The figure `N rule(s) in
+force are marked manual` was built from whether an adaptation existed at all,
+so declaring a rule `narrowed` — a claim that it still applies — took it out of
+the count while the listing above went on saying the check still runs. That
+number is the one a reader uses to judge how much a green run is worth, and it
+was undermined by the one adaptation kind this project built to prevent exactly
+that.
+
 **Heading slugs accept two more shapes.** A heading that is itself a link
 contributes its text, not its destination. A slug with a leading or trailing
 hyphen left by stripped punctuation is accepted alongside the trimmed form,
