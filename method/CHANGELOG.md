@@ -61,6 +61,19 @@ reference definitions were never read at all. If you had worked around any of
 this, the workaround is no longer needed; if a document has a reference
 definition pointing nowhere, you will now see it.
 
+**A `Status` heading with the value on the next line is read.** The status was
+taken only from the line carrying the label, so a project using the Nygard
+record — the most widespread decision-record format there is, and the one
+[D1](rules.md#d1)'s *Binding* points at — had D2's only automated part decide
+nothing, on every record, while the run stayed green. If your records are in
+that format and one of them disagrees with the index, that is now a finding. It
+was always a defect; nothing was looking.
+
+**Two decisions sharing a number is a finding, in the files and in the index.**
+Two records numbered 0001 that both agreed with the index passed in silence,
+and two index rows for one number kept the last one read. A number is how the
+rest of the project refers to a decision, so it cannot name two things.
+
 **Heading slugs accept two more shapes.** A heading that is itself a link
 contributes its text, not its destination. A slug with a leading or trailing
 hyphen left by stripped punctuation is accepted alongside the trimmed form,
@@ -76,6 +89,10 @@ filled in name only, and which.
 **Which rule went unchecked when `decisions` is a single file.** The report said
 the index check was skipped; it now names D2, so the blind spot is one a reader
 can look up.
+
+**A status the index invents, rather than a row that is missing.** An
+unrecognised status was dropped, so the decision looked absent from an index it
+was listed in and the finding named the wrong cause.
 
 ## 0.3
 

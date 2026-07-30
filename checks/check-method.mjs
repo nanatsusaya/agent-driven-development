@@ -240,6 +240,36 @@ const IZE_ALLOWED = new Set(
   })
 );
 
+/**
+ * The status a decision record claims about itself, or null.
+ *
+ * Two shapes, because the two that exist in the field are not variations of one
+ * another. `- **Status:** Accepted` puts the value on the line with the label;
+ * the Nygard record — the most widespread decision-record format there is, and
+ * the one D1's own *Binding* points people at — puts a `## Status` heading above
+ * it. Only the first was read, so for a project using the second the only
+ * automated check with any content to it decided nothing, on every record, and
+ * the run stayed green with the contradiction D2 exists to catch sitting in it.
+ *
+ * @param text whole decision record
+ * @returns the status word, or null when neither shape is present
+ */
+function ownStatus(text) {
+  const body = blankFences(text);
+  const inline = body.match(
+    /^\s*(?:-\s*)?\*{0,2}Status:?\*{0,2}\s*:?\s*\*{0,2}(\w+)/im
+  );
+  if (inline) return inline[1];
+  const heading = body.match(/^#{1,6}[ \t]*\*{0,2}Status\*{0,2}[ \t]*$/im);
+  if (heading) {
+    const after = body.slice(heading.index + heading[0].length);
+    const line = after.split('\n').find((l) => l.trim() !== '');
+    const word = line?.trim().match(/^\*{0,2}(\w+)/);
+    if (word) return word[1];
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Reporting
 // ---------------------------------------------------------------------------
@@ -846,14 +876,39 @@ if (decl && inForce('D2') && bound.decisions) {
     } else {
       const indexBody = blankFences(indexDoc.text);
       const claimed = new Map();
+      /**
+       * Numbered rows whose status is not one of the four, kept rather than
+       * dropped. Dropping them was silent in the worst way: the decision then
+       * looked *absent* from the index, so the finding named the wrong cause and
+       * sent the reader looking for a missing row that was right there.
+       *
+       * Not reported on its own, and deliberately so. A first cell holding four
+       * digits is also what a date column looks like, so an index containing an
+       * unrelated table would produce findings about rows that are not decisions.
+       * It is only used to explain a decision file that has no recognised row.
+       */
+      const unrecognised = new Map();
       for (const row of indexBody.matchAll(/^\|(.+)\|\s*$/gm)) {
         const cells = row[1].split('|').map((c) => c.trim());
         if (cells.length < 3) continue;
         const idm = cells[0].match(/(\d{4})/);
+        if (!idm) continue;
         const status = cells[cells.length - 1];
-        if (idm && /^(Proposed|Accepted|Superseded|Planned)$/i.test(status)) {
-          claimed.set(idm[1], status);
+        if (!/^(Proposed|Accepted|Superseded|Planned)$/i.test(status)) {
+          unrecognised.set(idm[1], status);
+          continue;
         }
+        if (claimed.has(idm[1])) {
+          fail(
+            'decisions',
+            indexDoc.rel,
+            `The index claims decision ${idm[1]} twice, as ` +
+              `"${claimed.get(idm[1])}" and "${status}". Whichever row a reader ` +
+              'happens to stop at is the status they believe; only one of them ' +
+              'can be checked against the record.'
+          );
+        }
+        claimed.set(idm[1], status);
       }
       if (claimed.size === 0) {
         fail(
@@ -864,6 +919,9 @@ if (decl && inForce('D2') && bound.decisions) {
             'Proposed, Accepted, Superseded, Planned.'
         );
       }
+      /** Which file first used each number, so a second use can name the first. */
+      const numberedBy = new Map();
+
       for (const d of inDir) {
         if (d === indexDoc) continue;
         // The number lives in the file name, not the path. Matching the path
@@ -871,32 +929,51 @@ if (decl && inForce('D2') && bound.decisions) {
         // the same number.
         const num = basename(d.rel).match(/(\d{4})/);
         if (!num) continue;
-        if (!claimed.has(num[1])) {
+        // Two records wearing one number is the same defect as two rules wearing
+        // one identifier, and it used to pass in silence whenever both agreed
+        // with the index: "decision 0001" then names two different documents, and
+        // a reference to it points at whichever one the reader finds first.
+        if (numberedBy.has(num[1])) {
           fail(
             'decisions',
             d.rel,
-            `Decision ${num[1]} is not listed in ${indexDoc.rel}. Every decision ` +
-              'file must appear in the index with a status.'
+            `Decision number ${num[1]} is already used by ` +
+              `${numberedBy.get(num[1])}. A number is how the rest of the ` +
+              'project refers to a decision, so two files cannot share one.'
+          );
+        } else {
+          numberedBy.set(num[1], d.rel);
+        }
+        if (!claimed.has(num[1])) {
+          const invented = unrecognised.get(num[1]);
+          fail(
+            'decisions',
+            d.rel,
+            invented
+              ? `Decision ${num[1]} is listed in ${indexDoc.rel} with status ` +
+                `"${invented}", which is not one of: Proposed, Accepted, ` +
+                'Superseded, Planned. A status nothing recognises cannot be ' +
+                'compared against the record, so the row counts for nothing.'
+              : `Decision ${num[1]} is not listed in ${indexDoc.rel}. Every ` +
+                'decision file must appear in the index with a status.'
           );
           continue;
         }
-        const own = blankFences(d.text).match(
-          /^\s*(?:-\s*)?\*{0,2}Status:?\*{0,2}\s*:?\s*\*{0,2}(\w+)/im
-        );
+        const own = ownStatus(d.text);
         if (!own) {
-          // Silence here would mean the most widespread decision-record format
-          // gets no status check at all, with nothing to say so.
+          // Silence here would mean a decision record whose status this parser
+          // cannot find gets no status check at all, with nothing to say so.
           note(
-            `${d.rel}: no status found on one line, so it was not compared ` +
-              'against the index. A "## Status" heading with the value on the ' +
-              'line below is not read'
+            `${d.rel}: no status found, so it was not compared against the ` +
+              'index. Expected either "Status: <value>" on one line or a ' +
+              '"Status" heading with the value on the next non-empty line'
           );
         }
-        if (own && own[1].toLowerCase() !== claimed.get(num[1]).toLowerCase()) {
+        if (own && own.toLowerCase() !== claimed.get(num[1]).toLowerCase()) {
           fail(
             'decisions',
             d.rel,
-            `Status disagreement: the file says "${own[1]}", the index says ` +
+            `Status disagreement: the file says "${own}", the index says ` +
               `"${claimed.get(num[1])}". One of them is lying to the next session.`
           );
         }

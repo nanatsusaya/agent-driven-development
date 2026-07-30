@@ -811,6 +811,69 @@ expect('a complete, coherent project passes', baseline('good'), true);
   );
 }
 {
+  // The Nygard record is the most widespread decision-record format there is,
+  // and D1's own Binding points people at it. The status was read only from the
+  // line carrying the label, so for a project using this format the one
+  // automated check with any content to it decided nothing, on every record.
+  const d = baseline('nygard-status-agrees');
+  put(d, 'docs/adr/0001-first.md',
+    '# 0001 — First\n\n## Status\n\nAccepted\n\n## Context\n\nSomething.\n');
+  expect('a Nygard-format status matching the index passes', d, true);
+}
+{
+  const d = baseline('nygard-status-disagrees');
+  put(d, 'docs/adr/0001-first.md',
+    '# 0001 — First\n\n## Status\n\nSuperseded\n\n## Context\n\nSomething.\n');
+  expect('a Nygard-format status disagreeing with the index fails', d, false, [
+    'decisions',
+  ]);
+}
+{
+  // Neither shape present. This must stay a note rather than become a finding —
+  // a record whose status this parser cannot find is not thereby wrong — but the
+  // reader has to be told which check went past without deciding anything.
+  const d = baseline('status-in-neither-shape');
+  put(d, 'docs/adr/0001-first.md', '# 0001 — First\n\nWe decided to do the thing.\n');
+  expectSays(
+    'a record with no readable status is named in the report',
+    d,
+    /not verified here[\s\S]*0001-first\.md: no status found/
+  );
+}
+{
+  // Two records wearing one number, both agreeing with the index: the run was
+  // green and said nothing. "Decision 0001" then names two documents, and a
+  // reference to it points at whichever the reader finds first — the same defect
+  // as two rules sharing an identifier, which the catalogue parser refuses
+  // outright.
+  const d = baseline('duplicate-decision-number');
+  put(d, 'docs/adr/0001-again.md', '# 0001 — Also first\n\n- **Status:** Accepted\n');
+  expect('two decision files sharing a number fails', d, false, ['decisions']);
+}
+{
+  // The same in the index: `Map.set` kept the last row, so whichever a reader
+  // stopped at was the status they believed.
+  const d = baseline('duplicate-index-row');
+  put(d, 'docs/adr/README.md',
+    '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n' +
+      '| 0001 | First | Accepted |\n| 0001 | First, again | Accepted |\n');
+  expect('the index claiming one decision twice fails', d, false, ['decisions']);
+}
+{
+  // A row with a status nothing recognises used to be dropped, so the decision
+  // looked *absent* from an index it was listed in and the finding named the
+  // wrong cause.
+  const d = baseline('index-invented-status');
+  put(d, 'docs/adr/README.md',
+    '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Agreed |\n');
+  expect('a row with an unrecognised status fails', d, false, ['decisions']);
+  expectSays(
+    'the finding names the invented status rather than a missing row',
+    d,
+    /with status "Agreed", which is not one of/
+  );
+}
+{
   const d = baseline('index-row-without-file');
   put(d, 'docs/adr/README.md',
     '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Accepted |\n| 0002 | Second | Accepted |\n');

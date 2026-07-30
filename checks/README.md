@@ -34,7 +34,7 @@ Ten checks:
 | `accounting` | an unbound role is explained by an adaptation | [A2](../method/rules.md#a2) |
 | `links` | relative links and anchors resolve | [C5](../method/rules.md#c5) |
 | `placeholders` | no bound artefact still carries `«template placeholders»` | [C3](../method/rules.md#c3) |
-| `decisions` | every decision appears in its index, with a matching status | [D2](../method/rules.md#d2) |
+| `decisions` | every decision appears in its index once, with a matching status | [D2](../method/rules.md#d2) |
 | `withdrawn` | no document still teaches a rule the catalogue has withdrawn | [M2](../method/rules.md#m2) |
 | `language` | one spelling regime, if the project declares one | [L1](../method/rules.md#l1) |
 
@@ -185,7 +185,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-107 cases for the coherence check and 13 for the line-width check, each building
+114 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
