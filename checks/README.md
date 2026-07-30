@@ -133,9 +133,18 @@ general `-ise` direction is not, because the exception list it would need
 entry becomes a false alarm. The report says so on every American run rather
 than leaving the gap to be discovered.
 
+**Nine directory names are never scanned, at any depth.** `.git`,
+`node_modules`, `.turbo`, `dist`, `build`, `.next`, `.astro`, `.obsidian` and
+`vendor`. For the first seven that is convention. The last two can hold real
+documents — `.obsidian` belongs to exactly the archetype
+[`adapting.md`](../method/adapting.md) addresses — so a document in either is
+not scanned and any broken link in it is not reported. Every run says how many
+directories it skipped and names them, and how many documents it read; there is
+no way to switch the list off, and none will be added until somebody needs one.
+
 **Symlinked directories are never walked.** The directory scan reads real
 directories only, so documents reachable only through a symlink are not
-scanned and not reported as skipped.
+scanned. A directory that cannot be read at all is named in the report.
 
 **Nothing verifies that a withdrawn rule was accompanied by its entry.**
 [`CLAUDE.md`](../CLAUDE.md) requires the two to land in the same change and no
@@ -198,7 +207,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-131 cases for the coherence check and 13 for the line-width check, each building
+134 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.

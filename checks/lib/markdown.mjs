@@ -40,30 +40,45 @@ export const DEFAULT_IGNORES = new Set([
  * forward slashes regardless of platform, so that findings and configuration
  * compare equal on Windows and Linux alike.
  *
+ * The optional third argument is how a caller learns what the walk *did not*
+ * look at. Both kinds of omission used to be invisible: a directory in `ignores`
+ * was skipped without a word, and an unreadable one was skipped on the reasoning
+ * that reporting it was not this check's business. For `.git` that is obviously
+ * right; for `vendor` and `.obsidian`, which can hold real documents, it is a
+ * blind spot — and a report that names its blind spots is the one thing this
+ * check insists on everywhere else.
+ *
  * @param root    directory to walk
  * @param ignores directory names to skip at any depth
+ * @param report  optional `{ skipped: [], unreadable: [] }`, filled with
+ *                relative paths as they are met
  * @returns relative paths, sorted, for stable output
  */
-export function listMarkdownFiles(root, ignores = DEFAULT_IGNORES) {
+export function listMarkdownFiles(root, ignores = DEFAULT_IGNORES, report = null) {
   const found = [];
-  const walk = (dir) => {
+  const walk = (dir, rel) => {
     let entries;
     try {
       entries = readdirSync(dir, { withFileTypes: true });
     } catch {
-      return; // unreadable directory: not this check's business to report
+      if (report) report.unreadable.push(rel || '.');
+      return;
     }
     for (const e of entries) {
+      const childRel = rel ? `${rel}/${e.name}` : e.name;
       if (e.isDirectory()) {
-        if (ignores.has(e.name)) continue;
-        walk(join(dir, e.name));
+        if (ignores.has(e.name)) {
+          if (report) report.skipped.push(childRel);
+          continue;
+        }
+        walk(join(dir, e.name), childRel);
       } else if (e.isFile() && e.name.toLowerCase().endsWith('.md')) {
         found.push(relative(root, join(dir, e.name)).split(sep).join('/'));
       }
     }
   };
   if (!isDirectory(root)) return found;
-  walk(root);
+  walk(root, '');
   return found.sort();
 }
 

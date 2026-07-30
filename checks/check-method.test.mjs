@@ -1200,6 +1200,34 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('a version behind the catalogue is reported, not failed', d, true);
 }
 
+// --- 7c1. what the walk did not look at
+{
+  // A run over a directory with nothing in it printed "OK · the documents scan
+  // clean" — the most confident thing this tool says, about no evidence at all.
+  const d = bare('nothing-to-scan', {});
+  expectSays(
+    'a run that read nothing says so rather than reporting clean',
+    d,
+    /scanned 0 markdown file\(s\)/,
+    ['--lint']
+  );
+}
+{
+  // Nine directory names are skipped at any depth. For `.git` that is obviously
+  // right; `vendor` and `.obsidian` can hold real documents, and skipping those
+  // in silence is a blind spot in the check that insists on naming its blind
+  // spots everywhere else.
+  const d = baseline('default-ignores-named');
+  put(d, 'vendor/imported.md', '# Imported\n\nSee [nothing](../gone.md).\n');
+  put(d, '.obsidian/notes.md', '# Vault\n\nSee [nothing](../gone.md).\n');
+  expect('a broken link in a skipped directory is still not a finding', d, true);
+  expectSays(
+    'the skipped directories are named, with a count',
+    d,
+    /skipped 2 directory\/ies never scanned by default: [\s\S]*vendor/
+  );
+}
+
 // --- 7c2. a copy of the method repository inside the project
 /**
  * Put a plausible clone of the method repository at `rel` inside `dir`.

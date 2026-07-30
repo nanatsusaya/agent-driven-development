@@ -128,6 +128,15 @@ affected, so CI could not be fooled; a person reading the run could be, and
 reading the run is what `--lint` is for. Everything from outside now passes
 through one filter on the way out.
 
+**How many documents the run read, and what it never looked at.** A run over a
+directory with nothing in it printed `OK · the documents scan clean` with
+nothing saying it had read nothing — the most confident thing this tool says,
+about no evidence at all. Every run now opens its blind-spot section with
+`scanned N markdown file(s)`, names the directories skipped by default, and
+names any directory it could not read. The nine skipped names are listed in
+[`checks/README.md`](../checks/README.md); two of them, `vendor` and
+`.obsidian`, can hold real documents.
+
 **Bound artefacts with nothing in them.** A zero-byte file passes an existence
 test and supports what a missing file supports. It is not a finding — the
 declaration is true — but the blind-spot section now says how many roles are

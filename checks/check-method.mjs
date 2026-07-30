@@ -801,8 +801,9 @@ if (decl && decl.ignore !== undefined) {
 const embedded = embeddedMethodRepos(project, DEFAULT_IGNORES);
 
 const skipped = [...declaredIgnores, ...embedded];
-const allDocs = listMarkdownFiles(project, DEFAULT_IGNORES);
-const docs = allDocs
+/** What the walk did not look at, so the report can say so. */
+const scan = { skipped: [], unreadable: [] };
+const docs = listMarkdownFiles(project, DEFAULT_IGNORES, scan)
   .filter((rel) => !skipped.some((ig) => ig && (rel === ig || rel.startsWith(ig + '/'))))
   .map((rel) => ({
     rel,
@@ -1275,6 +1276,23 @@ if (decl && !quiet) {
   ).length;
 
   console.log(`\nnot verified here`);
+  // First, because it is the number that decides what everything below is worth.
+  // A run over an empty directory used to print "OK · the documents scan clean"
+  // with nothing saying it had read nothing — the most confident report the tool
+  // can produce, about no evidence at all.
+  console.log(`  scanned ${docs.length} markdown file(s)`);
+  if (scan.skipped.length) {
+    console.log(
+      `  skipped ${scan.skipped.length} directory/ies never scanned by default: ` +
+        `${sanitise(scan.skipped.join(', '))}`
+    );
+  }
+  if (scan.unreadable.length) {
+    console.log(
+      `  could not read ${scan.unreadable.length} directory/ies, so their ` +
+        `documents were not scanned: ${sanitise(scan.unreadable.join(', '))}`
+    );
+  }
   if (lint) {
     console.log(
       '  --lint: only the document scans ran. The declaration, artefact,\n' +
