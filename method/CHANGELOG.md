@@ -118,6 +118,23 @@ directory named in the report. The copy is recognised by holding both
 now clones beside the project, in all three documents that state it, and a
 command checks that they still agree.
 
+**A malformed `"language"` block is a finding.** It was read as
+`language.spelling` and never checked, so `"language": "british"` — the obvious
+mistake — produced the note saying no regime was declared, and L1 went
+unverified with nothing saying the declaration had been misread rather than left
+out.
+
+### New, and optional
+
+**`"language": { "allow": ["…"] }`.** Words the spelling scan must not report.
+The scan compares against a word list, so a proper noun or a foreign word that
+happens to be an American spelling of something fires — `Liter` reads as a
+misspelt `litre` — and the only escape was `ignore`, which puts a whole document
+outside every scan to spare one word. The exemption covers the words it names
+and nothing else, and every run names them in the blind-spot section: an
+exemption nobody can see is a hole. A declaration without the field is
+unaffected.
+
 ### Now named in the report
 
 **Control characters out of `method.json` are shown rather than obeyed.** Values

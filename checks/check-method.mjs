@@ -800,6 +800,43 @@ if (decl && decl.ignore !== undefined) {
 // makes happens before they have written anything to declare.
 const embedded = embeddedMethodRepos(project, DEFAULT_IGNORES);
 
+// `language` was read as `decl?.language?.spelling` and never checked, so a
+// project writing `"language": "british"` — the obvious mistake — got the note
+// saying no regime was declared, and L1 went unverified with nothing to say the
+// declaration had been misread rather than left out.
+let declaredAllow = [];
+if (decl && decl.language !== undefined) {
+  if (
+    typeof decl.language !== 'object' ||
+    decl.language === null ||
+    Array.isArray(decl.language)
+  ) {
+    fail(
+      'declaration',
+      'method.json',
+      '"language" must be an object: { "spelling": "british" | "american", ' +
+        '"allow": ["…"] }. A string here reads as no regime declared at all, ' +
+        'and rule L1 then goes unchecked.'
+    );
+  } else if (decl.language.allow !== undefined) {
+    const list = decl.language.allow;
+    if (
+      !Array.isArray(list) ||
+      list.some((w) => typeof w !== 'string' || w.trim() === '')
+    ) {
+      fail(
+        'declaration',
+        'method.json',
+        '"language.allow" must be an array of non-empty words. It exempts ' +
+          'those words from the spelling scan and nothing else — a path or a ' +
+          'directory belongs in "ignore".'
+      );
+    } else {
+      declaredAllow = list.map((w) => w.trim());
+    }
+  }
+}
+
 const skipped = [...declaredIgnores, ...embedded];
 /** What the walk did not look at, so the report can say so. */
 const scan = { skipped: [], unreadable: [] };
@@ -1116,6 +1153,20 @@ if (decl && inForce('D2') && bound.decisions) {
       ' If this names the spelling rather than uses it, put it in a code span ' +
       'or a blockquote; neither is scanned.';
 
+    // Words the project has declared exempt. The scan compares against a word
+    // list, so a proper noun or a foreign word that happens to be an American
+    // spelling of something fires — `Liter` reads as a misspelt `litre`. Until
+    // now the only escape was `ignore`, which puts a whole document outside every
+    // scan to spare one word. An exemption is a hole, so it is named in the
+    // report: a project cannot quietly allow its way out of L1.
+    const allowed = new Set(declaredAllow.map((w) => w.toLowerCase()));
+    if (allowed.size) {
+      note(
+        `${allowed.size} word(s) are exempt from the spelling scan by ` +
+          `declaration: ${sanitise(declaredAllow.join(', '))}`
+      );
+    }
+
     // No document is exempt as a whole. The operating-rules artefact and the
     // catalogue used to be, on the reasoning that a document stating rule L1
     // necessarily contains the spellings it forbids — true, but the exemption
@@ -1132,6 +1183,7 @@ if (decl && inForce('D2') && bound.decisions) {
           .replace(/https?:\/\/\S+/g, '');
         for (const m of line.matchAll(/\b[A-Za-z]+\b/g)) {
           const w = m[0].toLowerCase();
+          if (allowed.has(w)) continue;
           if (wrongWay[w]) {
             fail(
               'language',

@@ -1107,6 +1107,53 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('-izer and -izational endings are caught', d, false, ['language']);
 }
 {
+  // The scan compares against a word list, so a proper noun or a foreign word
+  // that happens to be an American spelling of something fires. Until now the
+  // only escape was `ignore`, which puts a whole document outside every scan to
+  // spare one word.
+  const d = baseline('language-allow', {
+    language: { spelling: 'british', allow: ['Liter', 'Meter'] },
+  });
+  put(d, 'docs/STATUS.md', '# Status\n\nThe Liter and Meter units keep their German spelling.\n');
+  expect('a declared word exemption passes', d, true);
+  expectSays(
+    'the exempt words are named in the report',
+    d,
+    /word\(s\) are exempt from the spelling scan by declaration: Liter, Meter/
+  );
+}
+{
+  // The neighbour that matters: the same document without the exemption fails,
+  // so the case above is testing the exemption rather than a word the list never
+  // knew.
+  const d = baseline('language-allow-absent');
+  put(d, 'docs/STATUS.md', '# Status\n\nThe Liter and Meter units keep their German spelling.\n');
+  expect('the same words without an exemption still fail', d, false, ['language']);
+}
+{
+  // An exemption is for the words named in it, not a way out of the rule.
+  const d = baseline('language-allow-is-narrow', {
+    language: { spelling: 'british', allow: ['Liter'] },
+  });
+  put(d, 'docs/STATUS.md', '# Status\n\nOne Liter of a different color.\n');
+  expect('an exemption covers only the words it names', d, false, ['language']);
+}
+{
+  const d = baseline('language-allow-not-a-list', {
+    language: { spelling: 'british', allow: 'Liter' },
+  });
+  expect('"language.allow" given as a string fails', d, false, ['declaration']);
+}
+{
+  // `language` was read as `decl?.language?.spelling` and never checked, so the
+  // obvious mistake produced the note saying no regime was declared — and L1
+  // went unverified with nothing saying the declaration had been misread rather
+  // than left out.
+  const d = baseline('language-not-an-object', { language: 'british' });
+  put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior of the system.\n');
+  expect('"language" given as a string fails', d, false, ['declaration']);
+}
+{
   // The operating-rules artefact was exempt as a whole file, on the reasoning
   // that a document stating L1 must contain the spellings it forbids. The
   // reasoning holds for the mention, not for the file — and the operating rules

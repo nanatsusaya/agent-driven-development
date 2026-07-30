@@ -93,8 +93,10 @@ exempt as a whole — not the operating-rules artefact, not the catalogue — so
 code span or a blockquote is how any document names a spelling without using
 it. This
 matters because rule [L2](../method/rules.md#l2) requires quoted source material
-to stay unmodified — the check would push you to break a rule to satisfy it. Put
-such directories in `ignore`, which is what that field is for.
+to stay unmodified — the check would push you to break a rule to satisfy it. For
+a handful of words, `"language": { "allow": ["Liter"] }` exempts those words and
+nothing else, and every run names them. For whole documents of quoted material,
+`ignore` is what that field is for.
 
 **Heading anchors are approximated, deliberately permissively.** Platforms
 disagree about which punctuation survives slug generation, so every plausible
@@ -207,7 +209,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-136 cases for the coherence check and 13 for the line-width check, each building
+142 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.

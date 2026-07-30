@@ -29,8 +29,16 @@
     "secrets": null
   },
 
+  "$comment-language": [
+    "The spelling regime rule L1 asks for. \"allow\" is optional: words the",
+    "scan must not report, for proper nouns and foreign words that happen to",
+    "be an American spelling of something. Every run names them, because an",
+    "exemption nobody can see is a hole. Paths belong in \"ignore\", not here."
+  ],
+
   "language": {
-    "spelling": "british"
+    "spelling": "british",
+    "allow": []
   },
 
   "ignore": [],
