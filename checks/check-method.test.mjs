@@ -984,6 +984,60 @@ expect('a complete, coherent project passes', baseline('good'), true);
     '# Status\n\nPreviously:\n\n> There is one exception: small\n> mechanical changes may go straight\n> to the trunk.\n');
   expect('the same split phrase quoted in a blockquote passes', d, true, [], cat);
 }
+{
+  // A group repeating something already repeatable takes exponential time on
+  // input that nearly matches, and this pattern runs against every paragraph of
+  // every document. Measured before the fix: `(a+)+b` against 34 `a`s and a `c`
+  // had not finished after 45 seconds — so the failure is a hang with nothing
+  // saying which entry caused it. Refusing to compile it is the only outcome the
+  // reader can act on, and the right moment is before the first entry exists.
+  const cat = catalogueWithWithdrawal('cat-redos', '(mechanical +)+changes');
+  expectRefused(
+    'a withdrawn pattern with a nested quantifier is refused',
+    cat,
+    baseline('vs-redos-catalogue')
+  );
+}
+{
+  // The nearest legitimate case, and it is the example withdrawn.md itself
+  // gives: `(ly)?` quantifies a group, but nothing inside the group repeats, so
+  // there is nothing to divide. A detector that could not tell the two apart
+  // would reject the document's own worked example.
+  const cat = catalogueWithWithdrawal(
+    'cat-quantified-group',
+    'direct(ly)? (commit|push).{0,40}(status flip|mechanical)'
+  );
+  const d = baseline('withdrawn-quantified-group');
+  put(d, 'CLAUDE.md', '# Rules\n\nYou may directly push a status flip.\n');
+  expect('a quantified group with no inner repetition still works', d, false, [
+    'withdrawn',
+  ], cat);
+}
+{
+  // The other side of the same line: an exact count is not ambiguous, so
+  // `(ab{2})+` divides only one way and must be accepted. This pattern matches
+  // nothing in the project, which is the point — it has to compile.
+  const cat = catalogueWithWithdrawal('cat-exact-count', '(ab{2})+ is fine');
+  expect(
+    'a group repeating an exactly counted atom is accepted',
+    baseline('withdrawn-exact-count'),
+    true,
+    [],
+    cat
+  );
+}
+{
+  // The subtlest neighbour: escaped parentheses are literal text, so nothing
+  // here is a group at all. A detector that read the pattern with a regular
+  // expression instead of scanning it would see `(b+)+` and reject a pattern
+  // about the characters "(" and ")". The backslash is built from its code point
+  // rather than typed, so that no layer between here and the file can eat it.
+  const B = String.fromCharCode(92);
+  const cat = catalogueWithWithdrawal('cat-escaped-parens', `a${B}(b+${B})+c`);
+  const d = baseline('withdrawn-escaped-parens');
+  put(d, 'CLAUDE.md', '# Rules\n\nThe old wording was a(bbb)c and it is gone.\n');
+  expect('escaped parentheses are literal, not a nested group', d, false, ['withdrawn'], cat);
+}
 
 // --- 7. language
 {

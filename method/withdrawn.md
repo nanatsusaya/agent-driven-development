@@ -42,10 +42,23 @@ fields. Identifiers are never reused.
 ```
 
 **Pattern** is a JavaScript regular expression source, matched
-case-insensitively against a single line. Write it to catch the *claim*, not
-one phrasing of it — but narrow enough that it does not fire on a passing
-mention. The counter-test in [E3](rules.md#e3) is not optional here: a pattern
-that matches nothing reports success and is believed.
+case-insensitively against **one paragraph at a time, with its line breaks
+folded to single spaces**. Not a line: prose wrapped at a fixed width splits a
+phrase across a line break more often than not, and a pattern that can never
+fire reports success and is believed. Write the pattern as though the paragraph
+were one long line, and do not anchor it with `^` or `$` unless you mean the
+paragraph's own start and end.
+
+Write it to catch the *claim*, not one phrasing of it — but narrow enough that
+it does not fire on a passing mention. The counter-test in
+[E3](rules.md#e3) is not optional here.
+
+**Nested quantifiers are rejected.** A pattern of the form `(x+)+`, `(x*)*` or
+`(x+)*` can take exponential time on input that nearly matches, and this one is
+applied to every paragraph of every document in the project. The check refuses
+such a pattern outright rather than hanging on it: an entry nobody can run is
+better than a run nobody can interrupt. Write the repetition once —
+`x+` — or spell the alternatives out.
 
 **Instead** is shown verbatim in the failure message. Write it as the sentence
 you would want the person reading the failure to act on.

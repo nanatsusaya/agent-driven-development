@@ -94,6 +94,15 @@ contributes its text, not its destination. A slug with a leading or trailing
 hyphen left by stripped punctuation is accepted alongside the trimmed form,
 because platforms disagree about which one they generate.
 
+**A withdrawn-rule pattern with a nested quantifier is refused.** `(x+)+`,
+`(x*)*`, `(x+)*` and their relatives can take exponential time on input that
+nearly matches, and the pattern is applied to every paragraph of every document
+in the project — so such an entry does not fail, it hangs, with nothing saying
+which pattern is responsible. Exit 2 with the entry named. The catalogue has
+withdrawn no rules, so nothing existing is affected; the right moment for this
+is before the first entry, which is now.
+[`withdrawn.md`](withdrawn.md) states the requirement under *Format*.
+
 **Two project paths on one command line are refused.** The last one won, in
 silence: one project was checked, nothing was said about the other, and a CI
 line with a stray path in it reported green about somewhere nobody looked. Exit
@@ -121,6 +130,14 @@ can look up.
 **A status the index invents, rather than a row that is missing.** An
 unrecognised status was dropped, so the decision looked absent from an index it
 was listed in and the finding named the wrong cause.
+
+### Corrected documentation
+
+**[`withdrawn.md`](withdrawn.md) said a pattern is matched against a single
+line.** It has been matched against a whole paragraph with its line breaks
+folded to spaces since 0.2, which is the only way a phrase in wrapped prose can
+be caught at all. Anybody who wrote a pattern from that sentence wrote it for
+the wrong input.
 
 ## 0.3
 
