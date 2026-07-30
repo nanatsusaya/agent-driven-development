@@ -150,6 +150,15 @@ can look up.
 unrecognised status was dropped, so the decision looked absent from an index it
 was listed in and the finding named the wrong cause.
 
+### Fixes with no effect on an adopter
+
+**The counter-test baseline reads the catalogue's version instead of stating
+it.** It stated `0.2`. From the moment the catalogue moved to 0.3, every case in
+the suite emitted the version note — the exact noise the one dedicated case
+exists to isolate, and that case could no longer be told apart from the rest.
+Nothing an adopter runs was affected; what was affected is the argument for
+trusting any of it.
+
 ### Corrected documentation
 
 **[`withdrawn.md`](withdrawn.md) said a pattern is matched against a single

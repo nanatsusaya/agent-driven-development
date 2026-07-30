@@ -26,6 +26,17 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const CHECK = join(HERE, 'check-method.mjs');
 const REAL_CATALOGUE = join(HERE, '..', 'method');
 
+/**
+ * The catalogue's own version, read rather than written down here.
+ *
+ * It was written down, as `'0.2'`. The moment the catalogue moved to 0.3, every
+ * case in this file began emitting the version note — which is precisely the
+ * noise the one dedicated case exists to isolate, and it could no longer be told
+ * apart from the rest. A reference baseline pinned to a version that has moved is
+ * the same defect as any other stale copy; it just happens to live in the tests.
+ */
+const CATALOGUE_VERSION = readFileSync(join(REAL_CATALOGUE, 'VERSION'), 'utf8').trim();
+
 const root = mkdtempSync(join(tmpdir(), 'adm-test-'));
 let failures = 0;
 let ran = 0;
@@ -45,7 +56,7 @@ function baseline(name, overrides = {}) {
   put(dir, 'method.json', JSON.stringify(
     {
       method: 'agent-driven-development',
-      version: '0.2',
+      version: CATALOGUE_VERSION,
       artefacts: {
         'operating-rules': 'CLAUDE.md',
         decisions: 'docs/adr/',
@@ -1198,6 +1209,22 @@ expect('a complete, coherent project passes', baseline('good'), true);
 {
   const d = baseline('version-behind', { version: '0.0' });
   expect('a version behind the catalogue is reported, not failed', d, true);
+  expectSays(
+    'the note names both versions',
+    d,
+    new RegExp(`declared against catalogue version 0\\.0; this catalogue is ${CATALOGUE_VERSION.replace('.', '\\.')}`)
+  );
+}
+{
+  // The mirror, and the case that keeps the baseline honest: a declaration that
+  // matches the catalogue must produce no note at all. Without this, the
+  // reference baseline can drift a version behind and every case starts emitting
+  // the note the case above exists to isolate.
+  expectSays(
+    'a declaration level with the catalogue produces no version note',
+    baseline('version-current'),
+    /^(?![\s\S]*declared against catalogue version)[\s\S]*$/
+  );
 }
 
 // --- 7c1. what the walk did not look at
