@@ -161,7 +161,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-81 cases for the coherence check and 13 for the line-width check, each building
+87 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.

@@ -12,6 +12,32 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## Unreleased
+
+The catalogue is unchanged at **0.3**. Every entry here is a change to
+[the coherence check](../checks/check-method.mjs), not to a rule — no
+identifier moved and no rule was added or withdrawn. They are listed because a
+check that starts deciding differently changes what your green run means, and
+that is the same thing an adopter needs to be told about.
+
+### May change your result
+
+**The `state` role is accounted for by [S3](rules.md#s3), not
+[D3](rules.md#d3).** S3 is the rule that requires the state artefact; D3
+publishes the decided-versus-built gap beside it. The check asked for D3, which
+went both ways: a project that unbound `state` and adapted **S3** — the correct
+recording — was told S3 was still in force, and a project that adapted **D3**
+passed with S3's only automated part switched off. If you unbound `state` and
+explained it under D3, that declaration is now a finding: change the adaptation
+to name S3, keeping your reason and date.
+
+**A `method.json` that parses as `null`, `false`, `0`, `""`, a number or a
+string is a finding.** All of those are valid JSON and all of them used to end
+the run with `OK · the declaration matches the project`, because the
+declaration, artefact, authority, adaptation and accounting checks were skipped
+together. A truthy primitive crashed instead. Nothing legitimate is affected: a
+declaration has always had to be an object.
+
 ## 0.3
 
 Thirty-two rules in eleven clusters. One rule added. None withdrawn, none
@@ -44,6 +70,12 @@ adaptation is now against.
 existed: `artefacts` fails when a bound role names a file that is not there, and
 `accounting` fails when a role is unbound with nothing explaining it. Whether
 the artefact is *current* stays a review question under [E2](rules.md#e2).
+
+**Correction, written later.** That last paragraph was true of the machinery and
+false of the code that shipped with it: `accounting` still named D3 as the rule
+behind the `state` role, so S3's automated part never ran under its own name.
+Fixed under [Unreleased](#unreleased), where it appears as a change that can
+alter your result.
 
 ## 0.2
 

@@ -74,11 +74,19 @@ const SUSPENDS_CHECK = new Set(['dropped', 'replaced', 'deferred']);
  * adaptation at all, so a project could unbind three roles, declare one
  * unrelated change, and pass — which is precisely the silent absence A2 exists
  * to prevent, shipped as a passing check.
+ *
+ * `state` said `D3` until catalogue 0.3 introduced S3, which is the rule that
+ * *requires* the artefact; D3 only publishes something beside it. The stale
+ * entry was a bypass in both directions — adapting S3 correctly was rejected,
+ * and adapting the unrelated D3 switched S3's only automated part off — and no
+ * case covered the mapping, so the drift was invisible to the whole suite.
+ * There is now one case per role, which is what makes this table checked rather
+ * than merely written down.
  */
 const ROLE_RULES = {
   'operating-rules': 'C3',
   decisions: 'D1',
-  state: 'D3',
+  state: 'S3',
   'method-log': 'M1',
 };
 

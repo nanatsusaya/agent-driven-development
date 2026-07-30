@@ -564,6 +564,61 @@ expect('a complete, coherent project passes', baseline('good'), true);
     'accounting',
   ]);
 }
+
+// --- 5b. the role-to-rule table, one case per role
+{
+  // The table said `state` → D3 for the whole of catalogue 0.3, and nothing
+  // noticed: the mutation `ROLE_RULES.state = 'L1'` passed all 73 cases there
+  // were. A table that decides which adaptation counts is only as good as the
+  // cases pinning it, so there is now one per role, and each fails if its own
+  // entry moves.
+  const OWNERS = [
+    ['operating-rules', 'C3', 'the agent reads its instructions from a wiki this repository does not hold'],
+    ['decisions', 'D1', 'no formal records; the canon note carries dated changes instead'],
+    ['state', 'S3', 'the board is the state artefact and it lives in the tracker'],
+    ['method-log', 'M1', 'the method is not written down separately in this project'],
+  ];
+  const unbind = (role) =>
+    Object.fromEntries(
+      OWNERS.map(([r]) => [
+        r,
+        r === role
+          ? null
+          : { 'operating-rules': 'CLAUDE.md', decisions: 'docs/adr/', state: 'docs/STATUS.md', 'method-log': 'docs/method-log.md' }[r],
+      ])
+    );
+  for (const [role, owner, reason] of OWNERS) {
+    const d = baseline(`role-owner-${role}`, {
+      artefacts: unbind(role),
+      adaptations: [{ rule: owner, change: 'dropped', reason, decided: '2026-01-01' }],
+    });
+    expect(`an unbound "${role}" is accounted for by ${owner}`, d, true);
+  }
+}
+{
+  // The bypass the stale table opened, kept as a case in its own right: D3
+  // reads the state artefact, S3 is what requires it. Adapting the reader must
+  // not switch off the check belonging to the rule that demands the thing.
+  const d = baseline('state-unbound-wrong-rule', {
+    artefacts: {
+      'operating-rules': 'CLAUDE.md',
+      decisions: 'docs/adr/',
+      state: null,
+      'method-log': 'docs/method-log.md',
+    },
+    adaptations: [
+      { rule: 'D3', change: 'dropped', reason: 'the decided-versus-built gap is published in the tracker instead', decided: '2026-01-01' },
+    ],
+  });
+  expect('an unbound "state" explained by D3 rather than S3 fails', d, false, [
+    'accounting',
+  ]);
+  expectSays(
+    'the accounting finding for an unbound "state" names S3',
+    d,
+    /Role "state" is unbound, but rule S3 is still in force/
+  );
+}
 {
   const d = baseline('index-row-without-file');
   put(d, 'docs/adr/README.md',
