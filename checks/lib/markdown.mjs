@@ -87,6 +87,23 @@ export function exists(p) {
 }
 
 /**
+ * Byte length of `p`, or null when it is not a readable regular file.
+ *
+ * Existence alone answers less than it looks like it does. A role bound to a
+ * zero-byte file passes an existence test and supports nothing: the next
+ * session opens it and learns what it would have learnt from a missing file,
+ * with a name in the declaration insisting otherwise.
+ */
+export function fileSize(p) {
+  try {
+    const s = statSync(p);
+    return s.isFile() ? s.size : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Strip a byte-order mark and normalise CRLF and lone CR to LF.
  *
  * Every document is put through this on the way in. Without it, a Windows

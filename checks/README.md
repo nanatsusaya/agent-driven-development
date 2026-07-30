@@ -28,7 +28,7 @@ Ten checks:
 | Check | Asks | Rule |
 |---|---|---|
 | `declaration` | `method.json` exists and is well formed | — |
-| `artefacts` | every bound role exists | — |
+| `artefacts` | every bound role exists, inside the project, as a file — `decisions` may be a directory | — |
 | `authorities` | declared external systems name a role the method knows | — |
 | `adaptations` | each is complete, names a real rule, and gives a reason and a date | [A2](../method/rules.md#a2) |
 | `accounting` | an unbound role is explained by an adaptation | [A2](../method/rules.md#a2) |
@@ -161,7 +161,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-87 cases for the coherence check and 13 for the line-width check, each building
+95 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.

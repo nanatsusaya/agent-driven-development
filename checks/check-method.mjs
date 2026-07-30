@@ -25,7 +25,7 @@
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { basename, dirname, join, resolve, posix } from 'node:path';
+import { basename, dirname, join, resolve, sep, posix } from 'node:path';
 import {
   DEFAULT_IGNORES,
   listMarkdownFiles,
@@ -36,6 +36,7 @@ import {
   blankFences,
   normaliseEol,
   exists,
+  fileSize,
   isDirectory,
 } from './lib/markdown.mjs';
 import { parseRules, parseWithdrawn } from './lib/catalogue.mjs';
@@ -116,6 +117,28 @@ const AUTHORITIES = {
   gate: 'G1',
   tasks: 'W1',
   secrets: 'P1',
+};
+
+/**
+ * What each role has to *be*, not merely that something is there.
+ *
+ * `exists` answered file-or-directory for all four, so `state` could be bound to
+ * a directory and pass. That is a type error, not a quality judgement: a role
+ * that names one document and gets a directory is bound to something no rule can
+ * read. `decisions` is the one role where both are legitimate — D1's *Binding*
+ * describes a directory of records, and a project small enough to keep them in
+ * one file is following the same rule.
+ *
+ * E2 forbids a check from judging quality, and it is worth being precise about
+ * where the line falls: whether the artefact says anything *useful* is a review
+ * question and stays one. Whether it is the kind of thing the declaration claims
+ * is not.
+ */
+const ROLE_SHAPES = {
+  'operating-rules': 'file',
+  decisions: 'either',
+  state: 'file',
+  'method-log': 'file',
 };
 
 /**
@@ -426,6 +449,9 @@ if (decl) {
 
 const bound = {};
 
+/** Roles bound to a file with nothing in it, collected for one line at the end. */
+const emptyArtefacts = [];
+
 if (decl) {
   for (const key of Object.keys(decl.artefacts)) {
     if (!ROLES.includes(key)) {
@@ -455,7 +481,23 @@ if (decl) {
       fail('artefacts', 'method.json', `Role "${role}" must be a path or null.`);
       continue;
     }
-    const p = join(project, value);
+    // `resolve` rather than `join`, and then checked against the root. `join`
+    // happily produced a path outside the project for "../elsewhere.md" and for
+    // an absolute path, and an existence test on it passed — so the check
+    // certified coherence for a project whose operating rules were not in the
+    // repository at all. That is the arrangement C3 exists to rule out: the next
+    // session clones the repository and the instructions are not in it.
+    const p = resolve(project, value);
+    if (p !== project && !p.startsWith(project + sep)) {
+      fail(
+        'artefacts',
+        'method.json',
+        `Role "${role}" is bound to "${value}", which resolves outside the ` +
+          'project. An artefact the repository does not contain is not there ' +
+          'for the next session that clones it (rule C3).'
+      );
+      continue;
+    }
     if (!exists(p)) {
       fail(
         'artefacts',
@@ -464,7 +506,28 @@ if (decl) {
       );
       continue;
     }
+    if (ROLE_SHAPES[role] === 'file' && isDirectory(p)) {
+      fail(
+        'artefacts',
+        'method.json',
+        `Role "${role}" is bound to "${value}", which is a directory. This role ` +
+          'names one document. Only "decisions" may be either.'
+      );
+      continue;
+    }
+    if (fileSize(p) === 0) emptyArtefacts.push(`${role} → ${value}`);
     bound[role] = value;
+  }
+  if (emptyArtefacts.length) {
+    // A note rather than a finding, and the distinction is the point: the file
+    // is there, so nothing about the declaration is untrue. What is worth saying
+    // is that an artefact with no content supports exactly as much as a missing
+    // one, and the reader is the only one who can decide whether that is a state
+    // the project is passing through or one it is stuck in.
+    note(
+      `${emptyArtefacts.length} bound artefact(s) are empty, so the roles are ` +
+        `filled in name only: ${emptyArtefacts.join(', ')}`
+    );
   }
 }
 
@@ -738,7 +801,9 @@ if (decl && inForce('D2') && bound.decisions) {
   const dir = join(project, bound.decisions);
   if (!isDirectory(dir)) {
     note(
-      `"decisions" is bound to a file rather than a directory; the index check was skipped`
+      '"decisions" is bound to a file rather than a directory, so rule D2 — ' +
+        'the index and the records agree — was not checked. There is no index ' +
+        'to compare against, and one file cannot disagree with itself'
     );
   } else {
     const rel = bound.decisions.replace(/\/+$/, '');

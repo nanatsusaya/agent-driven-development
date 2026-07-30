@@ -38,6 +38,30 @@ declaration, artefact, authority, adaptation and accounting checks were skipped
 together. A truthy primitive crashed instead. Nothing legitimate is affected: a
 declaration has always had to be an object.
 
+**An artefact bound outside the project is a finding.** `"../rules.md"` and an
+absolute path both resolved and both passed an existence test, so the check
+certified coherence for a project whose operating rules the repository does not
+contain — the arrangement [C3](rules.md#c3) exists to rule out. Nothing is read
+outside the root either before or after this change; only the binding is
+rejected.
+
+**A role that names one document is a finding when bound to a directory.**
+`operating-rules`, `state` and `method-log` each name a single file.
+`decisions` may be a directory or a file, because [D1](rules.md#d1)'s *Binding*
+describes a directory of records and a project small enough to keep them in one
+file is following the same rule.
+
+### Now named in the report
+
+**Bound artefacts with nothing in them.** A zero-byte file passes an existence
+test and supports what a missing file supports. It is not a finding — the
+declaration is true — but the blind-spot section now says how many roles are
+filled in name only, and which.
+
+**Which rule went unchecked when `decisions` is a single file.** The report said
+the index check was skipped; it now names D2, so the blind spot is one a reader
+can look up.
+
 ## 0.3
 
 Thirty-two rules in eleven clusters. One rule added. None withdrawn, none

@@ -234,6 +234,107 @@ expect('a complete, coherent project passes', baseline('good'), true);
   });
   expect('an invented role fails', d, false, ['artefacts']);
 }
+{
+  // `join(project, value)` plus an existence test passed for a path outside the
+  // project, so the check certified coherence for a project whose operating
+  // rules were not in the repository. The file is deliberately created, so that
+  // the case fails on containment rather than on absence.
+  const d = baseline('artefact-escapes-root', {
+    artefacts: {
+      'operating-rules': '../outside-rules.md',
+      decisions: 'docs/adr/',
+      state: 'docs/STATUS.md',
+      'method-log': 'docs/method-log.md',
+    },
+  });
+  writeFileSync(join(root, 'outside-rules.md'), '# Rules\n\nElsewhere.\n', 'utf8');
+  expect('an artefact bound outside the project root fails', d, false, ['artefacts']);
+}
+{
+  // The nearest legitimate case: deep is fine, outside is not. Without this the
+  // containment test could be tightened into "no slashes" and nothing would say.
+  const d = baseline('artefact-deep-inside', {
+    artefacts: {
+      'operating-rules': 'CLAUDE.md',
+      decisions: 'docs/adr/',
+      state: 'docs/deep/nested/STATUS.md',
+      'method-log': 'docs/method-log.md',
+    },
+  });
+  put(d, 'docs/deep/nested/STATUS.md', '# Status\n\nNothing yet.\n');
+  expect('a deeply nested artefact inside the project passes', d, true);
+}
+{
+  const d = baseline('artefact-absolute-path', {
+    artefacts: {
+      'operating-rules': '/etc/hostname',
+      decisions: 'docs/adr/',
+      state: 'docs/STATUS.md',
+      'method-log': 'docs/method-log.md',
+    },
+  });
+  expect('an artefact bound to an absolute path fails', d, false, ['artefacts']);
+}
+{
+  // A role that names one document, bound to a directory. Existence alone said
+  // yes, so the type error passed as coherence.
+  const d = baseline('artefact-is-a-directory', {
+    artefacts: {
+      'operating-rules': 'CLAUDE.md',
+      decisions: 'docs/adr/',
+      state: 'docs/',
+      'method-log': 'docs/method-log.md',
+    },
+  });
+  expect('a single-document role bound to a directory fails', d, false, ['artefacts']);
+}
+{
+  // The one role where both shapes are right: D1's Binding describes a directory
+  // of records, and a project keeping them in one file follows the same rule.
+  // What it cannot have is D2's index check, and the report has to say so by
+  // name — a rule going unchecked with no rule named is a blind spot the reader
+  // cannot look up.
+  const d = baseline('decisions-as-one-file', {
+    artefacts: {
+      'operating-rules': 'CLAUDE.md',
+      decisions: 'docs/decisions.md',
+      state: 'docs/STATUS.md',
+      'method-log': 'docs/method-log.md',
+    },
+  });
+  rmSync(join(d, 'docs/adr'), { recursive: true });
+  put(d, 'docs/decisions.md', '# Decisions\n\nOne file, for now.\n');
+  expect('the decisions role bound to a single file passes', d, true);
+  expectSays(
+    'a file-bound decisions role names the rule that went unchecked',
+    d,
+    /not verified here[\s\S]*bound to a file rather than a directory, so rule D2/
+  );
+}
+{
+  // Zero bytes is absence wearing a name. Not a finding — the declaration is
+  // true, the file is there — but the blind-spot section is where a reader finds
+  // out that four bound roles support nothing.
+  const d = baseline('artefact-is-empty');
+  writeFileSync(join(d, 'docs/STATUS.md'), '', 'utf8');
+  expectSays(
+    'a bound artefact with no content is named in the report',
+    d,
+    /not verified here[\s\S]*1 bound artefact\(s\) are empty[\s\S]*state → docs\/STATUS\.md/
+  );
+}
+{
+  // The mirror: a file with real content must not be reported as empty, however
+  // short. A line that fires on ordinary artefacts is a line readers learn to
+  // skip, and the whole section depends on being read.
+  const d = baseline('artefact-is-short');
+  writeFileSync(join(d, 'docs/STATUS.md'), 'x', 'utf8');
+  expectSays(
+    'a one-byte artefact with content is not reported as empty',
+    d,
+    /^(?![\s\S]*bound artefact\(s\) are empty)[\s\S]*$/
+  );
+}
 
 // --- 2b. external authorities
 {
