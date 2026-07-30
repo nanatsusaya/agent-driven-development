@@ -293,6 +293,24 @@ const findings = [];
 const notes = [];
 
 /**
+ * Make text safe to print, by replacing every control character with a visible
+ * one. Newline and tab survive, because the report uses both.
+ *
+ * Values out of `method.json` were printed as they came. A string carrying ANSI
+ * sequences therefore acted on the terminal, and because the authorities block is
+ * printed *after* the findings, a declaration could scroll real findings off the
+ * screen or overwrite them. The exit code stayed correct throughout — CI cannot
+ * be fooled this way — but a person reading the run can be, and reading the run
+ * is exactly what `--lint` is advertised for.
+ *
+ * U+FFFD rather than a caret notation: it cannot be mistaken for text that was
+ * really there.
+ */
+function sanitise(s) {
+  return String(s).replace(/[\x00-\x08\x0b-\x1f\x7f]/g, '�');
+}
+
+/**
  * Record a failure.
  *
  * @param check short name of the check that fired, shown as a prefix
@@ -300,12 +318,12 @@ const notes = [];
  * @param message what is wrong, phrased so the reader can act on it
  */
 function fail(check, where, message) {
-  findings.push({ check, where, message });
+  findings.push({ check, where: sanitise(where), message: sanitise(message) });
 }
 
 /** Record something the reader should know that is not a failure. */
 function note(message) {
-  notes.push(message);
+  notes.push(sanitise(message));
 }
 
 // ---------------------------------------------------------------------------
@@ -344,8 +362,19 @@ for (let i = 0; i < argv.length; i++) {
         '          method, or does not intend to.'
     );
     process.exit(0);
-  } else if (!a.startsWith('-')) projectArg = a;
-  else {
+  } else if (!a.startsWith('-')) {
+    // The last one used to win, in silence. `check-method.mjs . ../other` then
+    // checked one project and said nothing about the other, and a CI line with a
+    // stray path in it reported a green run about somewhere nobody looked.
+    if (projectArg !== null) {
+      console.error(
+        `Two project paths given: "${projectArg}" and "${a}". One run checks ` +
+          'one project; nothing here would tell you which.'
+      );
+      process.exit(2);
+    }
+    projectArg = a;
+  } else {
     console.error(`Unknown option: ${a}`);
     process.exit(2);
   }
@@ -629,7 +658,9 @@ if (decl && decl.authorities !== undefined) {
         );
         continue;
       }
-      authorities[role] = value.trim();
+      // Sanitised on the way in, so that both places it is printed are covered
+      // by one call. It is only ever printed.
+      authorities[role] = sanitise(value.trim());
     }
   }
 }
@@ -1145,8 +1176,10 @@ if (decl && inForce('C3')) {
 const bar = '─'.repeat(72);
 console.log(bar);
 console.log(`agent-driven-development · coherence check`);
-console.log(`  project:   ${project}`);
-console.log(`  catalogue: ${catalogueDir} (${rules.size} rules, ${withdrawn.length} withdrawn)`);
+console.log(`  project:   ${sanitise(project)}`);
+console.log(
+  `  catalogue: ${sanitise(catalogueDir)} (${rules.size} rules, ${withdrawn.length} withdrawn)`
+);
 console.log(bar);
 
 if (findings.length) {
@@ -1183,7 +1216,7 @@ if (decl && !quiet) {
           : SUSPENDS_CHECK.has(a.change)
             ? '  · check still runs — this adaptation is incomplete'
             : '  · check still runs';
-    console.log(`  ${id} ${a.change.padEnd(8)} ${rules.get(id).title}${marker}`);
+    console.log(sanitise(`  ${id} ${a.change.padEnd(8)} ${rules.get(id).title}${marker}`));
   }
 
   // Printed for the reader who is not this check: the next session, which

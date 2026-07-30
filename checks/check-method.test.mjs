@@ -1146,6 +1146,79 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('a version behind the catalogue is reported, not failed', d, true);
 }
 
+// --- 7d. what reaches the terminal, and the arguments
+{
+  // Declaration values were printed as they came, so a string carrying ANSI
+  // sequences acted on the terminal — and because the authorities block prints
+  // *after* the findings, a declaration could scroll real findings off the
+  // screen. The exit code was never wrong; the person reading the run was the
+  // target, and reading the run is what --lint is advertised for.
+  // Both characters are built from code points rather than typed. An ESC in a
+  // source file is invisible, and the next person to touch this line would have
+  // no way to see what makes the case a case.
+  const ESC = String.fromCharCode(27);
+  const SHOWN = String.fromCharCode(0xfffd);
+  const d = baseline('authority-control-characters', {
+    authorities: { gate: ESC + '[2K' + ESC + '[1Anothing to see' },
+  });
+  expectSays(
+    'a control character in a declaration value is shown, not obeyed',
+    d,
+    // The escape must be gone from the output, and the replacement must be
+    // there. Either half alone would pass for a check that dropped the value.
+    new RegExp('^(?![\\s\\S]*' + ESC + ')[\\s\\S]*gate\\s+' + SHOWN + '\\[2K'),
+    [],
+    false
+  );
+}
+{
+  // The nearest legitimate case, and the reason the filter is a control-character
+  // class rather than an allow-list: a board name is prose, in whatever language
+  // and punctuation the project uses.
+  const d = baseline('authority-non-ascii', {
+    authorities: { tasks: 'Vorhaben · Übersicht — Spalte „offen"' },
+  });
+  expectSays(
+    'non-ASCII in a declaration value survives unchanged',
+    d,
+    /tasks\s+Vorhaben · Übersicht — Spalte „offen"/,
+    [],
+    false
+  );
+}
+
+/** Assert that a command line is refused outright rather than half-honoured. */
+function expectRejectsArgs(label, args) {
+  ran++;
+  const r = spawnSync(process.execPath, [CHECK, ...args], { encoding: 'utf8' });
+  if (r.status === 2) {
+    console.log(`ok    ${label}`);
+  } else {
+    failures++;
+    console.log(`FAIL  ${label}`);
+    console.log(`        expected exit 2, got ${r.status}`);
+  }
+}
+
+{
+  // The last positional argument used to win, in silence: one project was
+  // checked, nothing was said about the other, and a CI line with a stray path
+  // in it reported green about somewhere nobody looked.
+  const d = baseline('two-paths-a');
+  const e = baseline('two-paths-b');
+  expectRejectsArgs('two project paths are refused', [d, e, '--catalogue', REAL_CATALOGUE]);
+  expectRejectsArgs('an option that swallowed its value is refused', [
+    d,
+    '--catalogue',
+  ]);
+  expectRejectsArgs('an unknown option is refused', [
+    d,
+    '--catalogue',
+    REAL_CATALOGUE,
+    '--strict',
+  ]);
+}
+
 // --- 8. --lint: the document scans, without a declaration
 function bare(name, files) {
   const dir = join(root, name);

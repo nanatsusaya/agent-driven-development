@@ -94,7 +94,20 @@ contributes its text, not its destination. A slug with a leading or trailing
 hyphen left by stripped punctuation is accepted alongside the trimmed form,
 because platforms disagree about which one they generate.
 
+**Two project paths on one command line are refused.** The last one won, in
+silence: one project was checked, nothing was said about the other, and a CI
+line with a stray path in it reported green about somewhere nobody looked. Exit
+2, like every other unusable command line.
+
 ### Now named in the report
+
+**Control characters out of `method.json` are shown rather than obeyed.** Values
+were printed as they came, so a string carrying ANSI sequences acted on the
+terminal — and because the authorities block prints after the findings, a
+declaration could scroll real findings off the screen. The exit code was never
+affected, so CI could not be fooled; a person reading the run could be, and
+reading the run is what `--lint` is for. Everything from outside now passes
+through one filter on the way out.
 
 **Bound artefacts with nothing in them.** A zero-byte file passes an existence
 test and supports what a missing file supports. It is not a finding — the
