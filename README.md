@@ -145,8 +145,8 @@ A command reads your declaration and reports where it and the repository
 disagree. It changes no files, and it needs no adoption to be useful:
 
 ```bash
-git clone https://github.com/nanatsusaya/agent-driven-development
-node agent-driven-development/checks/check-method.mjs . --lint --spelling british
+git clone https://github.com/nanatsusaya/agent-driven-development ../agent-driven-development
+node ../agent-driven-development/checks/check-method.mjs . --lint --spelling british
 ```
 
 Zero dependencies, Node 18 or later. What matters most is how it ends:

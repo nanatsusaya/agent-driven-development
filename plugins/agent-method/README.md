@@ -108,9 +108,15 @@ exists to prevent, shipped inside the tooling meant to enforce it.
 So the catalogue stays in one place, and the check runs from a clone:
 
 ```bash
-git clone https://github.com/nanatsusaya/agent-driven-development
-node agent-driven-development/checks/check-method.mjs <project-path>
+git clone https://github.com/nanatsusaya/agent-driven-development ../agent-driven-development
+node ../agent-driven-development/checks/check-method.mjs <project-path>
 ```
 
-Zero dependencies, Node 18 or later. That is a real convenience gap and it is
-recorded as one rather than papered over.
+Zero dependencies, Node 18 or later. The clone goes **beside** the project, not
+into it: a copy of the method inside the project being checked is a directory
+full of documents the reader does not own. The check recognises such a copy by
+its contents and skips it, but the two are cleaner apart — the clone is not
+part of your history.
+
+That is a real convenience gap and it is recorded as one rather than papered
+over.

@@ -145,8 +145,8 @@ The coherence check lives in the method repository, has no dependencies, and
 runs against any project path:
 
 ```bash
-git clone https://github.com/nanatsusaya/agent-driven-development
-node agent-driven-development/checks/check-method.mjs <project-path>
+git clone https://github.com/nanatsusaya/agent-driven-development ../agent-driven-development
+node ../agent-driven-development/checks/check-method.mjs <project-path>
 ```
 
 Report what it says, including what it says it could **not** verify. If it

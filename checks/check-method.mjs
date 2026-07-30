@@ -28,6 +28,7 @@ import { fileURLToPath } from 'node:url';
 import { basename, dirname, join, resolve, sep, posix } from 'node:path';
 import {
   DEFAULT_IGNORES,
+  embeddedMethodRepos,
   listMarkdownFiles,
   assertedLines,
   assertedParagraphs,
@@ -793,15 +794,28 @@ if (decl && decl.ignore !== undefined) {
   }
 }
 
-const docs = listMarkdownFiles(project, DEFAULT_IGNORES)
-  .filter(
-    (rel) =>
-      !declaredIgnores.some((ig) => ig && (rel === ig || rel.startsWith(ig + '/')))
-  )
+// A clone of the method repository inside the project is not the project's
+// documents, and scanning it produces findings about files the reader does not
+// own. Skipped rather than declared in `ignore`, because the first run an adopter
+// makes happens before they have written anything to declare.
+const embedded = embeddedMethodRepos(project, DEFAULT_IGNORES);
+
+const skipped = [...declaredIgnores, ...embedded];
+const allDocs = listMarkdownFiles(project, DEFAULT_IGNORES);
+const docs = allDocs
+  .filter((rel) => !skipped.some((ig) => ig && (rel === ig || rel.startsWith(ig + '/'))))
   .map((rel) => ({
     rel,
     text: normaliseEol(readFileSync(join(project, rel), 'utf8')),
   }));
+
+if (embedded.length) {
+  note(
+    `${embedded.length} copy/ies of the method repository inside this project ` +
+      `were not scanned: ${embedded.join(', ')}. Recognised by content, not by ` +
+      'name. Clone it outside the project to keep the two apart'
+  );
+}
 
 // ---------------------------------------------------------------------------
 // 5. Withdrawn rules

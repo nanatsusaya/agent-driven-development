@@ -108,6 +108,16 @@ silence: one project was checked, nothing was said about the other, and a CI
 line with a stray path in it reported green about somewhere nobody looked. Exit
 2, like every other unusable command line.
 
+**A copy of the method repository inside the project is not scanned.** The
+documented install command cloned into the project being checked, and the
+clone's directory name is in nobody's ignore list — so the first run an adopter
+made reported findings by the hundred about files that were not theirs. On a
+rebuilt adopter project: 121 findings before, none after, with the skipped
+directory named in the report. The copy is recognised by holding both
+`method/rules.md` and `checks/check-method.mjs`, never by its name. The command
+now clones beside the project, in all three documents that state it, and a
+command checks that they still agree.
+
 ### Now named in the report
 
 **Control characters out of `method.json` are shown rather than obeyed.** Values

@@ -1200,6 +1200,50 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('a version behind the catalogue is reported, not failed', d, true);
 }
 
+// --- 7c2. a copy of the method repository inside the project
+/**
+ * Put a plausible clone of the method repository at `rel` inside `dir`.
+ *
+ * Only the two files the detection looks for, plus a document with a broken link
+ * — which is what an adopter's first run used to report by the hundred.
+ */
+function embedClone(dir, rel) {
+  put(dir, `${rel}/method/rules.md`, '# Rules\n\nNot the reader\'s.\n');
+  put(dir, `${rel}/checks/check-method.mjs`, '// not run from here\n');
+  put(dir, `${rel}/README.md`, '# The method\n\nSee [gone](nowhere-at-all.md).\n');
+}
+{
+  // The documented command used to clone into the project being checked, and the
+  // clone's directory name is in nobody's ignore list — so the first run an
+  // adopter ever made reported findings about files that were not theirs. The
+  // command is fixed; this is the half that holds when somebody clones anyway.
+  const d = baseline('embedded-method-clone');
+  embedClone(d, 'agent-driven-development');
+  expect('a copy of the method inside the project is not scanned', d, true);
+  expectSays(
+    'the report names the copy it skipped',
+    d,
+    /not verified here[\s\S]*copy\/ies of the method repository[\s\S]*agent-driven-development/
+  );
+}
+{
+  // Recognised by content, not by name. A name test would break the moment
+  // somebody renamed the directory, and it would break in silence.
+  const d = baseline('embedded-method-clone-renamed');
+  embedClone(d, 'tools/method-of-the-house');
+  expect('the copy is recognised under any directory name', d, true);
+}
+{
+  // The mirror, and the case that stops this from becoming a hole: a directory
+  // holding only one of the two markers is an ordinary part of the project, and
+  // its documents are the reader's.
+  const d = baseline('half-a-method-clone');
+  put(d, 'docs/method/rules.md', '# Our own rules\n\nSee [gone](nowhere-at-all.md).\n');
+  expect('a directory with only one marker is scanned as the project', d, false, [
+    'links',
+  ]);
+}
+
 // --- 7d. what reaches the terminal, and the arguments
 {
   // Declaration values were printed as they came, so a string carrying ANSI

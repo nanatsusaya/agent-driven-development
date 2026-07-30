@@ -67,6 +67,60 @@ export function listMarkdownFiles(root, ignores = DEFAULT_IGNORES) {
   return found.sort();
 }
 
+/**
+ * Directories under `root` that are themselves a copy of the method repository.
+ *
+ * The documented way to get the check used to put the clone *inside* the project
+ * being checked, and its directory name is in nobody's ignore list, so the first
+ * run an adopter ever made scanned it: 115 findings about files that were not
+ * theirs, at the one moment the tool has to be worth trusting. The command is
+ * fixed, but people will keep cloning wherever they like, and a tool that is only
+ * correct when the instructions were followed is not correct.
+ *
+ * Recognised by content, never by name — `method/rules.md` **and**
+ * `checks/check-method.mjs` together. A name test would break the moment somebody
+ * renamed the directory, and it would break silently, which is worse than not
+ * having the test.
+ *
+ * `root` itself is never a candidate: only children are examined, so the method
+ * repository can still be checked against itself.
+ *
+ * The cost is a second directory traversal. Traversal is the cheap half of this
+ * check — every document is read and scanned line by line afterwards — and the
+ * alternative is teaching the generic walker what a method repository is.
+ *
+ * @param root    directory to walk
+ * @param ignores directory names to skip at any depth
+ * @returns relative paths with forward slashes, sorted
+ */
+export function embeddedMethodRepos(root, ignores = DEFAULT_IGNORES) {
+  const found = [];
+  const walk = (dir, rel) => {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return; // unreadable directory: not this check's business to report
+    }
+    for (const e of entries) {
+      if (!e.isDirectory() || ignores.has(e.name)) continue;
+      const child = join(dir, e.name);
+      const childRel = rel ? `${rel}/${e.name}` : e.name;
+      if (
+        exists(join(child, 'method', 'rules.md')) &&
+        exists(join(child, 'checks', 'check-method.mjs'))
+      ) {
+        found.push(childRel);
+        continue; // nothing inside a copy of the method is the project's
+      }
+      walk(child, childRel);
+    }
+  };
+  if (!isDirectory(root)) return found;
+  walk(root, '');
+  return found.sort();
+}
+
 /** True when `p` exists and is a directory. Never throws. */
 export function isDirectory(p) {
   try {

@@ -1,8 +1,8 @@
 # Checks
 
-Three of them, and only the first is meant for your project.
-[`check-method.mjs`](check-method.mjs) is the coherence check. The other two are
-[this repository's own house style](#this-repositorys-own-checks) and know
+Four of them, and only the first is meant for your project.
+[`check-method.mjs`](check-method.mjs) is the coherence check. The other three
+are [this repository's own house style](#this-repositorys-own-checks) and know
 nothing about an adopting project.
 
 ## What the coherence check is asking
@@ -157,8 +157,8 @@ read.
 
 ## This repository's own checks
 
-Neither is part of the method. They enforce conventions this repository holds
-itself to, and an adopting project is free to ignore both.
+None of them is part of the method. They enforce conventions this repository
+holds itself to, and an adopting project is free to ignore all three.
 
 ```bash
 node checks/line-width.mjs <project-path> [--limit 80]
@@ -168,6 +168,19 @@ node checks/line-width.mjs <project-path> [--limit 80]
 reports; it never reformats. A reformatter run over this repository once
 corrupted prose by splitting punctuation away from the links it touched, and
 the damage was invisible line by line.
+
+```bash
+node checks/install-commands.mjs
+```
+
+[`install-commands.mjs`](install-commands.mjs) compares every fenced
+`git clone` line in the repository against every other, and requires the clone
+to land outside the project being checked. Three documents carry a copyable
+install command; [C2](../method/rules.md#c2) wants one authority for a fact and
+a command has to be where the reader is, so the copies stay and a command
+decides whether they still agree. The clone used to land *inside* the project,
+so an adopter's first run scanned the method's own documents as if they were
+theirs — which is why the destination is checked and not only the agreement.
 
 ```bash
 node checks/documented-counts.mjs
@@ -185,17 +198,18 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-127 cases for the coherence check and 13 for the line-width check, each building
+131 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 
 Those two figures are themselves checked, by
-[`documented-counts.mjs`](documented-counts.mjs) under `npm run lint`. A third
-counter-test, [`documented-counts.test.mjs`](documented-counts.test.mjs),
-covers that check in turn and is deliberately not given a figure of its own —
-one more advertised number would be one more thing to keep true, and nothing
-would be checking it.
+[`documented-counts.mjs`](documented-counts.mjs) under `npm run lint`. Two
+further counter-tests —
+[`documented-counts.test.mjs`](documented-counts.test.mjs) and
+[`install-commands.test.mjs`](install-commands.test.mjs) — cover those checks in
+turn and are deliberately not given figures of their own. One more advertised
+number would be one more thing to keep true, and nothing would be checking it.
 
 This exists because of [E3](../method/rules.md#e3). The usual way a check breaks
 is not a wrong verdict but a pattern that silently matches nothing, reports
