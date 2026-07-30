@@ -177,6 +177,32 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('unparseable method.json fails', d, false, ['declaration']);
 }
 {
+  // Every one of these is valid JSON, and every one used to decide the run on
+  // its own. The four falsy ones skipped the declaration, artefact, authority,
+  // adaptation and accounting checks together and printed "OK · the declaration
+  // matches the project"; the two truthy primitives crashed with a raw
+  // TypeError on `decl.artefacts = {}`. An array was the one shape already
+  // handled, and it stays here as the nearest case that was right.
+  const shapes = ['null', 'false', '0', '""', '5', '"x"', '[]'];
+  for (const literal of shapes) {
+    const d = baseline(`decl-primitive-${shapes.indexOf(literal)}`);
+    put(d, 'method.json', literal);
+    expect(`a method.json that parses as ${literal} fails`, d, false, ['declaration']);
+  }
+}
+{
+  // The crash was worse than the wrong verdict in one respect only: it is not
+  // reportable. A stacktrace tells the reader where this check broke, not what
+  // is wrong with their project.
+  const d = baseline('decl-primitive-no-stacktrace');
+  put(d, 'method.json', '5');
+  expectSays(
+    'a primitive declaration is reported, not thrown',
+    d,
+    /^(?![\s\S]*TypeError)[\s\S]*A declaration must be a JSON object/
+  );
+}
+{
   // Several Windows editors write a byte-order mark by default, and JSON.parse
   // rejects one outright — so a valid-looking declaration failed as "not valid
   // JSON", sending the reader after a syntax error that was not there. Every

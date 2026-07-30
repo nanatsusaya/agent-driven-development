@@ -307,6 +307,18 @@ try {
 // ---------------------------------------------------------------------------
 
 const declPath = join(project, 'method.json');
+
+/**
+ * The declaration. Either null — there is none to check against — or an object.
+ * Never anything else, and that is load-bearing: every block below gates on
+ * `if (decl)`, so a falsy value skipped the declaration, artefact, authority,
+ * adaptation and accounting checks in one go and the run printed
+ * "OK · the declaration matches the project". `null`, `false`, `0` and `""` are
+ * all valid JSON. Nobody writes them on purpose; a truncated write, a generator
+ * or a `jq` edit that empties the file all produce one. A *truthy* primitive was
+ * the mirror failure — it reached `decl.artefacts = {}` and threw a raw
+ * TypeError, because an ES module runs in strict mode.
+ */
 let decl = null;
 
 if (!exists(declPath)) {
@@ -321,15 +333,40 @@ if (!exists(declPath)) {
     );
   }
 } else {
+  let parsed;
+  let parsedOk = false;
   try {
     // Normalised like every document, and for the same reason. `JSON.parse`
     // rejects a leading byte-order mark outright, so a declaration written by a
     // Windows editor — several write one by default — failed as "not valid
     // JSON" against a file that reads as perfectly valid. The message sent the
     // reader hunting for a syntax error that was not there.
-    decl = JSON.parse(normaliseEol(readFileSync(declPath, 'utf8')));
+    parsed = JSON.parse(normaliseEol(readFileSync(declPath, 'utf8')));
+    parsedOk = true;
   } catch (e) {
     fail('declaration', 'method.json', `Not valid JSON — ${e.message}`);
+  }
+  // "Did not parse" and "parsed into the wrong shape" are different states and
+  // are kept apart, so that neither can be mistaken for the other by a later
+  // block. Only the second kind can be reported precisely.
+  if (parsedOk) {
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      const shape = Array.isArray(parsed)
+        ? 'an array'
+        : parsed === null
+          ? 'null'
+          : `a ${typeof parsed}`;
+      fail(
+        'declaration',
+        'method.json',
+        `A declaration must be a JSON object; this file parses as ${shape}. ` +
+          'Expected at least "method", "version", "artefacts" and ' +
+          '"adaptations" — see method/adapting.md. Nothing else could be ' +
+          'checked, so this run says nothing about the rest of the project.'
+      );
+    } else {
+      decl = parsed;
+    }
   }
 }
 
