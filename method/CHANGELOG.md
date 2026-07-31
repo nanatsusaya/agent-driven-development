@@ -1,24 +1,36 @@
-# Catalogue changes
+# Changes
 
-What changed between catalogue versions, and what an adopter has to do about
-it. The check reports a version difference but cannot say which rules moved;
-this file is the answer to that question.
+What changed, and what an adopter has to do about it. The check reports a
+version difference but cannot say which rules moved; this file is the answer to
+that question.
 
 Only changes that reach an adopter are listed. Wording, examples and internal
 comments are not.
+
+**Two things are versioned here, and they are separate sequences.** A bare
+number — `0.3`, `0.2` — is the **catalogue**, the version in
+[`VERSION`](VERSION) and the one your `method.json` pins to. A heading that says
+*checks* is the **tools**, versioned in `package.json`. They are written down
+together because a check that starts deciding differently changes what your
+green run means, exactly as a changed rule does; splitting them across two files
+would mean two places to look for one answer.
+[`README.md`](README.md#what-each-version-number-means) says which number
+carries which claim.
 
 A rule identifier is **never** reused, and no version renumbers one. Where a
 rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
-## Unreleased
+## Checks 0.3.0
 
 The catalogue is unchanged at **0.3**. Every entry here is a change to
 [the coherence check](../checks/check-method.mjs), not to a rule — no
-identifier moved and no rule was added or withdrawn. They are listed because a
-check that starts deciding differently changes what your green run means, and
-that is the same thing an adopter needs to be told about.
+identifier moved and no rule was added or withdrawn.
+
+This is the first release in which the two numbers move apart. That they read
+alike is history, not coupling: the tools were last versioned alongside
+catalogue 0.2, and this is their next release. They will diverge.
 
 ### May change your result
 
@@ -230,10 +242,10 @@ the artefact is *current* stays a review question under [E2](rules.md#e2).
 **Correction, written later.** That last paragraph was true of the machinery and
 false of the code that shipped with it: `accounting` still named D3 as the rule
 behind the `state` role, so S3's automated part never ran under its own name.
-Fixed under [Unreleased](#unreleased), where it appears as a change that can
+Fixed under [checks 0.3.0](#checks-030), where it appears as a change that can
 alter your result. The same version shipped a second gap: the agent manual went
 on *referring* to the state artefact without ever asking for one, which is the
-rule S3 replaced. Both are closed under Unreleased.
+rule S3 replaced. Both are closed there too.
 
 ## 0.2
 

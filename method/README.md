@@ -65,3 +65,26 @@ dropping them is the intended use, not a failure.
 
 `rules.md` is the only normative one; [`VERSION`](VERSION) is what a project
 pins to. The others explain, apply and correct it.
+
+## What each version number means
+
+Three things here change on their own schedules, so they carry their own
+numbers. Written down because it was once inferred, and inferring it went
+wrong: 0.3 moved five version statements and left three behind, and nothing
+said whether that was a mistake or a decision.
+
+| Number | Versions | Moves when |
+|---|---|---|
+| [`VERSION`](VERSION) | the **catalogue** — the rules themselves | a rule is added, changed or withdrawn |
+| `version` in `package.json` | the **checks** | the tools start deciding differently |
+| — | the **plugin** carries no number | never; the commit SHA identifies it |
+
+They are deliberately not tied to each other. The catalogue can stand still for
+months while a check is corrected, and a check can stand still while a rule is
+rewritten. Tying them would mean claiming a change nobody made.
+
+What your `method.json` pins to is the **catalogue** number, and only that. The
+check compares it against [`VERSION`](VERSION) and reports a difference without
+failing on it — [`CHANGELOG.md`](CHANGELOG.md) says which rules moved and which
+of them can change your result. The plugin's absence of a number is explained
+in [its own README](../plugins/agent-method/README.md#how-updates-reach-you).
