@@ -37,6 +37,22 @@ Step 1 alone is a legitimate stopping point. Steps 2 and 3 buy one thing: when
 a rule here changes, you find out which of your projects still teaches the old
 version — instead of discovering it two sessions later.
 
+## Backing out
+
+Each step undoes on its own, and nothing you keep depends on anything you drop.
+
+- **Step 3.** Stop running the check. It writes nothing and reads nothing
+  outside your project, so there is no state to clean up.
+- **Step 2.** Delete `method.json`. Your artefacts are ordinary files and stay
+  exactly as they are; what you lose is being told when the catalogue moves.
+- **Step 1.** Your operating-rules file is yours — it is in your words about
+  your project, and most of it was never ours. Keep it, cut it down, or throw
+  it away.
+
+Said plainly because a method that only documents the way in is asking for a
+commitment it has not earned. If steps 2 and 3 are not paying for themselves,
+dropping them is the intended use, not a failure.
+
 ## The documents
 
 | Document | Answers |
