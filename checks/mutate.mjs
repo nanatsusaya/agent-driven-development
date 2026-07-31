@@ -130,10 +130,10 @@ const MUTATIONS = [
     to: 'if (false) {',
   },
   {
-    label: 'an empty bound artefact is not reported',
+    label: 'an empty bound artefact is accepted',
     file: 'checks/check-method.mjs',
-    from: 'if (fileSize(p) === 0) emptyArtefacts.push',
-    to: 'if (false) emptyArtefacts.push',
+    from: 'if (fileSize(p) === 0) {',
+    to: 'if (false) {',
   },
 
   // --- adaptations

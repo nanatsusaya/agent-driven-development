@@ -363,28 +363,35 @@ expect('a complete, coherent project passes', baseline('good'), true);
   );
 }
 {
-  // Zero bytes is absence wearing a name. Not a finding — the declaration is
-  // true, the file is there — but the blind-spot section is where a reader finds
-  // out that four bound roles support nothing.
+  // Zero bytes is absence wearing a name. Worse than an unbound role, because an
+  // unbound role has to be accounted for by an adaptation and this does not: the
+  // declaration says the role is filled and the next session opens the file and
+  // learns nothing.
   const d = baseline('artefact-is-empty');
   writeFileSync(join(d, 'docs/STATUS.md'), '', 'utf8');
+  expect('a bound artefact with no content fails', d, false, ['artefacts']);
   expectSays(
-    'a bound artefact with no content is named in the report',
+    'the finding says which role is empty and what to do about it',
     d,
-    /not verified here[\s\S]*1 bound artefact\(s\) are empty[\s\S]*state → docs\/STATUS\.md/
+    /Role "state" is bound to "docs\/STATUS\.md", which is empty/
   );
 }
 {
-  // The mirror: a file with real content must not be reported as empty, however
-  // short. A line that fires on ordinary artefacts is a line readers learn to
-  // skip, and the whole section depends on being read.
+  // The mirror, and the reason the test is by size rather than by looking like
+  // content: a file with real content must pass however short it is. A check
+  // that fired on ordinary artefacts would be the false alarm E3 is about, in
+  // the check that decides whether a project has adopted anything at all.
   const d = baseline('artefact-is-short');
   writeFileSync(join(d, 'docs/STATUS.md'), 'x', 'utf8');
-  expectSays(
-    'a one-byte artefact with content is not reported as empty',
-    d,
-    /^(?![\s\S]*bound artefact\(s\) are empty)[\s\S]*$/
-  );
+  expect('a one-byte artefact with content passes', d, true);
+}
+{
+  // A directory is not empty in this sense and must not be tested for it —
+  // `decisions` is legitimately a directory, and a directory reports no useful
+  // size. The baseline binds it to docs/adr/, so this passes only if the size
+  // test is skipped for directories rather than guessed at.
+  const d = baseline('decisions-directory-not-size-tested');
+  expect('a directory-bound role is not size-tested', d, true);
 }
 
 // --- 2b. external authorities

@@ -524,9 +524,6 @@ if (decl) {
 
 const bound = {};
 
-/** Roles bound to a file with nothing in it, collected for one line at the end. */
-const emptyArtefacts = [];
-
 if (decl) {
   for (const key of Object.keys(decl.artefacts)) {
     if (!ROLES.includes(key)) {
@@ -590,19 +587,26 @@ if (decl) {
       );
       continue;
     }
-    if (fileSize(p) === 0) emptyArtefacts.push(`${role} → ${value}`);
+    // Zero bytes is absence wearing a name. The next session opens the file and
+    // learns exactly what a missing file would have taught it, while the
+    // declaration insists the role is filled — which is worse than an unbound
+    // role, because an unbound role has to be accounted for and this does not.
+    //
+    // E2 forbids judging quality, and the line falls on the other side of this:
+    // whether the artefact says anything *useful* is a review question and stays
+    // one. Whether it says anything at all is not a judgement.
+    if (fileSize(p) === 0) {
+      fail(
+        'artefacts',
+        'method.json',
+        `Role "${role}" is bound to "${value}", which is empty. Put something ` +
+          'in it, or unbind the role and record the adaptation — an empty file ' +
+          'supports what a missing one supports, while the declaration says ' +
+          'otherwise.'
+      );
+      continue;
+    }
     bound[role] = value;
-  }
-  if (emptyArtefacts.length) {
-    // A note rather than a finding, and the distinction is the point: the file
-    // is there, so nothing about the declaration is untrue. What is worth saying
-    // is that an artefact with no content supports exactly as much as a missing
-    // one, and the reader is the only one who can decide whether that is a state
-    // the project is passing through or one it is stuck in.
-    note(
-      `${emptyArtefacts.length} bound artefact(s) are empty, so the roles are ` +
-        `filled in name only: ${emptyArtefacts.join(', ')}`
-    );
   }
 }
 

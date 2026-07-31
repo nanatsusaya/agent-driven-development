@@ -63,6 +63,15 @@ rejected.
 describes a directory of records and a project small enough to keep them in one
 file is following the same rule.
 
+**A role bound to an empty file is a finding.** Zero bytes passes an existence
+test and supports what a missing file supports — worse than an unbound role,
+because an unbound role has to be accounted for by an adaptation and this does
+not. [E2](rules.md#e2) forbids judging quality and the line falls on the other
+side of this: whether the artefact says anything *useful* is a review question
+and stays one; whether it says anything at all is not a judgement. If you are
+scaffolding a project, either write one line or leave the role unbound with an
+adaptation, which is the honest form of the same state.
+
 **The link scan stops firing on six legitimate forms, and starts seeing two it
 missed.** It read `https:`, `mailto:` and `#!` as external and everything else
 as a path, so `tel:`, `file:`, `ftp:`, `obsidian://`, `vscode://` and `slack://`
@@ -165,11 +174,6 @@ about no evidence at all. Every run now opens its blind-spot section with
 names any directory it could not read. The nine skipped names are listed in
 [`checks/README.md`](../checks/README.md); two of them, `vendor` and
 `.obsidian`, can hold real documents.
-
-**Bound artefacts with nothing in them.** A zero-byte file passes an existence
-test and supports what a missing file supports. It is not a finding — the
-declaration is true — but the blind-spot section now says how many roles are
-filled in name only, and which.
 
 **Which rule went unchecked when `decisions` is a single file.** The report said
 the index check was skipped; it now names D2, so the blind spot is one a reader
