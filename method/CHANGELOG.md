@@ -184,6 +184,16 @@ folded to spaces since 0.2, which is the only way a phrase in wrapped prose can
 be caught at all. Anybody who wrote a pattern from that sentence wrote it for
 the wrong input.
 
+**The agent manual now carries S3.** It referred to the state artefact in five
+places and never asked for one — which is precisely the hole S3 was written to
+close, left open in the layer an agent actually reads. If you copied the manual
+during 0.3, add to it: the state artefact is always the same place, bring-up
+reads it before anything else, wind-down brings it current, and it names a
+single next step rather than everything outstanding.
+[`agent-manual/README.md`](../agent-manual/README.md) now says that a change to
+the catalogue is read against that directory in the same change, so the gap has
+something holding it shut.
+
 ## 0.3
 
 Thirty-two rules in eleven clusters. One rule added. None withdrawn, none
@@ -221,7 +231,9 @@ the artefact is *current* stays a review question under [E2](rules.md#e2).
 false of the code that shipped with it: `accounting` still named D3 as the rule
 behind the `state` role, so S3's automated part never ran under its own name.
 Fixed under [Unreleased](#unreleased), where it appears as a change that can
-alter your result.
+alter your result. The same version shipped a second gap: the agent manual went
+on *referring* to the state artefact without ever asking for one, which is the
+rule S3 replaced. Both are closed under Unreleased.
 
 ## 0.2
 

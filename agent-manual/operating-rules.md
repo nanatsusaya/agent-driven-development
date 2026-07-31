@@ -15,6 +15,8 @@ conditional belongs in a procedure the agent loads when it needs it.
 
 This file holds the **stable operating rules**, not the current state. Where we
 stand is in «state artefact»; what was decided is in «decisions artefact».
+«state artefact» is always the same place, is brought current before a session
+ends, and names a **single** clearest next step — not everything outstanding.
 
 ## What this is
 
@@ -143,9 +145,10 @@ Agents write the tickets too; hold them to the same bar as the work.
 ## Session rituals
 
 «If you use them, name them and say what each is for. The invariants:
-bring-up ends with a question, never an action · the seam after a merged change
-keeps your context and re-verifies the *external* state · wind-down parks
-unfinished work visibly rather than leaving it dangling.»
+bring-up reads «state artefact» before anything else and ends with a question,
+never an action · the seam after a merged change keeps your context and
+re-verifies the *external* state · wind-down brings «state artefact» current and
+parks unfinished work visibly rather than leaving it dangling.»
 
 ## Guardrails
 

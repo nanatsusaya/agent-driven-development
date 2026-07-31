@@ -64,3 +64,16 @@ warns about.
 If you would rather not maintain the relationship at all, delete `method.json`
 and keep the manual. Step 1 of
 [adopting](../method/README.md#adopting-it) is a legitimate stopping point.
+
+## When the catalogue moves
+
+These documents are the catalogue said in the second person, so a new or changed
+rule can leave them a version behind — silently, because nothing here is
+declared and no check reads them. S3 arrived in 0.3 and the manual went on
+mentioning the state artefact without ever asking for one.
+
+So: **a change to [`rules.md`](../method/rules.md) is read against this
+directory in the same change.** Most rules need nothing here; the ones that do
+are the rules an agent acts on every session.
+[`CHANGELOG.md`](../method/CHANGELOG.md) is where an adopter finds out what
+moved, and it says which entries reached the manual.
