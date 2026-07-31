@@ -51,7 +51,7 @@ one was starting.
 
 ## Reporting
 
-Email **nanatsusaya-grimora@gmx.net**. Include what happened, where, and roughly
+Email **nanatsusaya@mein.gmx**. Include what happened, where, and roughly
 when. A link is enough; you do not owe anybody a summary of something
 unpleasant.
 
