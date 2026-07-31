@@ -69,9 +69,20 @@ pull request is a different project.
   npm test
   ```
 
+  Both also run on your pull request, across Node 18, 20 and 22 on Linux and
+  Windows. Running them yourself is still the ask: a failure you meet in ten
+  seconds is cheaper than one you meet in a review comment, and the two are
+  not the same thing — this code was written on Windows, and the matrix exists
+  because nobody had ever run it anywhere else.
+
 - **If you change a check, add its counter-test cases** — the deliberate
   violation it must catch, *and* the nearest legitimate case it must not fire
   on. A check without the second kind of case is a check nobody should trust.
+
+  Then run `npm run mutate`. It breaks each guard in turn and fails if the
+  suite still passes, which is the only way to find out whether your new case
+  holds anything. It takes about six minutes, so it is not part of the two
+  commands above, and it runs on the trunk rather than on your pull request.
 - **If you withdraw or change the meaning of a rule**, add the entry to
   [`method/withdrawn.md`](method/withdrawn.md) in the same change. That entry is
   the whole mechanism by which adopters find out.

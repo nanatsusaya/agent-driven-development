@@ -17,6 +17,15 @@ it here would produce ceremony nobody reads. Do not add that machinery, and do
 not treat the check under [`checks/`](checks/README.md) as a gate on this
 repository — it is a tool for adopters.
 
+**Where that exemption stops.** It covers the coherence check as a gate, and
+nothing else. `npm run lint` and `npm test` are house style and the
+counter-tests; [`CONTRIBUTING.md`](CONTRIBUTING.md) requires a contributor to
+run both and report what they returned, and
+[`.github/workflows/checks.yml`](.github/workflows/checks.yml) runs them on
+every push and pull request. Requiring something of strangers and enforcing
+nothing is not an exemption, it is the arrangement [E1](method/rules.md#e1)
+argues against.
+
 Two things follow for anyone writing here. The premise is about the **seam
 between sessions**, never about working memory: within a session an agent
 accumulates context and should keep it. And **nothing in the catalogue may

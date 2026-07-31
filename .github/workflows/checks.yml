@@ -1,0 +1,62 @@
+# The two commands CONTRIBUTING.md asks contributors to run, run automatically.
+#
+# The repository is exempt from its own coherence check as a gate — CLAUDE.md
+# says so, and this workflow does not reintroduce it. What runs here is house
+# style and the counter-tests: `npm run lint` and `npm test`. Those are the
+# commands CONTRIBUTING.md requires of a stranger, and requiring something of
+# strangers while enforcing nothing is the arrangement rule E1 is about.
+#
+# The matrix exists for two specific claims the repository makes and could not
+# check. README.md and package.json say Node 18 or later; nothing had ever run
+# on 18. And every line of this code had only ever run on Windows, in a project
+# whose own check compares paths and normalises line endings — the two things
+# most likely to differ elsewhere.
+
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: node ${{ matrix.node }} · ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Every combination reports, rather than the run stopping at the first
+      # failure. A break that shows up on one platform and one version only is
+      # the kind this matrix exists to find, and fail-fast would hide which.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['18', '20', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      # No install step and no cache key: zero dependencies is a claim this
+      # repository makes on its front page, and a workflow that ran
+      # `npm install` would quietly stop testing it.
+      - run: npm run lint
+      - run: npm test
+
+  mutate:
+    # Trunk only, deliberately. It runs the coherence suite once per mutation —
+    # about six minutes against eight seconds — so gating every pull request on
+    # it would buy a slow review for a signal that only moves when a check
+    # moves. On the trunk it still answers the question nothing else answers:
+    # is every guard held by a case, or only written down?
+    name: mutation harness
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run mutate
