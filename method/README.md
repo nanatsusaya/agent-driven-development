@@ -77,14 +77,23 @@ said whether that was a mistake or a decision.
 |---|---|---|
 | [`VERSION`](VERSION) | the **catalogue** — the rules themselves | a rule is added, changed or withdrawn |
 | `version` in `package.json` | the **checks** | the tools start deciding differently |
-| — | the **plugin** carries no number | never; the commit SHA identifies it |
+| `version` in `plugin.json` | the **plugin** | a release is cut; it carries the release number |
 
-They are deliberately not tied to each other. The catalogue can stand still for
-months while a check is corrected, and a check can stand still while a rule is
-rewritten. Tying them would mean claiming a change nobody made.
+The first two are deliberately not tied to each other. The catalogue can stand
+still for months while a check is corrected, and a check can stand still while a
+rule is rewritten. Tying them would mean claiming a change nobody made.
+
+The plugin is the exception, and for a reason that is about distribution rather
+than meaning. It is the one thing here somebody *installs*, and the number they
+see in a marketplace is only useful if they can find what it refers to — so it
+carries the release number, and a release is tagged against the catalogue. That
+coupling is enforced by a command rather than a habit:
+`checks/plugin-version.mjs` fails when anything that ships to users changed
+since the last release and the version did not. The habit failed once already,
+and everyone who had installed the plugin kept running procedures that had been
+replaced.
 
 What your `method.json` pins to is the **catalogue** number, and only that. The
 check compares it against [`VERSION`](VERSION) and reports a difference without
 failing on it — [`CHANGELOG.md`](CHANGELOG.md) says which rules moved and which
-of them can change your result. The plugin's absence of a number is explained
-in [its own README](../plugins/agent-method/README.md#how-updates-reach-you).
+of them can change your result.

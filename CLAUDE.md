@@ -35,8 +35,8 @@ goes in its *Binding*, marked as such.
 ## Commands
 
 ```bash
-npm run lint    # line width, this repository's links and spelling, install commands, documented counts
-npm test        # the counter-tests for all four checks
+npm run lint    # line width, this repository's links and spelling, install commands, plugin version, documented counts
+npm test        # the counter-tests for all five checks
 npm run mutate  # break each guard in turn; anything the suite still passes is uncovered
 ```
 
@@ -53,7 +53,7 @@ check, point it at a project that has a `method.json`:
 | Where | What |
 |---|---|
 | [`method/`](method/README.md) | the catalogue and its guides — the normative content |
-| [`checks/`](checks/README.md) | the coherence check, three house-style checks, a counter-test for each, and the mutation harness |
+| [`checks/`](checks/README.md) | the coherence check, four house-style checks, a counter-test for each, and the mutation harness |
 | [`agent-manual/`](agent-manual/README.md) | what a project copies and rewrites — `operating-rules.md` is the manual, the rest are the shapes it refers to |
 | [`plugins/agent-method/`](plugins/agent-method/README.md) | the five session procedures, as a Claude Code plugin |
 

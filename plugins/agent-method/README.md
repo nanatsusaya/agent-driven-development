@@ -99,12 +99,10 @@ instead.
 
 ## How updates reach you
 
-**This plugin carries no version number, on purpose.** Neither `plugin.json` nor
-the marketplace entry sets `version`, so Claude Code falls back to the commit
-SHA of this repository. Every commit here is a new version — not only the ones
-that touch a procedure — and `/plugin update` fetches it.
+**This plugin carries an explicit version, and it tracks the release tag.** The
+current one is `0.4.0`, matching release `v0.4` of this repository. You get an
+update when a release is cut, not on every commit.
 
-The alternative is an explicit version, and it is the one that failed here.
 Version management in the plugins reference (retrieved 2026-07-31,
 [code.claude.com/docs/en/plugins-reference#version-management](https://code.claude.com/docs/en/plugins-reference#version-management))
 resolves the version from the first of: `plugin.json`, the marketplace entry,
@@ -114,22 +112,25 @@ the git commit SHA. It also says:
 > users to receive changes. Pushing new commits alone is not enough, because
 > Claude Code sees the same version string and keeps the cached copy.
 
-Both manifests said `0.2.0` while two procedures had changed under them. Anyone
-who installed the plugin before that change went on running the old
-procedures — silently, because a cached copy looks exactly like a current one.
-The same page calls the SHA approach *"Best for: Internal or team plugins under
-active development"*, which is what this is until there is a release to point
-at. A number nobody remembers to bump is worse than no number at all.
+**That is a promise somebody has to remember, and once nobody did.** Both
+manifests said `0.2.0` while two procedures had changed under them, so everyone
+who had installed the plugin went on running the old ones — silently, because a
+cached copy looks exactly like a current one. For a while afterwards there was
+no version here at all, which is the other strategy the same page documents and
+which makes the failure structurally impossible.
 
-What you give up: there is no version to name in a bug report. Use the commit
-SHA — `/plugin` lists it — and this repository's
-[`method/CHANGELOG.md`](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/CHANGELOG.md)
-for what changed.
+The explicit version came back when the first release tag did, because a number
+is worth having once there is something for it to name. What makes it safe this
+time is not resolve: `checks/plugin-version.mjs` fails when anything that ships
+to users has changed since the last release and the version has not. A `README`
+under `plugins/` does not count — it is read by somebody deciding whether to
+install, never by an agent that already has.
 
-`claude plugin validate` reports one warning about the missing version, and it
-is expected: the validator recommends semver, the reference documents both
-approaches. Left visible rather than silenced, because a warning explained here
-is cheaper than a maintainer removing this arrangement to make an output clean.
+**Which number is this?** The release, and through it the
+[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/VERSION).
+The procedures here act out the catalogue's rules, so a rule change is the thing
+most likely to change them; the checks are versioned separately because they
+change on their own schedule. `method/README.md` has the full table.
 
 ## What is deliberately not in here
 

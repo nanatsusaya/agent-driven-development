@@ -36,6 +36,12 @@ jobs:
         node: ['18', '20', '22']
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Tags and history, because `npm run lint` includes a check that
+          # compares the plugin against the last release. A shallow clone has no
+          # tags, so it would find nothing to compare and report success — the
+          # silent no-op this repository keeps finding in its own tools.
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}

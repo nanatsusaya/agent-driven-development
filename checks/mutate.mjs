@@ -36,12 +36,24 @@ import { spawnSync } from 'node:child_process';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 
+/** The suite a mutation is answered by, when it is not the coherence one. */
+const SUITES = {
+  coherence: 'checks/check-method.test.mjs',
+  install: 'checks/install-commands.test.mjs',
+  plugin: 'checks/plugin-version.test.mjs',
+};
+
 /**
  * One mutation: a file, an exact string in it, and what to put there instead.
  *
  * `from` must occur exactly once. A harness whose mutation lands somewhere other
  * than where its label claims reports a score about something nobody chose, so a
  * count other than one is an error rather than a warning.
+ *
+ * `suite` names which counter-test has to notice, defaulting to the coherence
+ * one. Without it the harness could only ever measure a single suite, and the
+ * two checks with their own counter-tests would sit outside the one mechanism
+ * that says whether a counter-test holds anything.
  */
 const MUTATIONS = [
   // --- the adaptation gate: which kinds switch a check off
@@ -357,6 +369,87 @@ const MUTATIONS = [
     from: "        exists(join(child, 'method', 'rules.md')) &&\n        exists(join(child, 'checks', 'check-method.mjs'))",
     to: "        e.name === 'agent-driven-development'",
   },
+
+  // --- the plugin's version against what changed under it
+  {
+    label: 'a changed procedure with an unchanged version is accepted',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: '} else if (pluginVersion === previousVersion) {',
+    to: '} else if (false) {',
+  },
+  {
+    label: 'the two manifests may disagree about the version',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: 'if ((pluginVersion ?? null) !== (marketplaceVersion ?? null)) {',
+    to: 'if (false) {',
+  },
+  {
+    label: 'an absent plugin version is accepted',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: "if (typeof pluginVersion !== 'string' || !pluginVersion.trim()) {",
+    to: 'if (false) {',
+  },
+  {
+    label: 'a version that is not semver is accepted',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: 'const SEMVER = /^\\d+\\.\\d+\\.\\d+$/;',
+    to: 'const SEMVER = /^.*$/;',
+  },
+  {
+    label: 'a README under plugins/ counts as shipping to users',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: 'return !/(^|\\/)README\\.md$/i.test(path);',
+    to: 'return true;',
+  },
+  {
+    label: 'nothing under plugins/ counts as shipping to users',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: "if (!path.startsWith('plugins/')) return false;",
+    to: 'return false;',
+  },
+  {
+    label: 'a release with no version to compare is passed over in silence',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: '  if (previousVersion === null || previousVersion === undefined) {',
+    to: '  if (false) {',
+  },
+
+  // --- the install command, stated in more than one document
+  {
+    label: 'the stated install commands may disagree',
+    suite: 'install',
+    file: 'checks/lib/install-commands.mjs',
+    from: 'if (c.line !== first.line) {',
+    to: 'if (false) {',
+  },
+  {
+    label: 'a clone into the project being checked is accepted',
+    suite: 'install',
+    file: 'checks/lib/install-commands.mjs',
+    from: 'const OUTSIDE = /^(\\.\\.\\/|\\/|~|[A-Za-z]:[\\\\/])/;',
+    to: 'const OUTSIDE = /^.*$/;',
+  },
+  {
+    label: 'a clone with no destination at all is accepted',
+    suite: 'install',
+    file: 'checks/lib/install-commands.mjs',
+    from: '    if (!c.dest) {',
+    to: '    if (false) {',
+  },
+  {
+    label: 'the command is no longer required to be stated anywhere',
+    suite: 'install',
+    file: 'checks/lib/install-commands.mjs',
+    from: 'if (!clones.length) {',
+    to: 'if (false) {',
+  },
 ];
 
 /**
@@ -393,7 +486,9 @@ const bar = '─'.repeat(72);
 console.log(bar);
 console.log('mutation harness · would anything notice if a check stopped firing?');
 console.log(`  mutations: ${selected.length}${only ? ` of ${MUTATIONS.length}` : ''}`);
-console.log(`  suite:     checks/check-method.test.mjs, once per mutation`);
+console.log(
+  `  suites:    ${[...new Set(selected.map((m) => SUITES[m.suite ?? 'coherence']))].join(', ')}`
+);
 console.log(bar);
 
 if (listOnly) {
@@ -441,9 +536,11 @@ for (const m of selected) {
   const path = join(work, m.file);
   const original = pristine.get(m.file);
   writeFileSync(path, original.replace(m.from, m.to), 'utf8');
-  const run = spawnSync(process.execPath, [join(work, 'checks/check-method.test.mjs')], {
-    encoding: 'utf8',
-  });
+  const run = spawnSync(
+    process.execPath,
+    [join(work, SUITES[m.suite ?? 'coherence'])],
+    { encoding: 'utf8' }
+  );
   writeFileSync(path, original, 'utf8');
 
   // Any non-zero exit counts as caught, including a crash: a mutation that makes

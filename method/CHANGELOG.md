@@ -28,6 +28,24 @@ Thirty-two rules in eleven clusters. None added, none withdrawn, none
 renumbered — every identifier you already refer to still means what it meant.
 One rule gained a *Binding*.
 
+### Plugin
+
+**The plugin is `0.4.0`, and carries an explicit version again.** For part of
+0.3 it carried none, so the commit SHA decided and every commit reached
+installed users. Now it carries the release number, and you get an update when
+a release is cut.
+
+That is the strategy that failed once — two procedures changed under a version
+that stayed at `0.2.0`, and everyone who had installed the plugin went on
+running the replaced ones. It is safe to return to it because the coupling is no
+longer a habit: `checks/plugin-version.mjs` fails when anything shipped inside
+the plugin changed since the last release tag and the version did not, and when
+the two manifests declaring it disagree.
+
+**What you have to do.** Run `/plugin update`. If you installed during the
+period with no version, you already have the current procedures and the update
+is a no-op.
+
 ### Worth re-reading
 
 **[C5](rules.md#c5) says which link syntax it reads, and stops implying you owe

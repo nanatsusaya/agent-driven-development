@@ -1,7 +1,7 @@
 # Checks
 
-Four of them, and only the first is meant for your project.
-[`check-method.mjs`](check-method.mjs) is the coherence check. The other three
+Five of them, and only the first is meant for your project.
+[`check-method.mjs`](check-method.mjs) is the coherence check. The other four
 are [this repository's own house style](#this-repositorys-own-checks) and know
 nothing about an adopting project.
 
@@ -201,6 +201,27 @@ so an adopter's first run scanned the method's own documents as if they were
 theirs — which is why the destination is checked and not only the agreement.
 
 ```bash
+node checks/plugin-version.mjs
+```
+
+[`plugin-version.mjs`](plugin-version.mjs) fails when something that ships to
+users changed since the last release tag and the plugin's version did not, and
+when the two manifests declaring that version disagree. Claude Code uses the
+version as a cache key, so an unbumped version means everybody who installed the
+plugin keeps what they have — silently, because a cached copy looks exactly like
+a current one. That happened once here, for a release.
+
+A `README.md` under `plugins/` does not count as shipping to users: it is read
+by somebody deciding whether to install, never by an agent that already has.
+Requiring a version bump for a typo in prose is how a version discipline becomes
+something people work around.
+
+It compares against the working tree rather than against `HEAD`, so it answers
+while the answer can still be a file edit. Where git has nothing to say — no
+repository, no tags, or a release that declared no version — it says so under
+*not decided here* rather than reporting success.
+
+```bash
 node checks/documented-counts.mjs
 ```
 
@@ -222,10 +243,11 @@ which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 
 Those two figures are themselves checked, by
-[`documented-counts.mjs`](documented-counts.mjs) under `npm run lint`. Two
+[`documented-counts.mjs`](documented-counts.mjs) under `npm run lint`. Three
 further counter-tests —
-[`documented-counts.test.mjs`](documented-counts.test.mjs) and
-[`install-commands.test.mjs`](install-commands.test.mjs) — cover those checks in
+[`documented-counts.test.mjs`](documented-counts.test.mjs),
+[`install-commands.test.mjs`](install-commands.test.mjs) and
+[`plugin-version.test.mjs`](plugin-version.test.mjs) — cover those checks in
 turn and are deliberately not given figures of their own. One more advertised
 number would be one more thing to keep true, and nothing would be checking it.
 
@@ -247,8 +269,8 @@ The counter-tests answer *does the check fire on a violation?*
 [`mutate.mjs`](mutate.mjs) answers the question behind it: **would anything
 notice if a check stopped firing?** Each mutation breaks one protective
 mechanism on purpose — a guard becomes `if (false)`, a table entry names the
-wrong rule — and the whole coherence suite runs against the damaged copy. A
-mutation that survives is a mechanism nothing is holding to account.
+wrong rule — and the counter-test that ought to notice runs against the damaged
+copy. A mutation that survives is a mechanism nothing is holding to account.
 
 It is not part of `npm run lint`, because it runs that suite once per mutation:
 minutes, not seconds. Run it after changing the check.
