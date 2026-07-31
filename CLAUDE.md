@@ -26,20 +26,25 @@ goes in its *Binding*, marked as such.
 ## Commands
 
 ```bash
-npm run lint    # line width, this repository's links and spelling, documented counts
-npm test        # the counter-tests for all three checks
+npm run lint    # line width, this repository's links and spelling, install commands, documented counts
+npm test        # the counter-tests for all four checks
+npm run mutate  # break each guard in turn; anything the suite still passes is uncovered
 ```
 
-Zero dependencies, Node 18 or later. There is nothing to install. Both must be
-green before work is handed back. To run the full check, point it at a project
-that has a `method.json`: `node checks/check-method.mjs <path>`.
+Zero dependencies, Node 18 or later. There is nothing to install. The first two
+must be green before work is handed back. `npm run mutate` is not part of that
+gate — it runs the whole coherence suite once per mutation, so it costs minutes
+— but a change to a check is not finished until it has been run: a green suite
+cannot tell you that a guard you added is held by nothing. To run the full
+check, point it at a project that has a `method.json`:
+`node checks/check-method.mjs <path>`.
 
 ## Structure
 
 | Where | What |
 |---|---|
 | [`method/`](method/README.md) | the catalogue and its guides — the normative content |
-| [`checks/`](checks/README.md) | the coherence check, two house-style checks, and a counter-test for each |
+| [`checks/`](checks/README.md) | the coherence check, three house-style checks, a counter-test for each, and the mutation harness |
 | [`agent-manual/`](agent-manual/README.md) | what a project copies and rewrites — `operating-rules.md` is the manual, the rest are the shapes it refers to |
 | [`plugins/agent-method/`](plugins/agent-method/README.md) | the five session procedures, as a Claude Code plugin |
 
