@@ -49,6 +49,7 @@ pull request is a different project.
 | [Discussions](https://github.com/nanatsusaya/agent-driven-development/discussions) | arguments, experience reports, "this did not work for me" |
 | Issues | concrete corrections: a broken link, a wrong claim, a check that misfires |
 | [`SECURITY.md`](SECURITY.md) | anything an attacker could use, privately and not in an issue |
+| [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | conduct, including a maintainer's — it is written to protect the arguing, not to limit it |
 | Pull requests | welcome, and best opened after an issue or a discussion — so that the shape is agreed before you spend the effort |
 
 ## If you open a pull request
