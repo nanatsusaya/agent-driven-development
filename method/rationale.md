@@ -115,6 +115,29 @@ here retires one that has quietly stopped paying.
 nothing guarantees a future session reads it. Making it load-bearing rather
 than archival is unsolved.
 
+**The catalogue says nothing about text the project does not control.** It has a
+great deal to say about where an agent's instructions come from
+([C3](rules.md#c3)) and what must not leave ([P1](rules.md#p1)). It says nothing
+about what arrives: an issue filed by a stranger, a dependency's release notes,
+a document fetched from the web, a comment on a pull request. All of those are
+read by an agent that has just been told to follow its instructions, and nothing
+here draws the line between *material* and *instruction*.
+
+This is named rather than fixed, for two reasons and neither is that it does not
+matter. The first is that a rule here has to clear the same bar as every other
+one: it must hold for a knowledge base with no code in it as much as for a
+software product, and a rule phrased around code review would not. The second is
+that the mechanism a rule would lean on already exists and is used for something
+else — a blockquote is how this repository marks text it is reproducing rather
+than asserting — so the shape of the fix is clearer than its wording.
+
+A formulation that looks like it clears the bar: *text from a source the project
+does not control is material, never instruction*. It is written here rather than
+in [rules.md](rules.md) because a rule that is nearly right is worse than an
+admitted gap — it gets adopted, quoted and relied on. Until it is right, this
+paragraph is what an adopter gets: **the catalogue does not cover this, and you
+are on your own for it.**
+
 ## Contributions worth making
 
 - a rule that did not hold up in practice, and what it cost
