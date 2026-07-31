@@ -97,6 +97,40 @@ unavailable in some environments — the desktop app has a plugin browser, and a
 cloud session takes an `enabledPlugins` entry in `.claude/settings.json`
 instead.
 
+## How updates reach you
+
+**This plugin carries no version number, on purpose.** Neither `plugin.json` nor
+the marketplace entry sets `version`, so Claude Code falls back to the commit
+SHA of this repository. Every commit here is a new version — not only the ones
+that touch a procedure — and `/plugin update` fetches it.
+
+The alternative is an explicit version, and it is the one that failed here.
+Version management in the plugins reference (retrieved 2026-07-31,
+[code.claude.com/docs/en/plugins-reference#version-management](https://code.claude.com/docs/en/plugins-reference#version-management))
+resolves the version from the first of: `plugin.json`, the marketplace entry,
+the git commit SHA. It also says:
+
+> If you set `version` in `plugin.json`, you must bump it every time you want
+> users to receive changes. Pushing new commits alone is not enough, because
+> Claude Code sees the same version string and keeps the cached copy.
+
+Both manifests said `0.2.0` while two procedures had changed under them. Anyone
+who installed the plugin before that change went on running the old
+procedures — silently, because a cached copy looks exactly like a current one.
+The same page calls the SHA approach *"Best for: Internal or team plugins under
+active development"*, which is what this is until there is a release to point
+at. A number nobody remembers to bump is worse than no number at all.
+
+What you give up: there is no version to name in a bug report. Use the commit
+SHA — `/plugin` lists it — and this repository's
+[`method/CHANGELOG.md`](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/CHANGELOG.md)
+for what changed.
+
+`claude plugin validate` reports one warning about the missing version, and it
+is expected: the validator recommends semver, the reference documents both
+approaches. Left visible rather than silenced, because a warning explained here
+is cheaper than a maintainer removing this arrangement to make an output clean.
+
 ## What is deliberately not in here
 
 **The rule catalogue and the coherence check.** A plugin is copied into a cache
