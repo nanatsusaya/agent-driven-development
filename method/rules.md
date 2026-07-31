@@ -274,9 +274,27 @@ link is that structure failing silently: the reader is sent to the authority
 and arrives nowhere, and the fact reverts to whatever the referring document
 happened to say about it. This is the part of C2 a command can decide.
 
-**Check:** `automated` — relative links and anchors resolve. External links are
-not fetched: whether a URL is reachable is a network question, and a check that
-fails for the wrong reason gets ignored for the right ones.
+**Binding.** Ordinary inline links — `[text](path/to/doc.md#anchor)` — are what
+the check reads, so they are what it can decide. The rule does **not** require
+them. A wiki-style `[[doc]]` costs a fraction of the characters, which is the
+difference between a corpus an agent can hold and one it cannot when the
+documents number in the hundreds; a project whose documents are read far more
+often than they are checked is trading correctly.
+
+What such a project must not do is assume the check is behind it. Every run
+reports how many references it read. **Zero read is the number to look for**: it
+means the scan ran, found nothing it understood, and reported success — the
+silent no-op [E3](#e3) is about, arriving as a green result. Where the syntax is
+not the ordinary one, the resolving is yours to do, and saying so is cheaper
+than a check that quietly decides nothing.
+
+**Check:** `automated` — relative links and anchors resolve, in the three
+ordinary forms: `[text](dest)` with an optional title, `[text](<dest>)`, and the
+reference definition `[label]: dest`. Other link syntaxes are not read, and the
+count of references read is printed so that is visible rather than assumed.
+External links are not fetched: whether a URL is reachable is a network
+question, and a check that fails for the wrong reason gets ignored for the right
+ones.
 
 ---
 

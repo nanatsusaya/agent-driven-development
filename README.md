@@ -124,7 +124,7 @@ divergences.
 ```json
 {
   "method": "agent-driven-development",
-  "version": "0.3",
+  "version": "0.4",
   "artefacts": {
     "operating-rules": "CLAUDE.md",
     "decisions": "docs/adr/",

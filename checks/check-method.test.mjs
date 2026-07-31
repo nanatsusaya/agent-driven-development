@@ -701,6 +701,39 @@ expect('a complete, coherent project passes', baseline('good'), true);
   expect('a slug with a leading hyphen from stripped punctuation passes', d, true);
 }
 {
+  // C5's Binding leaves the link syntax to the project: a wiki-style `[[doc]]`
+  // costs a fraction of the characters, which decides whether a corpus of
+  // hundreds of documents fits in an agent's context at all. Such a project is
+  // following C5 and getting nothing from its automated part — so the number of
+  // references read is printed, and zero is the number to look for. Without it
+  // the scan reports success having decided nothing, which is the silent no-op
+  // E3 is about arriving as a green result.
+  const d = baseline('links-wiki-syntax');
+  put(d, 'CLAUDE.md', '# Rules\n\nThe human merges every change.\n');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [[the-plan]] and [[another-thing]].\n');
+  put(d, 'docs/method-log.md', '# Method log\n\nNo entries.\n');
+  put(d, 'docs/adr/README.md',
+    '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Accepted |\n');
+  put(d, 'docs/adr/0001-first.md', '# 0001 — First\n\n- **Status:** Accepted\n');
+  expect('wiki-style links are not read as broken links', d, true);
+  expectSays(
+    'a run that read no references says so instead of reporting success',
+    d,
+    /no references were read at all/
+  );
+}
+{
+  // The mirror: an ordinary link must be counted, or the number above is a
+  // constant rather than a measurement.
+  const d = baseline('links-counted');
+  put(d, 'docs/STATUS.md', '# Status\n\nSee [the log](method-log.md).\n');
+  expectSays(
+    'the number of references read is reported',
+    d,
+    /1 reference\(s\) read and resolved/
+  );
+}
+{
   // The link scan belongs to C5, so a project that declares C5 adapted is not
   // held to it. Without this case the gate could be removed and every other
   // link case would still pass.

@@ -926,8 +926,16 @@ if (inForce('C5')) {
   };
   const forms = (s) => [...new Set([s, decoded(s)])];
 
+  // Counted and printed, because C5's *Binding* leaves the link syntax to the
+  // project and only the ordinary forms are read. A project writing `[[wiki]]`
+  // links is following C5 and getting nothing from its automated part, and
+  // without this number that arrives as a green result — the silent no-op E3 is
+  // about, wearing the appearance of a check that ran.
+  let referencesRead = 0;
+
   for (const { rel, text } of docs) {
     for (const { n, target } of relativeLinks(text)) {
+      referencesRead++;
       // Split at the first `#` only. `split('#')` dropped everything after a
       // second one, so a fragment containing one was silently truncated.
       const hash = target.indexOf('#');
@@ -958,6 +966,16 @@ if (inForce('C5')) {
       }
     }
   }
+
+  note(
+    referencesRead === 0
+      ? 'no references were read at all. C5 reads ordinary inline links, ' +
+        '`<angle-bracketed>` ones and `[label]:` definitions; if this project ' +
+        'writes `[[wiki]]` links or another syntax, that is C5\'s Binding ' +
+        'working — and this scan decided nothing, so the resolving is yours'
+      : `${referencesRead} reference(s) read and resolved. Only ordinary link ` +
+        'syntax is read; anything else in these documents went unchecked'
+  );
 }
 
 // --- D2: the decision index and the decisions agree

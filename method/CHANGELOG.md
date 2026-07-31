@@ -22,15 +22,49 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## 0.4
+
+Thirty-two rules in eleven clusters. None added, none withdrawn, none
+renumbered — every identifier you already refer to still means what it meant.
+One rule gained a *Binding*.
+
+### Worth re-reading
+
+**[C5](rules.md#c5) says which link syntax it reads, and stops implying you owe
+it one.** The rule is unchanged: a reference points at something that exists.
+What was never said is that its automated part reads ordinary inline links and
+nothing else — so a project writing wiki-style `[[doc]]` links was following C5
+perfectly and getting a green `links` result from a scan that had understood
+none of them.
+
+The new *Binding* says the ordinary form is what the check can decide, and that
+the rule does not require it. `[[doc]]` costs a fraction of the characters, and
+where documents number in the hundreds that is the difference between a corpus
+an agent can hold and one it cannot. A project reading its documents far more
+often than it checks them is trading correctly.
+
+**What you have to do.** Nothing, if you write ordinary links. If you write any
+other syntax, look for the new line in the report — see below — and know that
+resolving those references is yours.
+
+### Now named in the report
+
+**How many references the link scan actually read.** Every run says so, and
+**zero** is the number to look for: the scan ran, understood nothing, and
+reported success. That is the silent no-op [E3](rules.md#e3) exists to prevent,
+arriving as a green result — and it was reachable in one step from a legitimate
+choice about link syntax.
+
 ## Checks 0.3.0
 
-The catalogue is unchanged at **0.3**. Every entry here is a change to
+Released against catalogue 0.3. Every entry here is a change to
 [the coherence check](../checks/check-method.mjs), not to a rule — no
 identifier moved and no rule was added or withdrawn.
 
 This is the first release in which the two numbers move apart. That they read
 alike is history, not coupling: the tools were last versioned alongside
-catalogue 0.2, and this is their next release. They will diverge.
+catalogue 0.2, and this is their next release. They have diverged already —
+the catalogue is 0.4 above.
 
 ### May change your result
 

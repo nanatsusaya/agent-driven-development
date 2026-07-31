@@ -115,6 +115,13 @@ is not a link under CommonMark at all, so there is nothing there to resolve;
 write it `<my notes/x.md>` or percent-encode it and it is checked like any
 other.
 
+Any other link syntax — wiki-style `[[doc]]` above all — is not read, and
+[C5](../method/rules.md#c5)'s *Binding* says that is a legitimate choice rather
+than a violation. So every run reports **how many references it read**, and zero
+is the number to look for: it means the scan ran, understood nothing and
+reported success. That is the failure this whole page is written around, and it
+is one step away from a reasonable decision about link syntax.
+
 **A link inside a blockquote is scanned like any other.** Fenced examples and
 code spans are exempt from every scan, and blockquotes are exempt from the
 spelling and withdrawn-rule scans, because those decide what a document
@@ -209,7 +216,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-148 cases for the coherence check and 13 for the line-width check, each building
+151 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
