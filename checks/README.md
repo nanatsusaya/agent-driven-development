@@ -268,6 +268,22 @@ through an arrangement no case built. One deletion turned a refusal into a
 crash, which exits the same way. None of those five were visible in a green
 suite.
 
+## How to get it
+
+By cloning this repository beside your project, which is what every install
+command here says. **There is no npm package**, deliberately: `package.json`
+carries `"private": true`.
+
+Publishing would mean a second copy of the catalogue in a registry, drifting
+from this one — the defect [C2](../method/rules.md#c2) exists to prevent, and
+the same reason the plugin does not bundle the catalogue either. A published
+package would also be a version promise, and the checks are versioned but not
+released. That is a real convenience gap and it is recorded as one rather than
+papered over.
+
+The code is [MIT](LICENSE), so vendoring the files straight into your own
+repository is the supported answer to the inconvenience, not a workaround.
+
 ## Licence
 
 The code in this directory is under [MIT](LICENSE), not the CC BY 4.0 that
