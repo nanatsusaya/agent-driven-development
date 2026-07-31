@@ -209,7 +209,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-142 cases for the coherence check and 13 for the line-width check, each building
+146 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
@@ -229,6 +229,37 @@ to trip it. The cases that matter most are the ones asserting a
 **non**-finding: a withdrawn rule quoted in a blockquote, an Americanism inside
 a code span, a dead link inside a fenced example. Those are the false alarms
 that would teach people to distrust the check.
+
+## The mutation harness
+
+```bash
+npm run mutate
+```
+
+The counter-tests answer *does the check fire on a violation?*
+[`mutate.mjs`](mutate.mjs) answers the question behind it: **would anything
+notice if a check stopped firing?** Each mutation breaks one protective
+mechanism on purpose — a guard becomes `if (false)`, a table entry names the
+wrong rule — and the whole coherence suite runs against the damaged copy. A
+mutation that survives is a mechanism nothing is holding to account.
+
+It is not part of `npm run lint`, because it runs that suite once per mutation:
+minutes, not seconds. Run it after changing the check.
+
+No score is published anywhere, and that is the point of the design. A published
+score is a number that goes stale without failing, which is the defect this
+repository has already met twice. Instead **every** mutation in the list has to
+be caught, and a survivor exits 1. A mutation nothing can catch belongs in
+`KNOWN_SURVIVORS` with the reason, where it reads as a decision rather than an
+oversight; the map is empty and meant to stay that way.
+
+Five mutations survived the first run, and each one named a case that was
+weaker than it looked. Two asserted a verdict that the mutant still produced by
+another route. One fixture wrapped its phrase in the wrong place, so a test for
+paragraph matching passed line by line as well. One guard was reachable only
+through an arrangement no case built. One deletion turned a refusal into a
+crash, which exits the same way. None of those five were visible in a green
+suite.
 
 ## Licence
 

@@ -15,6 +15,7 @@
   },
   "scripts": {
     "lint": "node checks/line-width.mjs . && node checks/check-method.mjs . --lint --spelling british && node checks/install-commands.mjs && node checks/documented-counts.mjs",
-    "test": "node checks/check-method.test.mjs && node checks/line-width.test.mjs && node checks/install-commands.test.mjs && node checks/documented-counts.test.mjs"
+    "test": "node checks/check-method.test.mjs && node checks/line-width.test.mjs && node checks/install-commands.test.mjs && node checks/documented-counts.test.mjs",
+    "mutate": "node checks/mutate.mjs"
   }
 }

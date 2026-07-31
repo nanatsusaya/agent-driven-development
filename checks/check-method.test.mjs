@@ -511,6 +511,15 @@ expect('a complete, coherent project passes', baseline('good'), true);
     ],
   });
   expect('the template placeholder adaptation fails', d, false, ['adaptations']);
+  // The verdict alone does not test this branch: delete it and the entry falls
+  // through to "rule EXAMPLE is not in the catalogue", which fails too. What the
+  // branch is for is the sentence — it tells a reader that the file they copied
+  // was a template, which "not in the catalogue" leaves them to work out.
+  expectSays(
+    'the placeholder adaptation is named as a template left unread',
+    d,
+    /placeholder entry from agent-manual\/method\.json/
+  );
 }
 {
   // An unreadable change kind must not count as an adaptation. If it did, a
@@ -925,6 +934,17 @@ expect('a complete, coherent project passes', baseline('good'), true);
   );
 }
 {
+  // An index nothing can read, with no records to disagree with it. Every other
+  // decision case reaches a finding through a *file*, so removing the guard on
+  // an unreadable index left them all green — the one arrangement where the
+  // index is the only thing there is, and D2 has nothing to compare.
+  const d = baseline('index-with-no-readable-status');
+  rmSync(join(d, 'docs/adr/0001-first.md'));
+  put(d, 'docs/adr/README.md',
+    '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Done |\n');
+  expect('an index with no recognised status anywhere fails', d, false, ['decisions']);
+}
+{
   const d = baseline('index-row-without-file');
   put(d, 'docs/adr/README.md',
     '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Accepted |\n| 0002 | Second | Accepted |\n');
@@ -982,17 +1002,23 @@ expect('a complete, coherent project passes', baseline('good'), true);
   // across two lines could never fire — and prose wrapped at a fixed width
   // splits phrases constantly. This is the silent no-op E3 warns about, built
   // into the mechanism meant to prevent it.
+  //
+  // The wrap is placed *inside* the pattern on purpose. An earlier version of
+  // this fixture broke the line between "small" and "mechanical", which left the
+  // whole pattern sitting on one line — so the case passed line by line too and
+  // proved nothing about paragraphs. A mutation swapping the paragraph scan back
+  // for the line scan survived it.
   const cat = catalogueWithWithdrawal('cat-withdrawn-4', 'mechanical changes may go straight');
   const d = baseline('withdrawn-across-a-wrap');
   put(d, 'CLAUDE.md',
-    '# Rules\n\nThere is one exception worth stating: small\nmechanical changes may go straight\nto the trunk without review.\n');
+    '# Rules\n\nThere is one exception worth stating: small mechanical\nchanges may go straight to the trunk without review.\n');
   expect('a withdrawn phrase split across a line break still fails', d, false, ['withdrawn'], cat);
 }
 {
   const cat = catalogueWithWithdrawal('cat-withdrawn-5', 'mechanical changes may go straight');
   const d = baseline('withdrawn-quoted-across-a-wrap');
   put(d, 'docs/STATUS.md',
-    '# Status\n\nPreviously:\n\n> There is one exception: small\n> mechanical changes may go straight\n> to the trunk.\n');
+    '# Status\n\nPreviously:\n\n> There is one exception: small mechanical\n> changes may go straight to the trunk.\n');
   expect('the same split phrase quoted in a blockquote passes', d, true, [], cat);
 }
 {
@@ -1152,6 +1178,15 @@ expect('a complete, coherent project passes', baseline('good'), true);
   const d = baseline('language-not-an-object', { language: 'british' });
   put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior of the system.\n');
   expect('"language" given as a string fails', d, false, ['declaration']);
+}
+{
+  // An array is the shape a string case cannot stand in for: `typeof []` is
+  // "object", so every test but the array test lets it through, and
+  // `[].spelling` is undefined — the run would report that no regime was
+  // declared about a declaration that plainly declares one.
+  const d = baseline('language-as-an-array', { language: ['british'] });
+  put(d, 'docs/STATUS.md', '# Status\n\nWe will analyze the behavior of the system.\n');
+  expect('"language" given as an array fails', d, false, ['declaration']);
 }
 {
   // The operating-rules artefact was exempt as a whole file, on the reasoning
@@ -1480,19 +1515,35 @@ function bare(name, files) {
 
 // --- 9. the check must refuse to report success on a broken catalogue
 
-/** Assert that a catalogue is refused outright, rather than read and believed. */
-function expectRefused(label, catalogue, project) {
+/**
+ * Assert that a catalogue is refused outright, rather than read and believed.
+ *
+ * `mustSay` is not decoration. Exit 2 also happens when the parser crashes, so a
+ * guard can be deleted and the exit code stay the same while the message turns
+ * into a stack trace about a value being null. Where that is the difference
+ * between a refusal and an accident, the case says which one it wants.
+ *
+ * @param label     what this case is testing
+ * @param catalogue catalogue directory
+ * @param project   project directory
+ * @param mustSay   optional pattern the refusal message has to match
+ */
+function expectRefused(label, catalogue, project, mustSay = null) {
   ran++;
   const r = spawnSync(process.execPath, [CHECK, project, '--catalogue', catalogue], {
     encoding: 'utf8',
   });
-  if (r.status === 2) {
-    console.log(`ok    ${label}`);
-  } else {
+  const out = (r.stdout ?? '') + (r.stderr ?? '');
+  const problems = [];
+  if (r.status !== 2) problems.push(`expected exit 2, got ${r.status}`);
+  if (mustSay && !mustSay.test(out)) problems.push(`expected the refusal to match ${mustSay}`);
+  if (problems.length) {
     failures++;
     console.log(`FAIL  ${label}`);
-    console.log(`        expected exit 2, got ${r.status}`);
-    console.log(((r.stdout ?? '') + (r.stderr ?? '')).split('\n').map((l) => `      | ${l}`).join('\n'));
+    for (const p of problems) console.log(`        ${p}`);
+    console.log(out.split('\n').map((l) => `      | ${l}`).join('\n'));
+  } else {
+    console.log(`ok    ${label}`);
   }
 }
 
@@ -1548,6 +1599,31 @@ function expectRefused(label, catalogue, project) {
     true,
     [],
     cat
+  );
+}
+{
+  // A withdrawal entry missing a field is a pattern that never fires, dressed as
+  // one that does. Without the guard the missing `Pattern:` compiled to the
+  // literal `/null/i` — a scan that runs on every paragraph of every document
+  // and matches the word "null", which is worse than no scan because the report
+  // says the stale-rule check ran.
+  const cat = join(root, 'cat-incomplete-withdrawal');
+  mkdirSync(cat, { recursive: true });
+  cpSync(join(REAL_CATALOGUE, 'rules.md'), join(cat, 'rules.md'));
+  writeFileSync(
+    join(cat, 'withdrawn.md'),
+    '# Withdrawn rules\n\n## Entries\n\n' +
+      '### W1 — the mechanical-change exception\n\n' +
+      '- **Withdrawn:** 2026-07-27\n' +
+      '- **Reason:** an exception whose boundary the agent decides is not a boundary\n' +
+      '- **Instead:** every change reaches the trunk through review, without exception\n',
+    'utf8'
+  );
+  expectRefused(
+    'a withdrawal entry missing its pattern is refused rather than compiled',
+    cat,
+    baseline('vs-incomplete-withdrawal'),
+    /is missing the \*\*Pattern:\*\* field/
   );
 }
 
