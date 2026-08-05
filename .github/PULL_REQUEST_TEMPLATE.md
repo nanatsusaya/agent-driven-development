@@ -1,17 +1,12 @@
 <!--
-Copy to .github/PULL_REQUEST_TEMPLATE.md.
+This is a copy. The shape lives in agent-manual/pull-request.md; this is the
+file GitHub reads. Everything from the first heading down is held to the
+handbook by checks/pull-request-template.mjs — so edit the handbook, and let
+the check tell you this copy has fallen behind.
 
-One concern per change. The decider merges, never the author.
+One concern per change. The owner merges, never the author.
 
-The five headings below are the shape, and they are the same in every project
-that takes this handbook. What, Why and Verified are always answered. Open
-questions and Follow-ups are deleted when there are none — an empty heading
-reads as "considered and found empty".
-
-A project may add **exactly one** section of its own, for the thing its
-reviewers always need and no other project does. Declare it here, with the
-reason it exists, so that a later reader can tell a section somebody chose from
-one that drifted in.
+This repository adds no section of its own.
 -->
 
 ## What
