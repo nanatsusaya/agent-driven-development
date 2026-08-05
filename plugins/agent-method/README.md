@@ -99,12 +99,41 @@ repository for you alone.
 /reload-plugins
 ```
 
-Two things that look like failures and are not. `/reload-plugins` reports
-`0 skills`: that counter covers a plugin's `commands/` directory only, and these
-live in `skills/`. And `/plugin` opens an interactive terminal panel, so it is
-unavailable in some environments — the desktop app has a plugin browser, and a
-cloud session takes an `enabledPlugins` entry in `.claude/settings.json`
-instead.
+One thing that looks like a failure and is not: `/reload-plugins` reports
+`0 skills`. That counter covers a plugin's `commands/` directory only, and
+these live in `skills/`.
+
+### Where `/plugin` is unavailable
+
+`/plugin` opens an interactive terminal panel, and some environments answer
+that it is not available. The same two steps exist as shell commands, which
+need no panel and work wherever `claude` is on the `PATH`:
+
+```bash
+claude plugin marketplace add nanatsusaya/agent-project-rules
+claude plugin install agent-method@agent-project-rules
+```
+
+**The scope is the part worth being deliberate about.** These install for you
+across every project, which is what an adopter usually wants. `--scope project`
+and `--scope local` bind the plugin to whichever directory you are standing in
+instead — for everyone who clones it, or for you alone.
+
+They also run outside any session, so nothing is loaded until one starts. In a
+session that is already open, `/reload-plugins` still applies.
+
+Both claims are from *Discover and install plugins* (retrieved 2026-08-05,
+[code.claude.com/docs/en/discover-plugins#install-plugins](https://code.claude.com/docs/en/discover-plugins#install-plugins)):
+
+> To install without an interactive step, use the `claude plugin install` shell
+> command, which installs to user scope unless you pass `--scope`.
+
+> The `claude plugin install` shell command doesn't run in a session, so Claude
+> Code loads the plugins it installs the next time you start Claude Code, or
+> when you run `/reload-plugins` in a session that's already open.
+
+The desktop app has a plugin browser as well, and a cloud session takes an
+`enabledPlugins` entry in `.claude/settings.json`.
 
 ## How updates reach you
 
