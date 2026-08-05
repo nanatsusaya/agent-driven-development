@@ -104,6 +104,17 @@ const MUTATIONS = [
 
   // --- the declaration
   {
+    // The constant is compared against the baseline on every run, so a wrong
+    // value was always caught. Removing the comparison was not, and that is
+    // the mutation the rename to agent-project-rules made worth having: a
+    // project could then declare any method at all, including one that has
+    // never existed.
+    label: 'any declared method name is accepted',
+    file: 'checks/check-method.mjs',
+    from: "if (decl.method !== 'agent-project-rules') {",
+    to: 'if (false) {',
+  },
+  {
     label: 'a primitive declaration is accepted again',
     file: 'checks/check-method.mjs',
     from: "if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {",
