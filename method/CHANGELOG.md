@@ -114,6 +114,15 @@ the two manifests declaring it disagree.
 period with no version, you already have the current procedures and the update
 is a no-op.
 
+**Correction, written later.** The v0.4 tag declares no plugin version, in
+either manifest. `0.4.0` was restored *after* the tag was made, and the rename
+replaced it with `0.5.0` before the next one — so no release tag has ever
+carried `0.4.0`, and the paragraph above describes release 0.4 as having a
+number it does not have. What was true of it is the direction: from
+[0.5](#05) the tag carries the version, which is also when
+`checks/plugin-version.mjs` stopped reporting on every run that it had nothing
+to compare the current version against.
+
 ### Worth re-reading
 
 **[C5](rules.md#c5) says which link syntax it reads, and stops implying you owe
