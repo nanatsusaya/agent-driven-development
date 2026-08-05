@@ -11,10 +11,11 @@ about behaviour.
 
 Arguing about rules. [`CONTRIBUTING.md`](CONTRIBUTING.md) asks for the rule that
 did not hold up in practice and what it cost, and
-[`rationale.md`](method/rationale.md) keeps a standing list of where the method
-is most likely wrong. **Telling a maintainer they are wrong is the contribution
-this project wants most.** Nothing below is meant to make that harder, and
-anybody using this document to deflect a substantive criticism is misusing it.
+[`rationale.md`](../method/rationale.md) keeps a standing list of where the
+method is most likely wrong. **Telling a maintainer they are wrong is the
+contribution this project wants most.** Nothing below is meant to make that
+harder, and anybody using this document to deflect a substantive criticism is
+misusing it.
 
 The distinction the whole page rests on: *this rule is wrong, and here is the
 failure it produces* is the work. *You are careless* is not a sharper version of

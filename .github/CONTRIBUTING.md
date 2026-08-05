@@ -18,8 +18,8 @@ and you can say why. This beats any amount of agreement.
 
 **An archetype the adaptation guide misses.** If you keep writing the same
 adaptation into every project of a kind not covered in
-[`method/adapting.md`](method/adapting.md), the rule is probably in the wrong
-layer.
+[`method/adapting.md`](../method/adapting.md), the rule is probably in the
+wrong layer.
 
 **A rule marked `manual` that could be `automated`.** The honest measure of how
 much of this method is in force is the ratio of checked rules to merely written
@@ -35,7 +35,7 @@ that are right. Report it as a defect, because it is one.
 **A rule that only holds for software.** The admission bar is that a rule works
 for a project with no code in it. Rules that do not clear it are not rejected —
 they belong in the project layer, and
-[`method/adapting.md`](method/adapting.md) is where they go.
+[`method/adapting.md`](../method/adapting.md) is where they go.
 
 **A rewrite of the framing.** The premise — that the seam between sessions is
 what the repository exists to carry work across — is the thing being argued for.
@@ -86,11 +86,11 @@ pull request is a different project.
   holds anything. It takes about six minutes, so it is not part of the two
   commands above, and it runs on the trunk rather than on your pull request.
 - **If you withdraw or change the meaning of a rule**, add the entry to
-  [`method/withdrawn.md`](method/withdrawn.md) in the same change. That entry is
-  the whole mechanism by which adopters find out.
+  [`method/withdrawn.md`](../method/withdrawn.md) in the same change. That
+  entry is the whole mechanism by which adopters find out.
 
 ## Licence
 
 Contributions are accepted under the same terms as the part of the repository
-they touch: [CC BY 4.0](LICENSE) for the written method, and
-[MIT](checks/LICENSE) for the code in `checks/`.
+they touch: [CC BY 4.0](../LICENSE) for the written method, and
+[MIT](../checks/LICENSE) for the code in `checks/`.

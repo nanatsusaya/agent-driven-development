@@ -19,8 +19,8 @@ repository — it is a tool for adopters.
 
 **Where that exemption stops.** It covers the coherence check as a gate, and
 nothing else. `npm run lint` and `npm test` are house style and the
-counter-tests; [`CONTRIBUTING.md`](CONTRIBUTING.md) requires a contributor to
-run both and report what they returned, and
+counter-tests; [`CONTRIBUTING.md`](.github/CONTRIBUTING.md) requires a
+contributor to run both and report what they returned, and
 [`.github/workflows/checks.yml`](.github/workflows/checks.yml) runs them on
 every push and pull request. Requiring something of strangers and enforcing
 nothing is not an exemption, it is the arrangement [E1](method/rules.md#e1)
