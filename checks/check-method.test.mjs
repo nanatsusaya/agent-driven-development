@@ -1567,6 +1567,71 @@ function bare(name, files) {
   );
 }
 
+// What the flag does *not* do. `--lint` only ever suppressed the
+// missing-declaration finding, but the report was written as though it
+// suppressed four whole checks. On an adopted project the run therefore did all
+// of that work and then told the reader it had done none of it — a report
+// under-claiming what it established, which costs the reader exactly what
+// over-claiming costs: they stop believing a result that was complete.
+{
+  const d = baseline('lint-adopted-note');
+  expectSays(
+    '--lint on an adopted project does not claim the declaration went unchecked',
+    d,
+    /^(?![\s\S]*--lint: there is no method\.json)/,
+    ['--lint']
+  );
+}
+{
+  // The nearest legitimate case, and why the note is conditional rather than
+  // deleted: with no declaration those checks really did have nothing to run
+  // against, and a run that does not say so is the blind spot the whole "not
+  // verified here" block exists to name.
+  const d = bare('lint-bare-note', { 'README.md': '# A project\n\nNothing yet.\n' });
+  expectSays(
+    '--lint without a method.json still names the checks that had nothing to run against',
+    d,
+    /--lint: there is no method\.json here/,
+    ['--lint']
+  );
+}
+{
+  // The verdict line, for the same reason. Keyed on the flag, this run ended on
+  // "the documents scan clean" — the weaker of the two claims, for the stronger
+  // of the two runs.
+  const d = baseline('lint-adopted-verdict');
+  expectSays(
+    '--lint on an adopted project ends on the declaration, not on the documents',
+    d,
+    /OK · the declaration matches the project/,
+    ['--lint']
+  );
+}
+{
+  const d = bare('lint-bare-verdict', { 'README.md': '# A project\n\nNothing yet.\n' });
+  expectSays(
+    '--lint without a method.json ends on the documents',
+    d,
+    /OK · the documents scan clean/,
+    ['--lint']
+  );
+}
+{
+  // What --help promises, pinned: the flag suppresses nothing but the
+  // missing-declaration finding, so --lint can never report less than the plain
+  // run. Without this case the honest wording could be restored to the help text
+  // while the behaviour drifted back underneath it.
+  const d = baseline('lint-suppresses-nothing', { method: 'some-other-method' });
+  expect(
+    '--lint does not suppress a declaration finding on an adopted project',
+    d,
+    false,
+    ['declaration'],
+    REAL_CATALOGUE,
+    ['--lint']
+  );
+}
+
 // --- 9. the check must refuse to report success on a broken catalogue
 
 /**

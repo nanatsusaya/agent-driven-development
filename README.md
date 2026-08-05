@@ -142,14 +142,23 @@ version — instead of discovering it two sessions later.
 ### Checking that it still holds
 
 A command reads your declaration and reports where it and the repository
-disagree. It changes no files, and it needs no adoption to be useful:
+disagree. It changes no files:
 
 ```bash
 git clone https://github.com/nanatsusaya/agent-project-rules ../agent-project-rules
-node ../agent-project-rules/checks/check-method.mjs . --lint --spelling british
+node ../agent-project-rules/checks/check-method.mjs .
 ```
 
-Zero dependencies, Node 18 or later. What matters most is how it ends:
+Zero dependencies, Node 18 or later. The spelling regime comes out of your
+declaration, so nothing has to be passed for it.
+
+**A project that has not adopted anything** adds `--lint --spelling british`.
+That makes a missing `method.json` something other than a finding, and the
+regime has to be named because no declaration is there to name it. The flag
+suppresses nothing else: where a declaration is present it is read and checked
+exactly as it is without the flag.
+
+What matters most is how it ends:
 
 ```
 not verified here

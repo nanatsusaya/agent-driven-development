@@ -486,6 +486,28 @@ const MUTATIONS = [
     from: '  if (read === 0) {',
     to: '  if (false) {',
   },
+
+  // --- what the report claims about itself under --lint
+  {
+    // This is the state the check shipped in. `--lint` only ever suppressed the
+    // missing-declaration finding, so on an adopted project every declaration
+    // check ran and the report then said none had. Both directions of a false
+    // claim cost the reader the same thing, and this one is the harder to spot:
+    // nothing fails, and the run quietly looks less thorough than it was.
+    label: 'the report says the declaration went unchecked when it did not',
+    file: 'checks/check-method.mjs',
+    from: '  if (lint && !decl) {',
+    to: '  if (lint) {',
+  },
+  {
+    // The verdict line, keyed on the flag rather than on what was read. An
+    // adopted project run with --lint then ends on the weaker of the two claims
+    // while having earned the stronger one.
+    label: 'the verdict is decided by the flag rather than by what was read',
+    file: 'checks/check-method.mjs',
+    from: "console.log(decl ? 'OK · the declaration matches the project' : 'OK · the documents scan clean');",
+    to: "console.log(lint ? 'OK · the documents scan clean' : 'OK · the declaration matches the project');",
+  },
 ];
 
 /**
