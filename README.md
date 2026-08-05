@@ -298,7 +298,7 @@ to bring:
 
 [Discussions](https://github.com/nanatsusaya/agent-project-rules/discussions)
 for the arguments, issues for concrete corrections. See
-[CONTRIBUTING.md](CONTRIBUTING.md).
+[CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## Licence
 
