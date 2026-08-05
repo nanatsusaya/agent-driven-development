@@ -1,7 +1,7 @@
 ---
 name: adopt
 description: >-
-  Use to introduce the agent-driven-development method into a project, or to review how well an
+  Use to introduce the agent-project-rules method into a project, or to review how well an
   existing project fits it. Works out which of the project's files already play the four roles,
   proposes the rules that need reshaping for this kind of project, writes the method.json
   declaration with any adaptations recorded, and runs the coherence check. Ends by presenting the
@@ -11,7 +11,7 @@ description: >-
 # Adopting the method into a project
 
 *Carries out rules A1, A2 and C1. The
-[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+[catalogue](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md)
 is the authority; this file is only the procedure.*
 
 Adoption is a proposal, not an installation. What the method looks like here is
@@ -106,7 +106,7 @@ Once the shape is agreed, write `method.json` at the project root:
 
 ```json
 {
-  "method": "agent-driven-development",
+  "method": "agent-project-rules",
   "version": "0.4",
   "artefacts": {
     "operating-rules": "CLAUDE.md",
@@ -145,8 +145,8 @@ The coherence check lives in the method repository, has no dependencies, and
 runs against any project path:
 
 ```bash
-git clone https://github.com/nanatsusaya/agent-driven-development ../agent-driven-development
-node ../agent-driven-development/checks/check-method.mjs <project-path>
+git clone https://github.com/nanatsusaya/agent-project-rules ../agent-project-rules
+node ../agent-project-rules/checks/check-method.mjs <project-path>
 ```
 
 Report what it says, including what it says it could **not** verify. If it

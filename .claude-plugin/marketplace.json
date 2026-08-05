@@ -1,5 +1,5 @@
 {
-  "name": "agent-driven-development",
+  "name": "agent-project-rules",
   "description": "Session rituals and decision procedures for running projects with AI agents.",
   "owner": {
     "name": "Daniel Wagner",
@@ -10,7 +10,7 @@
       "name": "agent-method",
       "source": "./plugins/agent-method",
       "description": "Five procedures that make the seams of a working session repeatable: bring-up, the transition after a merged change, wind-down, writing a decision record, and adopting the method into a project.",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "author": {
         "name": "Daniel Wagner",
         "url": "https://github.com/nanatsusaya"

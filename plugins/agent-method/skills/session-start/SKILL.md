@@ -12,7 +12,7 @@ description: >-
 # Session start — bring-up
 
 *Carries out rules S1, S2, S3 and H1. The
-[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+[catalogue](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md)
 is the authority; this file is only the procedure.*
 
 Starting a session cleanly is a procedure, not something reconstructed from

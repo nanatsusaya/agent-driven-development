@@ -145,5 +145,5 @@ are on your own for it.**
 - a `manual` rule that could be made `automated`, with the check
 - a check that produces false alarms, which is worse than no check at all
 
-[Discussions](https://github.com/nanatsusaya/agent-driven-development/discussions)
+[Discussions](https://github.com/nanatsusaya/agent-project-rules/discussions)
 is the place for it.

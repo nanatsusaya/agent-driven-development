@@ -1,4 +1,4 @@
-# Agent Driven Development
+# Agent Project Rules
 
 **AI agents remember the current session. Your repository has to remember the
 rest.**
@@ -123,7 +123,7 @@ divergences.
 
 ```json
 {
-  "method": "agent-driven-development",
+  "method": "agent-project-rules",
   "version": "0.4",
   "artefacts": {
     "operating-rules": "CLAUDE.md",
@@ -145,8 +145,8 @@ A command reads your declaration and reports where it and the repository
 disagree. It changes no files, and it needs no adoption to be useful:
 
 ```bash
-git clone https://github.com/nanatsusaya/agent-driven-development ../agent-driven-development
-node ../agent-driven-development/checks/check-method.mjs . --lint --spelling british
+git clone https://github.com/nanatsusaya/agent-project-rules ../agent-project-rules
+node ../agent-project-rules/checks/check-method.mjs . --lint --spelling british
 ```
 
 Zero dependencies, Node 18 or later. What matters most is how it ends:
@@ -198,14 +198,14 @@ Code:
 makes the catalogue visible.
 
 ```
-/plugin marketplace add nanatsusaya/agent-driven-development
+/plugin marketplace add nanatsusaya/agent-project-rules
 ```
 
 **2. Install the plugin.** You will be asked to choose a scope — yourself
 everywhere, this repository for everyone, or this repository for you alone.
 
 ```
-/plugin install agent-method@agent-driven-development
+/plugin install agent-method@agent-project-rules
 ```
 
 **3. Activate it in the running session.**
@@ -296,7 +296,7 @@ to bring:
 - a `manual` rule that could be `automated`, with the check
 - a check that produces false alarms, which is worse than no check at all
 
-[Discussions](https://github.com/nanatsusaya/agent-driven-development/discussions)
+[Discussions](https://github.com/nanatsusaya/agent-project-rules/discussions)
 for the arguments, issues for concrete corrections. See
 [CONTRIBUTING.md](CONTRIBUTING.md).
 

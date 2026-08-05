@@ -12,7 +12,7 @@ description: >-
 # After merge — the seam between two units of work
 
 *Carries out rules S1, S2, G1 and C4. The
-[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+[catalogue](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md)
 is the authority; this file is only the procedure.*
 
 Between finishing one unit of work and starting the next there is a seam, and

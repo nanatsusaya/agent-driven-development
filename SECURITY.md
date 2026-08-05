@@ -52,11 +52,11 @@ of these was a real defect here rather than a hypothetical:
 ## Reporting something
 
 Use GitHub's private vulnerability reporting on
-[this repository](https://github.com/nanatsusaya/agent-driven-development/security/advisories/new).
+[this repository](https://github.com/nanatsusaya/agent-project-rules/security/advisories/new).
 It is private until a fix exists, which a public issue is not.
 
 If that form is unavailable to you, open a normal
-[issue](https://github.com/nanatsusaya/agent-driven-development/issues) saying
+[issue](https://github.com/nanatsusaya/agent-project-rules/issues) saying
 only that you have something to report and asking for a private channel — no
 details in the issue itself.
 

@@ -144,7 +144,7 @@ Binding a role means naming the file or directory that plays it. That is what
 
 ```json
 {
-  "method": "agent-driven-development",
+  "method": "agent-project-rules",
   "version": "0.4",
   "artefacts": {
     "operating-rules": "CLAUDE.md",
@@ -228,4 +228,4 @@ switched off, so a rule that stopped being verified cannot do so quietly.
 If you find yourself writing the same adaptation into every project, the rule
 is probably in the wrong layer — too domain-specific for a catalogue that
 claims to be domain-independent. That is worth
-[raising](https://github.com/nanatsusaya/agent-driven-development/discussions).
+[raising](https://github.com/nanatsusaya/agent-project-rules/discussions).

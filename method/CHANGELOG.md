@@ -22,6 +22,57 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## 0.5
+
+Thirty-two rules in eleven clusters. None added, none withdrawn, none
+renumbered — every identifier you already refer to still means what it meant.
+The catalogue changed its name, and that is the whole release.
+
+### May change your result
+
+**The method is called `agent-project-rules`, and the check requires the new
+name.** `"method"` in your `method.json` must read `agent-project-rules`. The
+old value is a finding, and the declaration is read before anything else, so a
+project still carrying it stops the run with nothing else decided.
+
+The old name made two claims the catalogue does not. *Agent-driven* says the
+agent drives, while [G1](rules.md#g1) — the first rule here — says the agent
+proposes, opens the change and stops. And *X-driven development* is a software
+naming pattern, which put a domain on a catalogue whose entry bar is that a
+rule holds independently of domain.
+
+**What you have to do.** Change one line:
+
+```json
+"method": "agent-project-rules",
+```
+
+The repository is now at `https://github.com/nanatsusaya/agent-project-rules`.
+GitHub redirects web traffic and `git clone`, `git fetch` and `git push` from
+the old address, so an existing clone keeps working and links already written
+keep resolving. Two exceptions are worth knowing — project site URLs are not
+redirected, and a workflow using an action hosted here would fail rather than
+follow — and neither reaches this repository, which publishes no site and ships
+no action. Both are stated in
+[GitHub's documentation on renaming a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository).
+
+**Nothing will ever be published under the old name again.** That redirect
+survives only while the old name stays free: a new repository called
+`agent-driven-development` would break every redirect at once, including any
+sitting in documents that may no longer be edited.
+
+### Plugin
+
+**The plugin is `0.5.0`.** Six of its files carried the old repository address
+and now carry the new one. What the five procedures do is unchanged.
+
+**What you have to do.** Add the marketplace under its new name, then update:
+
+```
+/plugin marketplace add nanatsusaya/agent-project-rules
+/plugin install agent-method@agent-project-rules
+```
+
 ## 0.4
 
 Thirty-two rules in eleven clusters. None added, none withdrawn, none

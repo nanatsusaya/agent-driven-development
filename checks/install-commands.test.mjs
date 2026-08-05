@@ -48,17 +48,17 @@ function expect(label, docs, expected, says = null) {
   }
 }
 
-const URL = 'https://github.com/nanatsusaya/agent-driven-development';
-const GOOD = `git clone ${URL} ../agent-driven-development`;
+const URL = 'https://github.com/nanatsusaya/agent-project-rules';
+const GOOD = `git clone ${URL} ../agent-project-rules`;
 const block = (...lines) => '# Doc\n\nText.\n\n```bash\n' + lines.join('\n') + '\n```\n';
 
 // --- the legitimate shape, in the arrangement the repository actually uses
 expect(
   'the same command in three documents, cloning outside, passes',
   [
-    { rel: 'README.md', text: block(GOOD, 'node ../agent-driven-development/checks/check-method.mjs . --lint') },
-    { rel: 'plugins/README.md', text: block(GOOD, 'node ../agent-driven-development/checks/check-method.mjs <path>') },
-    { rel: 'skills/adopt/SKILL.md', text: block(GOOD, 'node ../agent-driven-development/checks/check-method.mjs <path>') },
+    { rel: 'README.md', text: block(GOOD, 'node ../agent-project-rules/checks/check-method.mjs . --lint') },
+    { rel: 'plugins/README.md', text: block(GOOD, 'node ../agent-project-rules/checks/check-method.mjs <path>') },
+    { rel: 'skills/adopt/SKILL.md', text: block(GOOD, 'node ../agent-project-rules/checks/check-method.mjs <path>') },
   ],
   0
 );
@@ -66,7 +66,7 @@ expect(
 // --- the defect this check exists for: the clone lands in the project
 expect(
   'a clone with no destination fails',
-  [{ rel: 'README.md', text: block(`git clone ${URL}`, 'node agent-driven-development/checks/check-method.mjs .') }],
+  [{ rel: 'README.md', text: block(`git clone ${URL}`, 'node agent-project-rules/checks/check-method.mjs .') }],
   1,
   /gives no destination/
 );
@@ -81,7 +81,7 @@ expect(
 expect(
   'two documents stating different clone commands fail',
   [
-    { rel: 'README.md', text: block(GOOD, 'node ../agent-driven-development/checks/check-method.mjs .') },
+    { rel: 'README.md', text: block(GOOD, 'node ../agent-project-rules/checks/check-method.mjs .') },
     { rel: 'other.md', text: block(`git clone ${URL} ../adm`, 'node ../adm/checks/check-method.mjs .') },
   ],
   1,
@@ -89,7 +89,7 @@ expect(
 );
 expect(
   'a run line left pointing at the old path fails',
-  [{ rel: 'README.md', text: block(GOOD, 'node agent-driven-development/checks/check-method.mjs .') }],
+  [{ rel: 'README.md', text: block(GOOD, 'node agent-project-rules/checks/check-method.mjs .') }],
   1,
   /but the clone in the same block goes to/
 );
@@ -98,7 +98,7 @@ expect(
 expect(
   'a block running the check from inside the method repository is not compared',
   [
-    { rel: 'README.md', text: block(GOOD, 'node ../agent-driven-development/checks/check-method.mjs .') },
+    { rel: 'README.md', text: block(GOOD, 'node ../agent-project-rules/checks/check-method.mjs .') },
     { rel: 'checks/README.md', text: block('node checks/check-method.mjs <project-path>') },
   ],
   0
@@ -106,7 +106,7 @@ expect(
 expect(
   'the command named in prose rather than in a fence is not a claim about it',
   [
-    { rel: 'README.md', text: block(GOOD, 'node ../agent-driven-development/checks/check-method.mjs .') },
+    { rel: 'README.md', text: block(GOOD, 'node ../agent-project-rules/checks/check-method.mjs .') },
     { rel: 'notes.md', text: '# Notes\n\nRun git clone https://example.invalid/x somewhere else.\n' },
   ],
   0

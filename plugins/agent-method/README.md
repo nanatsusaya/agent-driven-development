@@ -1,6 +1,7 @@
 # agent-method
 
-Five procedures for [agent-driven-development](https://github.com/nanatsusaya/agent-driven-development),
+Five procedures for
+[agent-project-rules](https://github.com/nanatsusaya/agent-project-rules),
 packaged as a Claude Code plugin. They cover the moments a session turns over,
 which is where the seam between sessions actually bites.
 
@@ -19,7 +20,7 @@ which question — and which systems it keeps outside the repository, under
 `authorities`: where tasks live, where the review boundary is configured. Those
 are addresses to know, never things to fetch. A procedure that has to retrieve
 something before it can work is not self-supporting, which is what
-[C3](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c3)
+[C3](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md#c3)
 forbids. Where there is no declaration they fall back to the conventional names.
 
 They assume **nothing** about your stack, your domain or your tooling: anything
@@ -35,7 +36,7 @@ one person is useless the moment there are several.
 
 The names above are English because everything committed here is English. That
 is one half of rule
-[L1](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#l1).
+[L1](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md#l1).
 The other half is that you talk to an agent in your own language — and a skill
 name is something you type in conversation, not something you read in a
 document.
@@ -73,7 +74,7 @@ running session until it is reloaded.
 **1. Register this repository as a marketplace.**
 
 ```
-/plugin marketplace add nanatsusaya/agent-driven-development
+/plugin marketplace add nanatsusaya/agent-project-rules
 ```
 
 **2. Install the plugin.** This opens the plugin's details, where you choose a
@@ -81,7 +82,7 @@ scope: yourself across all projects, this repository for everyone, or this
 repository for you alone.
 
 ```
-/plugin install agent-method@agent-driven-development
+/plugin install agent-method@agent-project-rules
 ```
 
 **3. Activate it in the running session.**
@@ -127,7 +128,7 @@ under `plugins/` does not count — it is read by somebody deciding whether to
 install, never by an agent that already has.
 
 **Which number is this?** The release, and through it the
-[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/VERSION).
+[catalogue](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/VERSION).
 The procedures here act out the catalogue's rules, so a rule change is the thing
 most likely to change them; the checks are versioned separately because they
 change on their own schedule. `method/README.md` has the full table.
@@ -137,14 +138,14 @@ change on their own schedule. `method/README.md` has the full table.
 **The rule catalogue and the coherence check.** A plugin is copied into a cache
 when it is installed, so bundling them would create a second copy of the
 catalogue that drifts from the first — the exact defect rule
-[C2](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c2)
+[C2](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md#c2)
 exists to prevent, shipped inside the tooling meant to enforce it.
 
 So the catalogue stays in one place, and the check runs from a clone:
 
 ```bash
-git clone https://github.com/nanatsusaya/agent-driven-development ../agent-driven-development
-node ../agent-driven-development/checks/check-method.mjs <project-path>
+git clone https://github.com/nanatsusaya/agent-project-rules ../agent-project-rules
+node ../agent-project-rules/checks/check-method.mjs <project-path>
 ```
 
 Zero dependencies, Node 18 or later. The clone goes **beside** the project, not
