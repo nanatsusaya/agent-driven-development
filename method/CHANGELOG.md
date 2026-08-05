@@ -73,6 +73,23 @@ and now carry the new one. What the five procedures do is unchanged.
 /plugin install agent-method@agent-project-rules
 ```
 
+## Checks 0.4.0
+
+Released against catalogue 0.5. One change reaches you, and it is not the
+tools' own: the check requires the new method name. What to do about it is
+under [0.5](#05) rather than restated here, because the fact belongs to the
+rename and not to this release.
+
+### Fixes with no effect on an adopter
+
+**The guard comparing the declared method name is now held by something.** A
+wrong value was always caught, because the baseline declares the right one —
+but *removing* the comparison was not, and then any string at all would have
+named a method that does not exist. The counter-test suite gained a case
+feeding the declaration the pre-0.5 name, and the mutation harness gained the
+mutation that deletes the comparison. Your result does not change. What
+changes is whether a green run still means the check is checking.
+
 ## 0.4
 
 Thirty-two rules in eleven clusters. None added, none withdrawn, none
