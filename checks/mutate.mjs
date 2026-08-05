@@ -508,6 +508,37 @@ const MUTATIONS = [
     from: "console.log(decl ? 'OK · the declaration matches the project' : 'OK · the documents scan clean');",
     to: "console.log(lint ? 'OK · the documents scan clean' : 'OK · the declaration matches the project');",
   },
+
+  // --- the README's restatement of the plugin version
+  {
+    // The silent half. A README that no longer states the version at all would
+    // agree with anything, so rewording the sentence would switch the check off
+    // without failing — the same no-op the catalogue-version check guards
+    // against by treating "read nothing" as a finding.
+    label: 'a README that states no version agrees with the manifests',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: '  const stated = statedVersion(text);',
+    to: '  const stated = statedVersion(text) ?? { version: pluginVersion, line: 0 };',
+  },
+  {
+    label: 'the README and the manifests may disagree',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: '  if (stated.version !== pluginVersion) {',
+    to: '  if (false) {',
+  },
+  {
+    // The loud half, and the reason the pattern is a phrase rather than "every
+    // version-shaped string": this widening reports the true sentence about both
+    // manifests having sat at 0.2.0, which could only be silenced by falsifying
+    // the record.
+    label: 'every backticked version in the README is treated as the claim',
+    suite: 'plugin',
+    file: 'checks/lib/plugin-version.mjs',
+    from: 'const STATED_VERSION = /manifests currently declare `([^`\\n]*)`/;',
+    to: 'const STATED_VERSION = /`(\\d+\\.\\d+\\.\\d+)`/;',
+  },
 ];
 
 /**
