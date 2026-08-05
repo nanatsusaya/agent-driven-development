@@ -20,6 +20,13 @@ import {
   compareCounts,
   ranCount,
 } from './lib/documented-counts.mjs';
+import {
+  compareInventory,
+  compareNames,
+  countFrom,
+  namedCounterTests,
+  tabulatedSubChecks,
+} from './lib/documented-inventory.mjs';
 
 let failures = 0;
 let ran = 0;
@@ -130,6 +137,147 @@ expect(
 expect('a summary line yields its count', ranCount('\n73 cases, 0 failed\n'), 73);
 expect('a failing run still yields its count', ranCount('73 cases, 4 failed'), 73);
 expect('output with no summary yields null', ranCount('ok    something\n'), null);
+
+// --- 4. the inventory half: the numbers read from the file system and source
+
+const INVENTORY = {
+  checks: ['a.mjs', 'b.mjs', 'c.mjs'],
+  counterTests: ['a.test.mjs', 'b.test.mjs', 'c.test.mjs'],
+  unfiguredTests: ['b.test.mjs', 'c.test.mjs'],
+  subChecks: ['links', 'withdrawn'],
+};
+
+/** A checks/README.md stating the inventory above, correctly. */
+const readmeDoc = ({
+  total = 'Three',
+  house = 'two',
+  ignorable = 'two',
+  sub = 'Two',
+  further = 'Two',
+  names = ['b.test.mjs', 'c.test.mjs'],
+} = {}) =>
+  `# Checks\n\n${total} of them, and only the first is meant for your project.\n` +
+  `The other ${house} are [this repository's own house style](#x).\n\n` +
+  `${sub} checks:\n\n| Check | Asks |\n|---|---|\n` +
+  '| `links` | do they resolve |\n| `withdrawn` | is anything stale |\n\n' +
+  '## Options\n\n| | |\n|---|---|\n| `--lint` | do not require a declaration |\n' +
+  '| `--quiet` | omit the listing |\n\n' +
+  `They enforce conventions, and an adopting project is free to ignore all ${ignorable}.\n\n` +
+  `${further} further counter-tests — ${names.map((n) => `\`${n}\``).join(' and ')} — cover ` +
+  'those checks in turn.\n';
+
+const claudeDoc = (n = 'three') =>
+  `# CLAUDE.md\n\n\`\`\`bash\nnpm test    # the counter-tests for all ${n} checks\n\`\`\`\n`;
+
+const inv = (readme, claude = claudeDoc()) =>
+  compareInventory({ 'checks/README.md': readme, 'CLAUDE.md': claude }, INVENTORY);
+
+expect('a word is a count', countFrom('Seven'), 7);
+expect('digits are a count too', countFrom('12'), 12);
+expect('a word outside the list is not silently zero', countFrom('umpteen'), null);
+
+expect('a document stating the truth produces no finding', inv(readmeDoc()), []);
+
+// --- deliberate violations, one per claim
+expect(
+  'a wrong total fails, and the finding names what was counted',
+  inv(readmeDoc({ total: 'Four' })),
+  ['checks/README.md — states 4 check scripts in checks/; there are 3.']
+);
+expect(
+  'a wrong house-style count fails',
+  inv(readmeDoc({ house: 'four' })).length,
+  1
+);
+expect('a wrong ignorable count fails', inv(readmeDoc({ ignorable: 'six' })).length, 1);
+expect('a wrong sub-check count fails', inv(readmeDoc({ sub: 'Nine' })).length, 1);
+expect('a wrong further-counter-test count fails', inv(readmeDoc({ further: 'Five' })).length, 1);
+expect(
+  'a wrong count in CLAUDE.md fails, and is attributed to CLAUDE.md',
+  inv(readmeDoc(), claudeDoc('nine')),
+  ['CLAUDE.md — states 9 counter-test files; there are 3.']
+);
+
+// Rewording a sentence takes it out of the scan, so its absence has to cost the
+// same as a wrong number. Otherwise the cheapest way out of a failing run is to
+// delete the claim.
+expect(
+  'a claim reworded out of the scan is a finding, not a pass',
+  inv(readmeDoc().replace(/Three of them[^\n]*\n/, 'There are a few.\n')).length,
+  1
+);
+// Asserted whole rather than counted: a number the scan cannot read must be
+// reported *as unreadable*. Comparing null against 3 also produces one finding,
+// and it sends the reader to recount something that was never the problem.
+expect(
+  'a number this scan cannot read says so, rather than reporting a mismatch',
+  inv(readmeDoc({ total: 'Umpteen' })),
+  [
+    'checks/README.md — the number of check scripts in checks/ reads "Umpteen", ' +
+      'which this scan cannot turn into a number. Add the word to WORDS, or use digits.',
+  ]
+);
+
+// --- the legitimate cases nearest the violations
+expect(
+  'rewrapping a claim across a line break does not hide it',
+  inv(readmeDoc().replace('and only the first is meant', 'and only the first\nis meant')),
+  []
+);
+// The CLAUDE.md claim is the comment on an `npm test` line, so it lives in a
+// fence on purpose. Blanking fences there would delete the claim and then report
+// it missing — a false alarm about a document that is correct.
+expect('a claim that legitimately lives in a fence is still read', inv(readmeDoc()), []);
+// ...and the default stays the other way: a fenced example of a README claim is
+// the document showing a claim, not making one.
+expect(
+  'a fenced copy of a README claim does not satisfy it',
+  inv(
+    readmeDoc().replace(
+      /Three of them[^\n]*\n/,
+      '```\nThree of them, and only the first is meant for your project.\n```\n'
+    )
+  ).length,
+  1
+);
+
+// --- names, which is the stronger claim
+expect(
+  'the sub-check table is read, and the options table below it is not',
+  tabulatedSubChecks(readmeDoc()),
+  ['links', 'withdrawn']
+);
+expect('a document with no such table reports that rather than an empty list',
+  tabulatedSubChecks('# Checks\n\nNothing here.\n'), null);
+expect('the named counter-tests are read', namedCounterTests(readmeDoc()), [
+  'b.test.mjs',
+  'c.test.mjs',
+]);
+expect(
+  'a reworded sentence yields null rather than an empty list',
+  namedCounterTests('# Checks\n\nSome counter-tests exist.\n'),
+  null
+);
+expect('two lists that agree produce no finding',
+  compareNames(['b.test.mjs'], ['b.test.mjs'], 'tests', 'f.md'), []);
+expect(
+  'an omitted name is reported as omitted',
+  compareNames(['b.test.mjs'], ['b.test.mjs', 'c.test.mjs'], 'tests', 'f.md'),
+  ['f.md — the tests omit c.test.mjs.']
+);
+expect(
+  'an invented name is reported separately from an omitted one',
+  compareNames(['z.test.mjs'], ['b.test.mjs'], 'tests', 'f.md'),
+  [
+    'f.md — the tests omit b.test.mjs.',
+    'f.md — the tests name z.test.mjs, which do not exist.',
+  ]
+);
+expect(
+  'a list that was removed entirely is a finding',
+  compareNames(null, ['b.test.mjs'], 'tests', 'f.md').length,
+  1
+);
 
 console.log(`\n${ran} cases, ${failures} failed`);
 process.exit(failures ? 1 : 0);

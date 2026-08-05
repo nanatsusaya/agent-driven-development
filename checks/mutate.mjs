@@ -43,6 +43,7 @@ const SUITES = {
   plugin: 'checks/plugin-version.test.mjs',
   version: 'checks/documented-version.test.mjs',
   template: 'checks/copied-templates.test.mjs',
+  counts: 'checks/documented-counts.test.mjs',
 };
 
 /**
@@ -576,6 +577,83 @@ const MUTATIONS = [
     file: 'checks/check-method.mjs',
     from: "    let indexDoc = byBase('README.md');",
     to: '    let indexDoc = null;',
+  },
+
+  // --- the inventory this repository states about itself, in prose
+  {
+    label: 'a stated inventory number may disagree with what is there',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: '    if (stated !== real) {',
+    to: '    if (false) {',
+  },
+  {
+    // Rewording a sentence takes it out of the scan, so the absence has to cost
+    // what a wrong number costs. Otherwise deleting the claim is the cheapest
+    // way out of a failing run.
+    label: 'a claim reworded out of the scan passes in silence',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: '    if (!m) {',
+    to: '    if (false) {',
+  },
+  {
+    // Comparing an unreadable number against a real one also produces a
+    // finding, so this survives a count-only assertion. It is caught because the
+    // case asserts the sentence: an unreadable number sends the reader to
+    // recount something that was never wrong.
+    label: 'an unreadable number is reported as a mismatch rather than as unreadable',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: '    if (stated === null) {',
+    to: '    if (false) {',
+  },
+  {
+    label: 'a word outside the list is read as zero rather than refused',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: '  return WORDS.has(t) ? WORDS.get(t) : null;',
+    to: '  return WORDS.has(t) ? WORDS.get(t) : 0;',
+  },
+  {
+    // Fences, in the direction that deletes a true claim: the CLAUDE.md number
+    // is the comment on an `npm test` line and lives in one on purpose.
+    label: 'a claim that legitimately lives in a fence is blanked away',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: 'claim.inFence ? text : blankFences(text)',
+    to: 'blankFences(text)',
+  },
+  {
+    // ...and the other direction, which accepts an example as the claim.
+    label: 'a fenced example of a claim satisfies it',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: 'const m = claim.pattern.exec(claim.inFence ? text : blankFences(text));',
+    to: 'const m = claim.pattern.exec(text);',
+  },
+  {
+    // The scan reaches past the sub-check table into the options table, where
+    // `--lint` is a row doing its job rather than a check that went missing.
+    label: 'the sub-check scan runs on past its own table',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: '    if (/^\\s*$/.test(line) && names.length) break;',
+    to: '    if (false) break;',
+  },
+  {
+    label: 'a name the document omitted is not reported',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: '  if (missing.length) {',
+    to: '  if (false) {',
+  },
+  {
+    label: 'a name the document invented is not reported',
+    suite: 'counts',
+    file: 'checks/lib/documented-inventory.mjs',
+    from: '  if (invented.length) {',
+    to: '  if (false) {',
   },
 
   // --- the pull-request shape, which has to exist in two files at once

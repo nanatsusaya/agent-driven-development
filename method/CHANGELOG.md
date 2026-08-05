@@ -22,6 +22,34 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## Checks 0.5.3
+
+Against catalogue 0.5, which does not move. **Nothing here changes an adopter's
+result.** `check-method.mjs` is untouched.
+
+### Fixes with no effect on an adopter
+
+**The numbers this repository states about itself are now held by a command.**
+`documented-counts.mjs` compared two case counts and nothing else, so the rest
+of [`checks/README.md`](../checks/README.md) drifted: it undercounted the
+checks, undercounted them again a sentence later, and named one fewer
+counter-test than existed. Four wrong numbers in the document whose job is to
+say what these checks do, and nothing failed.
+
+It now also reads the inventory — from the file system and from the source
+rather than from a run — and compares **names as well as totals**. A total is
+the weaker claim: a table that loses one row and gains another keeps its count,
+and a list that omits a file reads as complete. That omission is what actually
+happened.
+
+Three consequences of reading prose, each a decision rather than an accident.
+Counts written as words are parsed as words, and a number the scan cannot turn
+into an integer is a finding rather than a skip. A claim reworded out of the
+scan is a finding too, because otherwise deleting a sentence is the cheapest way
+out of a failing run. And fences cut both ways: a fenced copy of a claim is an
+example, not the document making it — except where a number legitimately lives
+in one, as the comment on a command, which is read from the raw text.
+
 ## Checks 0.5.2
 
 Against catalogue 0.5, which does not move. **Nothing here changes an adopter's

@@ -1,31 +1,48 @@
 #!/usr/bin/env node
 /**
- * House-style check: do the case counts in checks/README.md match the
- * counter-tests they describe?
+ * House-style check: is every number this repository states about itself true?
  *
- * House style rather than method, the same way line-width.mjs is: it knows one
- * sentence in one file of this repository, and a project adopting the catalogue
- * has no use for it. It is not part of the coherence check and never runs
- * against somebody else's project.
+ * House style rather than method, the same way line-width.mjs is: it knows this
+ * repository's own documents, and a project adopting the catalogue has no use
+ * for it. It is not part of the coherence check and never runs against somebody
+ * else's project.
  *
- * It exists because that sentence is the argument for trusting every other
- * check here, and it drifted eighteen cases without failing anything. C4 makes
- * that a defect rather than untidiness.
+ * Two halves, with two different sources.
  *
- * It runs both counter-tests to learn the real numbers, so it costs what they
- * cost. There is no cheaper source: the cases are not statically countable.
+ *   - The **case counts**, which exist nowhere but in a run, so it runs both
+ *     counter-tests and costs what they cost.
+ *   - The **inventory** — how many checks there are, how many sit inside
+ *     check-method.mjs, how many counter-tests carry no published figure, and
+ *     which files those are — read from the file system and from the source.
+ *
+ * Both halves exist for the same reason and it is not tidiness. The case figure
+ * drifted eighteen cases without failing anything; the inventory was wrong in
+ * four places at once, in the document whose whole job is to say what these
+ * checks do. Each was a sentence somebody wrote once and nobody recounted, which
+ * is E1 exactly: a claim a command could decide, left to whoever remembers.
+ *
+ * Names are compared as well as totals. A table that lost one row and gained
+ * another keeps its count, and a list that omits a file reads as complete —
+ * which is how documented-version.test.mjs went unnamed for two releases.
  *
  * Usage: node documented-counts.mjs
  */
 
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 import { compareCounts, ranCount } from './lib/documented-counts.mjs';
+import {
+  compareInventory,
+  compareNames,
+  namedCounterTests,
+  tabulatedSubChecks,
+} from './lib/documented-inventory.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, '..');
 const README = join(HERE, 'README.md');
 
 /** The two counter-tests, keyed the way the findings name them. */
@@ -34,11 +51,21 @@ const RUNNERS = [
   ['lineWidth', 'line-width.test.mjs'],
 ];
 
+/**
+ * The counter-tests whose case counts checks/README.md publishes.
+ *
+ * Named here because it is the same decision RUNNERS encodes, seen from the
+ * other side: every other counter-test is deliberately given no figure, and it
+ * is that remainder the document counts and names.
+ */
+const FIGURED = new Set(RUNNERS.map(([, f]) => f));
+
 const bar = '─'.repeat(72);
 console.log(bar);
 console.log('documented counts');
-console.log('  claim:  checks/README.md · the counter-test case counts');
-console.log(`  source: ${RUNNERS.map(([, f]) => f).join(' · ')}`);
+console.log('  claim:  checks/README.md · the case counts, the inventory it');
+console.log('          states about itself, and the files it names');
+console.log(`  source: ${RUNNERS.map(([, f]) => f).join(' · ')} · checks/ · check-method.mjs`);
 console.log(bar);
 
 const actual = {};
@@ -59,7 +86,60 @@ for (const [key, file] of RUNNERS) {
   actual[key] = ranCount(run.stdout ?? '');
 }
 
-const findings = broke ? [] : compareCounts(readFileSync(README, 'utf8'), actual);
+const readme = readFileSync(README, 'utf8');
+const findings = broke ? [] : compareCounts(readme, actual);
+
+// The inventory half, which needs no run: these numbers come from the file
+// system and from the source, and they are the ones that were wrong in four
+// places at once with nothing failing. Checked even when a counter-test broke,
+// because it does not depend on one.
+const entries = readdirSync(join(ROOT, 'checks'));
+const counterTests = entries.filter((f) => f.endsWith('.test.mjs')).sort();
+const inventory = {
+  // mutate.mjs is a harness rather than a check: it decides nothing about this
+  // repository, it decides whether the checks decide anything.
+  checks: entries
+    .filter((f) => f.endsWith('.mjs') && !f.endsWith('.test.mjs') && f !== 'mutate.mjs')
+    .sort(),
+  counterTests,
+  unfiguredTests: counterTests.filter((f) => !FIGURED.has(f)),
+  subChecks: [
+    ...new Set(
+      [...readFileSync(join(HERE, 'check-method.mjs'), 'utf8').matchAll(/\bfail\(\s*'([a-z-]+)'/g)]
+        .map((m) => m[1])
+    ),
+  ].sort(),
+};
+
+findings.push(
+  ...compareInventory(
+    {
+      'checks/README.md': readme,
+      'CLAUDE.md': readFileSync(join(ROOT, 'CLAUDE.md'), 'utf8'),
+    },
+    inventory
+  )
+);
+
+// Names, not just totals. A table that lost one row and gained another keeps its
+// count, and a list that omits a file reads as complete — which is exactly how
+// documented-version.test.mjs went unnamed for two releases.
+findings.push(
+  ...compareNames(
+    tabulatedSubChecks(readme)?.sort() ?? null,
+    inventory.subChecks,
+    'checks listed in the sub-check table',
+    'checks/README.md'
+  )
+);
+findings.push(
+  ...compareNames(
+    namedCounterTests(readme)?.sort() ?? null,
+    inventory.unfiguredTests,
+    'counter-tests named as carrying no figure',
+    'checks/README.md'
+  )
+);
 
 if (broke || findings.length) {
   if (findings.length) {
@@ -76,8 +156,13 @@ if (broke || findings.length) {
   process.exit(1);
 }
 
-console.log(`\n${bar}`);
+console.log('');
+console.log(`  ${actual.coherence} and ${actual.lineWidth} cases, as stated`);
 console.log(
-  `OK · checks/README.md states ${actual.coherence} and ${actual.lineWidth}, and so do the runs`
+  `  ${inventory.checks.length} checks · ${inventory.subChecks.length} inside ` +
+    `check-method.mjs · ${inventory.counterTests.length} counter-tests, ` +
+    `${inventory.unfiguredTests.length} of them named without a figure`
 );
+console.log(`\n${bar}`);
+console.log('OK · every number this repository states about itself is true');
 console.log(bar);
