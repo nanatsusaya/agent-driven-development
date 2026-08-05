@@ -357,10 +357,13 @@ for (let i = 0; i < argv.length; i++) {
     console.log(
       'Usage: check-method.mjs [project-path] [--catalogue <path>]\n' +
         '                       [--lint [--spelling british|american]] [--quiet]\n\n' +
-        '  --lint  run the document scans only, with no method.json: links and\n' +
-        '          anchors resolve, no document teaches a withdrawn rule, and one\n' +
-        '          spelling regime holds. For a project that has not adopted the\n' +
-        '          method, or does not intend to.'
+        '  --lint  do not require a method.json. The document scans still run:\n' +
+        '          links and anchors resolve, no document teaches a withdrawn\n' +
+        '          rule, and one spelling regime holds. For a project that has\n' +
+        '          not adopted the method, or does not intend to.\n\n' +
+        '          The flag suppresses nothing else. Where a declaration is\n' +
+        '          present it is read and checked exactly as without the flag,\n' +
+        '          so --lint can never report less than the plain run.'
     );
     process.exit(0);
   } else if (!a.startsWith('-')) {
@@ -1367,10 +1370,18 @@ if (decl && !quiet) {
         `documents were not scanned: ${sanitise(scan.unreadable.join(', '))}`
     );
   }
-  if (lint) {
+  // Conditional on there being no declaration, not on the flag. The note used to
+  // print whenever --lint was given, and `--lint` only ever suppressed the
+  // *missing-declaration* finding — so on an adopted project the run performed
+  // every declaration, artefact, adaptation and decision-index check and then
+  // told the reader it had performed none of them. A report that under-claims is
+  // the same defect as one that over-claims: both leave the reader believing
+  // something the run did not establish, and this one taught them to distrust a
+  // result that was in fact complete.
+  if (lint && !decl) {
     console.log(
-      '  --lint: only the document scans ran. The declaration, artefact,\n' +
-        '  adaptation and decision-index checks all need a method.json.'
+      '  --lint: there is no method.json here, so the declaration, artefact,\n' +
+        '  adaptation and decision-index checks had nothing to run against.'
     );
   }
   for (const line of skipped) console.log(line);
@@ -1390,4 +1401,9 @@ if (findings.length) {
   console.log(`FAIL · ${findings.length} finding${findings.length === 1 ? '' : 's'}`);
   process.exit(1);
 }
-console.log(lint ? 'OK · the documents scan clean' : 'OK · the declaration matches the project');
+// Decided by what was actually read, not by the flag. Keyed on `lint`, an
+// adopted project run with --lint ended on "the documents scan clean" while the
+// declaration had matched too — the weaker of the two claims, for the stronger
+// of the two runs. Reaching here with no declaration and without --lint is not
+// possible: that combination is a finding, and a finding exits above.
+console.log(decl ? 'OK · the declaration matches the project' : 'OK · the documents scan clean');

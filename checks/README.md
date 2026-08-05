@@ -73,10 +73,19 @@ fails for the wrong reason gets ignored for the right ones.
 node checks/check-method.mjs <project-path> --lint --spelling british
 ```
 
-Runs only the checks that read documents — [C5](../method/rules.md#c5),
-[M2](../method/rules.md#m2) and [L1](../method/rules.md#l1) — and needs no
-`method.json`. Use it on a project that has not adopted the method, or does not
-intend to. Everything it did not run is named in the report.
+Makes a missing `method.json` something other than a finding, so that the
+checks which read documents — [C5](../method/rules.md#c5),
+[M2](../method/rules.md#m2) and [L1](../method/rules.md#l1) — are usable on a
+project that has not adopted the method, or does not intend to. What had
+nothing to run against is named in the report.
+
+**The flag suppresses nothing.** Where a declaration is present it is read and
+checked exactly as it is without the flag, so `--lint` can never report less
+than the plain run. It used to say otherwise: the report claimed the
+declaration, artefact, adaptation and decision-index checks had not run
+whenever the flag was given, including on projects where all four had just run
+and produced findings. A report that under-claims costs its reader what one
+that over-claims costs — belief in a result that was sound.
 
 Without `--lint`, a missing declaration is still a finding. Lint mode is opt-in;
 it is not the check quietly relaxing.
@@ -166,8 +175,8 @@ actually withdrawn, because until then there is nothing to check against.
 |---|---|
 | `<project-path>` | defaults to the working directory |
 | `--catalogue <path>` | use a different catalogue; defaults to `../method` relative to the script |
-| `--lint` | run the document scans only; no `method.json` needed |
-| `--spelling <regime>` | the spelling regime for `--lint`: `british` or `american` |
+| `--lint` | do not require a `method.json`; suppresses nothing else |
+| `--spelling <regime>` | name the regime a declaration would otherwise give: `british` or `american` |
 | `--quiet` | omit the in-force listing. The blind-spot section is always printed |
 
 Exit codes: `0` coherent · `1` findings · `2` the catalogue itself could not be
@@ -262,7 +271,7 @@ had gone eighteen cases stale before anybody read it against a run.
 npm test
 ```
 
-152 cases for the coherence check and 13 for the line-width check, each building
+157 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
