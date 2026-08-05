@@ -124,7 +124,7 @@ divergences.
 ```json
 {
   "method": "agent-project-rules",
-  "version": "0.4",
+  "version": "0.5",
   "artefacts": {
     "operating-rules": "CLAUDE.md",
     "decisions": "docs/adr/",

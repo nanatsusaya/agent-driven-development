@@ -145,7 +145,7 @@ Binding a role means naming the file or directory that plays it. That is what
 ```json
 {
   "method": "agent-project-rules",
-  "version": "0.4",
+  "version": "0.5",
   "artefacts": {
     "operating-rules": "CLAUDE.md",
     "decisions": "docs/adr/",

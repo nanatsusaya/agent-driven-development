@@ -176,7 +176,7 @@ read.
 ## This repository's own checks
 
 None of them is part of the method. They enforce conventions this repository
-holds itself to, and an adopting project is free to ignore all three.
+holds itself to, and an adopting project is free to ignore all five.
 
 ```bash
 node checks/line-width.mjs <project-path> [--limit 80]
@@ -220,6 +220,31 @@ It compares against the working tree rather than against `HEAD`, so it answers
 while the answer can still be a file edit. Where git has nothing to say — no
 repository, no tags, or a release that declared no version — it says so under
 *not decided here* rather than reporting success.
+
+```bash
+node checks/documented-version.mjs
+```
+
+[`documented-version.mjs`](documented-version.mjs) fails when an example
+`method.json` in this repository declares a catalogue version other than the one
+in [`method/VERSION`](../method/VERSION). Four documents carry a copyable
+declaration, and [`agent-manual/method.json`](../agent-manual/method.json) is
+the one the front page offers as the thing to start from — so a stale version
+here is not untidiness, it is every adopter beginning on a pin they never chose
+and being told by their first run that they are behind.
+
+It is scoped to **this** repository on purpose. A project pinning itself to an
+older catalogue is making a legitimate choice, which
+[`check-method.mjs`](check-method.mjs) reports and deliberately does not fail
+on; only the templates people copy have to be current.
+
+The scan is block-scoped: a version is compared only when it sits in the same
+JSON object as the method's own name. That is what keeps `package.json` and the
+two plugin manifests out of it without an exemption list naming them, which
+would go stale the first time somebody added a manifest. A run that recognises
+no declaration at all fails rather than passing, because a rename moving the
+method's name out from under the pattern would otherwise arrive as a green
+result.
 
 ```bash
 node checks/documented-counts.mjs
