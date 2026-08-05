@@ -38,6 +38,22 @@ Ten checks:
 | `withdrawn` | no document still teaches a rule the catalogue has withdrawn | [M2](../method/rules.md#m2) |
 | `language` | one spelling regime, if the project declares one | [L1](../method/rules.md#l1) |
 
+**How `decisions` finds the index.** Three routes, most specific first:
+`README.md`; a document named after the directory itself — `ADR/ADR.md` — which
+is how a tool that cannot link to a folder makes one reachable; and failing
+both, the single document in the directory carrying a status table. If more than
+one document carries one, that is a finding rather than a guess, because a
+wrongly chosen index makes every later finding a statement about the wrong file.
+When the index was found by anything other than its name, **the report says
+which document it read and why** — for the same reason.
+
+It used to be found only as `README.md`. That was stricter than the rules it
+enforces: [D1](../method/rules.md#d1)'s *Binding* asks for an index with a
+status column and [D2](../method/rules.md#d2)'s *Check* for the statuses
+agreeing, and neither names a file. A project holding the rule in full could
+still fail, and its only way out was to declare D2 `deferred` — which reads as
+the rule not being followed, over a file name.
+
 A check tied to a rule runs only while that rule is in force, and the kind of
 adaptation decides that. `dropped`, `replaced` and `deferred` switch the check
 off — that is [A1](../method/rules.md#a1) working, not a hole. **`narrowed`
@@ -313,7 +329,7 @@ must not arrive as agreement.
 npm test
 ```
 
-157 cases for the coherence check and 13 for the line-width check, each building
+166 cases for the coherence check and 13 for the line-width check, each building
 a throwaway project and asserting the exit code — and, for the coherence check,
 which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.

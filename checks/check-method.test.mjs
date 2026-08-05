@@ -998,6 +998,69 @@ expect('a complete, coherent project passes', baseline('good'), true);
     '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Done |\n');
   expect('an index with no recognised status anywhere fails', d, false, ['decisions']);
 }
+// --- how the index is found. It used to be found only as README.md, which is
+// stricter than the rules it enforces: D1's Binding asks for "an index with a
+// status column" and D2's Check for the statuses agreeing, and neither names a
+// file. A project holding the rule in full could still fail, and its only way
+// out was to declare D2 deferred — which reads as "this rule is not followed
+// here" when the truth was "our index has a different name".
+const INDEX_TABLE =
+  '# Decisions\n\n| # | Title | Status |\n|---|---|---|\n| 0001 | First | Accepted |\n';
+{
+  const d = baseline('index-named-after-directory');
+  rmSync(join(d, 'docs/adr/README.md'));
+  put(d, 'docs/adr/adr.md', INDEX_TABLE);
+  expect('an index named after its directory is found', d, true);
+  expectSays(
+    'and the report names the document it read, and why',
+    d,
+    /index was read as docs\/adr\/adr\.md, because it is named after its directory/
+  );
+}
+{
+  const d = baseline('index-by-status-table');
+  rmSync(join(d, 'docs/adr/README.md'));
+  put(d, 'docs/adr/index.md', INDEX_TABLE);
+  expect('the only document carrying a status table is read as the index', d, true);
+  expectSays(
+    'a guessed index is announced rather than assumed',
+    d,
+    /the only document here carrying a status table/
+  );
+}
+{
+  // Two candidates and no file name to decide between them. Picking one would
+  // make every finding after it a statement about a document nobody chose.
+  const d = baseline('index-ambiguous');
+  rmSync(join(d, 'docs/adr/README.md'));
+  put(d, 'docs/adr/index.md', INDEX_TABLE);
+  put(d, 'docs/adr/overview.md', INDEX_TABLE);
+  expect('two documents that both look like an index fails', d, false, ['decisions']);
+  expectSays('the finding names both candidates', d, /index\.md, overview\.md/);
+}
+{
+  // No index under any of the three routes. The decision record left in the
+  // directory states its status as a line, never a table row, so a directory of
+  // records is still "no index" rather than a record promoted to one.
+  const d = baseline('index-missing-entirely');
+  rmSync(join(d, 'docs/adr/README.md'));
+  expect('no index under any route still fails', d, false, ['decisions']);
+  expectSays(
+    'the finding says it looked by file name, so "no index" cannot be read as "wrong name"',
+    d,
+    /looked for by file name first — README\.md, then adr\.md/
+  );
+}
+{
+  // The nearest legitimate case to all four: README.md is present, and another
+  // document in the directory also carries a table. The table contradicts the
+  // project on purpose — it claims a decision with no file behind it — so if
+  // precedence broke and that document were read as the index, this case fails.
+  const d = baseline('index-readme-wins');
+  put(d, 'docs/adr/overview.md',
+    '# Overview\n\n| # | Title | Status |\n|---|---|---|\n| 0002 | Invented | Accepted |\n');
+  expect('README.md is still the index when another document carries a table', d, true);
+}
 {
   const d = baseline('index-row-without-file');
   put(d, 'docs/adr/README.md',
