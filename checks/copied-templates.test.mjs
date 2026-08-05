@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Counter-test for the pull-request-template check.
+ * Counter-test for the copied-templates check.
  *
  * Rule E3: a check is not trusted until it has been fed deliberate violations
  * and shown to fail on each, and shown to pass on the legitimate cases nearest
@@ -13,10 +13,10 @@
  * files grow a section together. A check that only compared the two documents
  * would pass it, and the shape would have changed with nothing saying so.
  *
- * Usage: node pull-request-template.test.mjs
+ * Usage: node copied-templates.test.mjs
  */
 
-import { headings, shape, templateFindings } from './lib/pull-request-template.mjs';
+import { PAIRS, headings, shape, templateFindings } from './lib/copied-templates.mjs';
 
 /**
  * The core set, written out rather than imported from the check.
@@ -82,10 +82,11 @@ const BODY =
 const HANDBOOK = HANDBOOK_COMMENT + BODY;
 const COPY = COPY_COMMENT + BODY;
 
-const check = (handbook, copy) => templateFindings(handbook, copy, 'handbook.md', 'copy.md');
+const check = (handbook, copy) =>
+  templateFindings(handbook, copy, 'handbook.md', 'copy.md', WANTED);
 
 const sectionsFinding = (file, got) =>
-  `${file} — sections are ${got}; the core set is ${WANTED.join(' · ')}`;
+  `${file} — sections are ${got}; the set for this pair is ${WANTED.join(' · ')}`;
 
 // --- 1. the shape is read at all
 expect('the five headings are read', headings(HANDBOOK), WANTED);
@@ -196,6 +197,78 @@ expect(
 // that fails for the wrong reason on somebody else's machine.
 expect('a CRLF copy agrees with an LF handbook', check(HANDBOOK, COPY.replace(/\n/g, '\r\n')), []);
 expect('a trailing blank line is not a difference', check(HANDBOOK, `${COPY}\n\n`), []);
+
+// --- 5. the pair list, which is what makes this one check rather than two
+
+// Written out rather than derived, for the same reason WANTED is: a pair
+// dropped from the constant would take its expectation with it, and the run
+// would go green having compared one fewer thing.
+expect(
+  'both copied templates are declared, with their paths and section sets',
+  PAIRS,
+  [
+    {
+      handbook: 'agent-manual/pull-request.md',
+      copy: '.github/PULL_REQUEST_TEMPLATE.md',
+      sections: ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups'],
+    },
+    {
+      handbook: 'agent-manual/issue-templates/task.md',
+      copy: '.github/ISSUE_TEMPLATE/task.md',
+      sections: ['Context', 'Scope', 'Constraints', 'Related'],
+    },
+  ]
+);
+
+const ISSUE_SECTIONS = ['Context', 'Scope', 'Constraints', 'Related'];
+const ISSUE_BODY =
+  section('Context', 'The problem or goal, and why it exists.') +
+  section('Scope', 'Testable acceptance criteria, one per line.') +
+  section('Constraints', 'Anything that limits the solution.') +
+  section('Related', 'Parent epic, related decisions and tickets.') +
+  '\n';
+
+// The second pair's copy carries YAML frontmatter its handbook has no use for —
+// that is how GitHub is told what to call the template. It sits above the first
+// heading, so the exemption covering the differing opening comment covers it
+// too. Without that, the pair could never agree and the check would be
+// unusable for exactly the case it was generalised for.
+expect(
+  'frontmatter on the copy only is not a difference',
+  templateFindings(
+    `<!--\nCopy to .github/ISSUE_TEMPLATE/task.md.\n-->${ISSUE_BODY}`,
+    `---\nname: Task\nabout: A unit of work\n---\n\n<!--\nA copy.\n-->${ISSUE_BODY}`,
+    'handbook.md',
+    'copy.md',
+    ISSUE_SECTIONS
+  ),
+  []
+);
+expect(
+  'the issue shape agrees with itself under its own set',
+  templateFindings(
+    `<!--\na\n-->${ISSUE_BODY}`,
+    `<!--\nb\n-->${ISSUE_BODY}`,
+    'handbook.md',
+    'copy.md',
+    ISSUE_SECTIONS
+  ),
+  []
+);
+// Each pair is held to its own set. Judged against the other pair's set, two
+// files that agree with each other perfectly are still both findings — which is
+// what stops one set quietly becoming the set for everything.
+expect(
+  'a pair is held to its own section set, not another pair’s',
+  templateFindings(
+    `<!--\na\n-->${ISSUE_BODY}`,
+    `<!--\nb\n-->${ISSUE_BODY}`,
+    'handbook.md',
+    'copy.md',
+    WANTED
+  ).length,
+  2
+);
 
 console.log(`\n${ran} cases, ${failures} failed`);
 process.exit(failures ? 1 : 0);

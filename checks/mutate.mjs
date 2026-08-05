@@ -42,7 +42,7 @@ const SUITES = {
   install: 'checks/install-commands.test.mjs',
   plugin: 'checks/plugin-version.test.mjs',
   version: 'checks/documented-version.test.mjs',
-  template: 'checks/pull-request-template.test.mjs',
+  template: 'checks/copied-templates.test.mjs',
 };
 
 /**
@@ -585,31 +585,50 @@ const MUTATIONS = [
     // agree perfectly — the failure a same-content check is least able to see.
     label: 'the heading set is no longer held to the core sections',
     suite: 'template',
-    file: 'checks/lib/pull-request-template.mjs',
-    from: "if (got.join('\\n') !== CORE_SECTIONS.join('\\n')) {",
+    file: 'checks/lib/copied-templates.mjs',
+    from: "if (got.join('\\n') !== sections.join('\\n')) {",
     to: 'if (false) {',
   },
   {
     // And the constant itself, which is why the counter-test writes the five
     // out rather than importing them: an imported expectation moves with the
     // thing it is supposed to hold.
-    label: 'the core set may grow a section',
+    label: 'a section set may grow a section',
     suite: 'template',
-    file: 'checks/lib/pull-request-template.mjs',
-    from: "export const CORE_SECTIONS = ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups'];",
-    to: "export const CORE_SECTIONS = ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups', 'Watched'];",
+    file: 'checks/lib/copied-templates.mjs',
+    from: "    sections: ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups'],",
+    to: "    sections: ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups', 'Watched'],",
+  },
+  {
+    // The list is what makes this one check rather than two. A pair that falls
+    // out of it is a comparison that stops happening, and nothing else notices:
+    // the run reports success about the pairs that are left.
+    label: 'a pair falls out of the list',
+    suite: 'template',
+    file: 'checks/lib/copied-templates.mjs',
+    from: "    handbook: 'agent-manual/issue-templates/task.md',",
+    to: "    handbook: 'agent-manual/issue-templates/gone.md',",
+  },
+  {
+    // Every pair judged by the first pair's set. The pull-request pair still
+    // passes, which is what makes this the quiet kind of breakage.
+    label: 'every pair is judged by the first pair’s section set',
+    suite: 'template',
+    file: 'checks/lib/copied-templates.mjs',
+    from: '  for (const [name, text] of [',
+    to: '  sections = PAIRS[0].sections;\n  for (const [name, text] of [',
   },
   {
     label: 'the two files may disagree below the first heading',
     suite: 'template',
-    file: 'checks/lib/pull-request-template.mjs',
+    file: 'checks/lib/copied-templates.mjs',
     from: 'if (a.body !== b.body) {',
     to: 'if (false) {',
   },
   {
     label: 'a handbook with no shape is compared against anyway',
     suite: 'template',
-    file: 'checks/lib/pull-request-template.mjs',
+    file: 'checks/lib/copied-templates.mjs',
     from: '  if (a === null) {',
     to: '  if (false) {',
   },
@@ -618,7 +637,7 @@ const MUTATIONS = [
     // so "there is nothing there" must not arrive as agreement.
     label: 'a copy with no shape reads as a copy that agrees',
     suite: 'template',
-    file: 'checks/lib/pull-request-template.mjs',
+    file: 'checks/lib/copied-templates.mjs',
     from: '  if (b === null) {',
     to: '  if (false) {',
   },
@@ -628,14 +647,14 @@ const MUTATIONS = [
     // section nobody wrote.
     label: 'a hash inside an HTML comment counts as a heading',
     suite: 'template',
-    file: 'checks/lib/pull-request-template.mjs',
+    file: 'checks/lib/copied-templates.mjs',
     from: '    return !started && !opens;',
     to: '    return true;',
   },
   {
     label: 'line endings are not normalised before comparing',
     suite: 'template',
-    file: 'checks/lib/pull-request-template.mjs',
+    file: 'checks/lib/copied-templates.mjs',
     from: "text.replace(/\\r\\n?/g, '\\n').replace(/\\s+$/, '')",
     to: 'text',
   },
