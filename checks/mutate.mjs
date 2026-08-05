@@ -541,6 +541,43 @@ const MUTATIONS = [
     to: 'const STATED_VERSION = /`(\\d+\\.\\d+\\.\\d+)`/;',
   },
 
+  // --- how the decision index is found. The check used to look only for
+  // README.md, which is stricter than D1 and D2, neither of which names a file.
+  {
+    label: 'the index is no longer found by its directory name',
+    file: 'checks/check-method.mjs',
+    from: '      indexDoc = byBase(`${dirName}.md`);',
+    to: '      indexDoc = null;',
+  },
+  {
+    label: 'a lone status table is no longer recognised as the index',
+    file: 'checks/check-method.mjs',
+    from: '      if (candidates.length === 1) {',
+    to: '      if (false) {',
+  },
+  {
+    // Two candidates and no name to choose between them. Silently picking one
+    // makes every finding after it a statement about a document nobody chose.
+    label: 'an ambiguous index is picked rather than reported',
+    file: 'checks/check-method.mjs',
+    from: '      } else if (candidates.length > 1) {',
+    to: '      } else if (false) {',
+  },
+  {
+    // The half that keeps the widening honest: an index the check *guessed* at
+    // has to be a fact the reader can disagree with.
+    label: 'a guessed index is used without saying so',
+    file: 'checks/check-method.mjs',
+    from: '      if (howFound) {',
+    to: '      if (false) {',
+  },
+  {
+    label: 'README.md loses its precedence over the other two routes',
+    file: 'checks/check-method.mjs',
+    from: "    let indexDoc = byBase('README.md');",
+    to: '    let indexDoc = null;',
+  },
+
   // --- the pull-request shape, which has to exist in two files at once
   {
     // The mutation that says why the check is not only a diff. With the set

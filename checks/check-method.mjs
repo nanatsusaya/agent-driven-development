@@ -993,17 +993,87 @@ if (decl && inForce('D2') && bound.decisions) {
   } else {
     const rel = bound.decisions.replace(/\/+$/, '');
     const inDir = docs.filter((d) => d.rel.startsWith(rel + '/'));
-    const indexDoc = inDir.find((d) => /\/README\.md$/i.test(d.rel));
 
+    /**
+     * Does this document carry an index table — a row whose first cell holds a
+     * four-digit number and whose last cell is one of the four statuses?
+     *
+     * Deliberately the same shape the index is read with below, so a document
+     * this accepts is one the reader can actually use. A decision record does
+     * not match: its status is a line or a heading, never a table row.
+     */
+    const carriesIndexTable = (d) => {
+      for (const row of blankFences(d.text).matchAll(/^\|(.+)\|\s*$/gm)) {
+        const cells = row[1].split('|').map((c) => c.trim());
+        if (cells.length < 3) continue;
+        if (!/\d{4}/.test(cells[0])) continue;
+        if (/^(Proposed|Accepted|Superseded|Planned)$/i.test(cells[cells.length - 1])) return true;
+      }
+      return false;
+    };
+
+    // The index used to be found only as README.md, which is stricter than the
+    // rules it enforces: D1's Binding asks for "an index with a status column"
+    // and D2's Check for the statuses agreeing, and neither names a file. A
+    // project satisfying the rule could still fail, and its only way out was to
+    // declare D2 deferred — which reads as "this rule is not followed here" when
+    // the truth was "our index has a different name".
+    //
+    // Three routes, most specific first. Whichever one was taken is named in the
+    // report, because an index the check *guessed* at is a fact the reader has
+    // to be able to disagree with.
+    const dirName = basename(rel);
+    const byBase = (name) =>
+      inDir.find((d) => basename(d.rel).toLowerCase() === name.toLowerCase());
+
+    let indexDoc = byBase('README.md');
+    let howFound = null;
     if (!indexDoc) {
+      // A folder's overview note carrying the folder's own name is how a whole
+      // family of tools makes a directory reachable at all — where nothing can
+      // link to a folder, and where README.md is already the vault entry point.
+      indexDoc = byBase(`${dirName}.md`);
+      if (indexDoc) howFound = 'it is named after its directory';
+    }
+    /** Several documents look like an index, so none of them is the index. */
+    let ambiguous = null;
+    if (!indexDoc) {
+      const candidates = inDir.filter(carriesIndexTable);
+      if (candidates.length === 1) {
+        indexDoc = candidates[0];
+        howFound = 'it is the only document here carrying a status table';
+      } else if (candidates.length > 1) {
+        ambiguous = candidates;
+      }
+    }
+
+    if (ambiguous) {
       fail(
         'decisions',
         rel,
-        'No README.md index. Rule D2 is checkable only against an index that ' +
-          'claims a status for every decision; without one, a superseded ' +
-          'decision looks exactly like a current one.'
+        `No README.md and no ${dirName}.md, and ${ambiguous.length} documents ` +
+          `here carry a status table: ${ambiguous.map((d) => basename(d.rel)).join(', ')}. ` +
+          'Picking one would make every finding after it a guess as well. Name ' +
+          'the index README.md, or after this directory.'
+      );
+    } else if (!indexDoc) {
+      fail(
+        'decisions',
+        rel,
+        'No index found. It is looked for by file name first — README.md, then ' +
+          `${dirName}.md after this directory — and failing that as the only ` +
+          'document here carrying a status table. Rule D2 is checkable only ' +
+          'against an index that claims a status for every decision; without ' +
+          'one, a superseded decision looks exactly like a current one.'
       );
     } else {
+      if (howFound) {
+        note(
+          `the decision index was read as ${indexDoc.rel}, because ${howFound}. ` +
+            'D2 was checked against that document; if it is not your index, ' +
+            'every decisions finding below is about the wrong file'
+        );
+      }
       const indexBody = blankFences(indexDoc.text);
       const claimed = new Map();
       /**

@@ -22,6 +22,43 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## Checks 0.5.1
+
+Against catalogue 0.5, which does not move: no rule was added, changed or
+withdrawn. One change can turn a red run green, and it can let you withdraw an
+adaptation you should never have needed.
+
+### May change your result
+
+**The decision index is no longer found only as `README.md`.** D2's check
+located it by that one file name. That is stricter than the rules it enforces —
+[D1](rules.md#d1)'s *Binding* asks for "an index with a status column",
+[D2](rules.md#d2)'s *Check* for the statuses agreeing, and neither names a file
+— so a project that held the rule in full could still fail on it.
+
+It is now looked for by three routes, most specific first: `README.md`; a
+document named after the directory itself, `ADR/ADR.md`, which is how a tool
+that cannot link to a folder makes one reachable at all; and failing both, the
+single document in the directory carrying a status table.
+
+**What you have to do.** Probably nothing — a project whose index is
+`README.md` sees no change at all. But **if you declared D2 `dropped`,
+`replaced` or `deferred` because your index has another name, that adaptation
+has lost its reason.** Remove it and let the check run. An adaptation kept past
+its cause is worse than none: it reads as a rule this project does not follow,
+and the next session believes it.
+
+Two things this deliberately does not do. **More than one document carrying a
+status table is a finding, not a guess** — a wrongly chosen index would make
+every finding after it a statement about the wrong file. And **when the index
+was found by anything other than its name, the report says which document it
+read and why**, so an inference you disagree with is visible rather than
+buried.
+
+The finding for a directory with no index now says it looked **by file name**,
+and names the two it looked for. "No index" and "your index is not called that"
+used to arrive as the same sentence.
+
 ## Checks 0.5.0
 
 Against catalogue 0.5, which does not move here: no rule was added, changed or
