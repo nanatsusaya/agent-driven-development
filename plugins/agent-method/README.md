@@ -51,6 +51,14 @@ day:
 | `session-start` | `moin` | `buenas` | `buondi` |
 | `after-merge` | `weiterimtext` | `seguimos` | `avanti` |
 | `session-end` | `feierabend` | `hasta-luego` | `stacco` |
+| `decision-record` | `adr` | `adr` | `adr` |
+| `adopt` | `passtdas` | `cuadra` | `torna` |
+
+All five, because a table covering three of them reads as though the other two
+were meant to keep their English names. `decision-record` is the row where the
+advice above does not apply: `adr` is already what the thing is called out loud
+in every one of these languages, and inventing a colloquialism for a term
+people already say would cost recognition and buy nothing.
 
 These are plain ASCII on purpose. Whether the runtime accepts accented
 characters in a skill name is not something this repository has verified.
