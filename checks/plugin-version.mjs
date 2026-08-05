@@ -22,13 +22,14 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-import { versionFindings } from './lib/plugin-version.mjs';
+import { readmeVersionFindings, versionFindings } from './lib/plugin-version.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 
 const PLUGIN_MANIFEST = 'plugins/agent-method/.claude-plugin/plugin.json';
 const MARKETPLACE = '.claude-plugin/marketplace.json';
+const PLUGIN_README = 'plugins/agent-method/README.md';
 
 /** Run git, returning trimmed stdout or null. Never throws. */
 function git(...args) {
@@ -49,7 +50,8 @@ function readJson(rel) {
 const bar = '─'.repeat(72);
 console.log(bar);
 console.log('plugin version');
-console.log('  claim:  the plugin version changed when the plugin did');
+console.log('  claim:  the plugin version changed when the plugin did, and the');
+console.log('          README says the number the manifests say');
 console.log(`  source: ${PLUGIN_MANIFEST} · ${MARKETPLACE} · git`);
 console.log(bar);
 
@@ -106,6 +108,20 @@ const { findings, notes } = versionFindings({
   releaseTag,
   changedPaths,
 });
+
+// The README restates the manifests for a reader deciding whether to install,
+// and nothing held it to them: it said 0.4.0 while both manifests said 0.5.0.
+// A missing README is a finding rather than a pass — this repository ships one,
+// and "the file is gone" must not read as "the file agrees".
+let readmeText = null;
+try {
+  readmeText = readFileSync(join(ROOT, PLUGIN_README), 'utf8');
+} catch {
+  findings.push(`${PLUGIN_README} could not be read, so its version claim went unchecked.`);
+}
+if (readmeText !== null) {
+  findings.push(...readmeVersionFindings(readmeText, plugin.version ?? null, PLUGIN_README));
+}
 
 if (!inGitRepo) {
   notes.unshift('not a git repository, so nothing could be compared against a release');

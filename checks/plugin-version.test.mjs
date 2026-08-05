@@ -14,7 +14,12 @@
  * Usage: node plugin-version.test.mjs
  */
 
-import { versionFindings, shipsToUsers } from './lib/plugin-version.mjs';
+import {
+  readmeVersionFindings,
+  shipsToUsers,
+  statedVersion,
+  versionFindings,
+} from './lib/plugin-version.mjs';
 
 let failures = 0;
 let ran = 0;
@@ -180,6 +185,112 @@ expectNote(
     console.log('ok    shipsToUsers decides each path correctly');
   }
 }
+
+// --- the README's restatement of the version
+//
+// The manifests are the authority; the README repeats the number for a reader
+// deciding whether to install. Nothing held the two together, and the prose sat
+// at 0.4.0 while both manifests said 0.5.0.
+
+/** @param wanted the exact findings required, in order */
+function expectReadme(label, actual, wanted) {
+  ran++;
+  const ok = JSON.stringify(actual) === JSON.stringify(wanted);
+  if (ok) {
+    console.log(`ok    ${label}`);
+  } else {
+    failures++;
+    console.log(`FAIL  ${label}`);
+    console.log(`        wanted ${JSON.stringify(wanted)}`);
+    console.log(`        got    ${JSON.stringify(actual)}`);
+  }
+}
+
+const README = 'plugins/agent-method/README.md';
+
+/** The shape the real document has: a heading, the claim, prose around it. */
+const readme = (version) =>
+  '# agent-method\n\n## How updates reach you\n\n' +
+  `**This plugin carries an explicit version.** The manifests currently declare \`${version}\`.\n`;
+
+expectReadme(
+  'a README stating the manifest version produces no finding',
+  readmeVersionFindings(readme('0.5.0'), '0.5.0', README),
+  []
+);
+expectReadme(
+  'a stale README fails, and says both numbers',
+  readmeVersionFindings(readme('0.4.0'), '0.5.0', README),
+  [`${README}:5 says the manifests declare "0.4.0"; plugin.json says "0.5.0".`]
+);
+expectReadme(
+  'a README ahead of the manifests fails too',
+  readmeVersionFindings(readme('0.6.0'), '0.5.0', README),
+  [`${README}:5 says the manifests declare "0.6.0"; plugin.json says "0.5.0".`]
+);
+expectReadme(
+  'a missing plugin version is a finding rather than a match',
+  readmeVersionFindings(readme('0.5.0'), null, README),
+  [`${README}:5 says the manifests declare "0.5.0"; plugin.json says null.`]
+);
+
+// Rewording the sentence takes it out of the scan. That has to cost the same as
+// leaving it wrong, or the check stops looking without anything failing — the
+// silent no-op E3 exists for.
+expectReadme(
+  'a README that states no version at all fails',
+  readmeVersionFindings('# agent-method\n\nNothing about versions here.\n', '0.5.0', README),
+  [
+    `${README} no longer states which version the manifests carry, so nothing ` +
+      'holds its prose to them. State it as: the manifests currently declare ' +
+      '`X.Y.Z`.',
+  ]
+);
+
+// --- the legitimate cases nearest the violations
+//
+// This one is the reason the scan is a fixed phrase rather than every
+// version-shaped string in the file. The account of both manifests sitting at
+// 0.2.0 is true, is the reason the check exists, and the only way to silence a
+// finding about it would be to falsify the record.
+// Written with the history *above* the claim on purpose. Below it, a scan that
+// simply took the first backticked version would still land on the right one and
+// the case would prove nothing. Above it, the two implementations disagree — and
+// a document is free to recount its history before stating where it stands.
+expectReadme(
+  'the historical failure this check commemorates is not reported',
+  readmeVersionFindings(
+    '# agent-method\n\n## How updates reach you\n\n' +
+      'Both manifests said `0.2.0` while two procedures had changed under\n' +
+      'them, and release `v0.4` carried none of it.\n\n' +
+      'The manifests currently declare `0.5.0`.\n',
+    '0.5.0',
+    README
+  ),
+  []
+);
+{
+  // A fenced block is an example, not an assertion — the exemption every other
+  // scan here makes. An example must not satisfy the requirement either, so the
+  // document counts as stating nothing.
+  const fencedOnly =
+    '# agent-method\n\n```\nthe manifests currently declare `9.9.9`\n```\n';
+  expectReadme(
+    'a claim inside a fence neither fires nor counts as the statement',
+    readmeVersionFindings(fencedOnly, '0.5.0', README).length,
+    1
+  );
+}
+expectReadme(
+  'a CRLF document reads the same as an LF one',
+  readmeVersionFindings(readme('0.5.0').replace(/\n/g, '\r\n'), '0.5.0', README),
+  []
+);
+expectReadme(
+  'the line reported is the line the claim is on',
+  statedVersion(readme('0.5.0')),
+  { version: '0.5.0', line: 5 }
+);
 
 console.log('');
 console.log(`${ran} cases, ${failures} failed`);

@@ -225,6 +225,17 @@ by somebody deciding whether to install, never by an agent that already has.
 Requiring a version bump for a typo in prose is how a version discipline becomes
 something people work around.
 
+**It also holds the plugin README to the manifests.** That README repeats the
+number for a reader deciding whether to install, and nothing kept the two
+together: the prose sat at `0.4.0` while both manifests had moved to `0.5.0`.
+The scan looks for one fixed sentence — *the manifests currently declare
+`X.Y.Z`* — rather than for every version-shaped string in the file, because
+that file legitimately contains several, one of them the account of the failure
+this check exists for. Reporting a true historical sentence would be a false
+alarm that could only be silenced by falsifying the record. Rewording the
+sentence therefore takes it out of the scan, so **finding no such statement is
+itself a finding**: the check stopping is loud rather than silent.
+
 It compares against the working tree rather than against `HEAD`, so it answers
 while the answer can still be a file edit. Where git has nothing to say — no
 repository, no tags, or a release that declared no version — it says so under
