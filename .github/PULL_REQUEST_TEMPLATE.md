@@ -1,8 +1,8 @@
 <!--
 This is a copy. The shape lives in agent-manual/pull-request.md; this is the
 file GitHub reads. Everything from the first heading down is held to the
-handbook by checks/pull-request-template.mjs — so edit the handbook, and let
-the check tell you this copy has fallen behind.
+handbook by checks/copied-templates.mjs — so edit the handbook, and let the
+check tell you this copy has fallen behind.
 
 One concern per change. The owner merges, never the author.
 

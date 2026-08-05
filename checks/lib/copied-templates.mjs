@@ -1,31 +1,46 @@
 /**
- * The decision half of the pull-request-template check.
+ * The decision half of the copied-templates check.
  *
  * Split from the CLI the way lib/documented-version.mjs is, so the cases can be
  * written as strings rather than as a repository per case.
  *
  * Two claims live here, and they are different claims:
  *
- *   1. the two files agree from their first heading down — the copy GitHub
- *      reads still says what the handbook says;
- *   2. the heading set is the core set, in order — so the two agreeing on a
- *      shape that has quietly grown a sixth section is still a finding.
+ *   1. the two files agree from their first heading down — the copy the
+ *      platform reads still says what the handbook says;
+ *   2. the heading set is the one that was decided on, in order — so the two
+ *      agreeing on a shape that has quietly grown a section is still a finding.
  *
  * Without the second, drift is only caught while it is one-sided. An agent
  * editing both files in one change would satisfy a same-content check
  * perfectly, which is the failure mode a same-content check is least able to
  * see.
+ *
+ * It began as one pair and generalised to a list on the second, which is the
+ * right time: a second copy of this logic would have been the thing the check
+ * itself exists to prevent, one level up.
  */
 
 /**
- * The five headings every copy of this shape carries, in order.
+ * The pairs this repository keeps in step, and the sections each carries.
  *
  * A project adopting the handbook may add exactly one section of its own; this
- * repository declares that it adds none, which is why the set is exact here
- * rather than a prefix. An adopting project does not run this check — it is
- * house style, and it knows this repository's own two paths.
+ * repository declares that it adds none, which is why each set is exact rather
+ * than a prefix. An adopting project does not run this check — it is house
+ * style, and it knows this repository's own paths.
  */
-export const CORE_SECTIONS = ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups'];
+export const PAIRS = [
+  {
+    handbook: 'agent-manual/pull-request.md',
+    copy: '.github/PULL_REQUEST_TEMPLATE.md',
+    sections: ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups'],
+  },
+  {
+    handbook: 'agent-manual/issue-templates/task.md',
+    copy: '.github/ISSUE_TEMPLATE/task.md',
+    sections: ['Context', 'Scope', 'Constraints', 'Related'],
+  },
+];
 
 /** Line endings normalised, and the trailing blank tail dropped. */
 function lines(text) {
@@ -82,12 +97,14 @@ export function headings(text) {
 /**
  * The part the two files share: everything from the first heading down.
  *
- * What sits *above* the first heading is each file's own opening instruction
- * comment, and the two must differ there — the handbook tells a reader to copy
- * the file, and repeating that in the copy would tell every contributor here to
- * copy it again. Excluding the comment is therefore the check's one exemption,
- * and it is the reason a change to the guidance under a heading is still
- * compared: that guidance is the shape.
+ * What sits *above* the first heading is each file's own preamble, and the two
+ * must differ there. The handbook tells a reader to copy the file, and
+ * repeating that in the copy would tell every contributor here to copy it
+ * again; and the copy may need YAML frontmatter the handbook has no use for,
+ * which is how a platform is told what to call the template. Excluding the
+ * preamble is therefore the check's one exemption, and it is the reason a
+ * change to the guidance *under* a heading is still compared: that guidance is
+ * the shape.
  *
  * @param text  whole document
  * @returns `{ body, offset }`, or null when the document has no heading at all
@@ -107,9 +124,10 @@ export function shape(text) {
  * @param copy          text of .github/PULL_REQUEST_TEMPLATE.md
  * @param handbookName  path to name in findings
  * @param copyName      path to name in findings
+ * @param sections      the heading set both files must carry, in order
  * @returns array of finding strings, empty when the two agree
  */
-export function templateFindings(handbook, copy, handbookName, copyName) {
+export function templateFindings(handbook, copy, handbookName, copyName, sections) {
   const findings = [];
   const a = shape(handbook);
   const b = shape(copy);
@@ -132,10 +150,10 @@ export function templateFindings(handbook, copy, handbookName, copyName) {
     const got = headings(text);
     // Joined on a newline rather than a space: a heading may contain spaces, so
     // a space separator would let ["Open", "questions"] equal ["Open questions"].
-    if (got.join('\n') !== CORE_SECTIONS.join('\n')) {
+    if (got.join('\n') !== sections.join('\n')) {
       findings.push(
         `${name} — sections are ${got.length ? got.join(' · ') : '(none)'}; ` +
-          `the core set is ${CORE_SECTIONS.join(' · ')}`
+          `the set for this pair is ${sections.join(' · ')}`
       );
     }
   }

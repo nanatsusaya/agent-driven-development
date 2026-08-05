@@ -293,31 +293,42 @@ That figure is the argument for trusting everything else on this page, and it
 had gone eighteen cases stale before anybody read it against a run.
 
 ```bash
-node checks/pull-request-template.mjs
+node checks/copied-templates.mjs
 ```
 
-[`pull-request-template.mjs`](pull-request-template.mjs) holds
-`.github/PULL_REQUEST_TEMPLATE.md` to
-[`agent-manual/pull-request.md`](../agent-manual/pull-request.md). The shape has
-to exist twice — the handbook is what a project copies, and only the file under
-`.github/` is read by GitHub — so [C2](../method/rules.md#c2) makes the handbook
-the authority and a command decides whether the copy still agrees. That is the
-same trade [`install-commands.mjs`](install-commands.mjs) makes for the three
-copyable install commands.
+[`copied-templates.mjs`](copied-templates.mjs) holds each template under
+`.github/` to the handbook document it is a copy of. Two pairs today:
 
-**It compares from the first heading down, and asks two different things.** The
-opening comment above that heading is exempt, and has to be: the handbook tells
+| The handbook shape | The copy GitHub reads | Sections |
+|---|---|---|
+| [`agent-manual/pull-request.md`](../agent-manual/pull-request.md) | `.github/PULL_REQUEST_TEMPLATE.md` | What · Why · Verified · Open questions · Follow-ups |
+| [`agent-manual/issue-templates/task.md`](../agent-manual/issue-templates/task.md) | `.github/ISSUE_TEMPLATE/task.md` | Context · Scope · Constraints · Related |
+
+Each shape has to exist twice — the handbook is what a project copies, and only
+the file under `.github/` is read by GitHub — so [C2](../method/rules.md#c2)
+makes the handbook the authority and a command decides whether the copy still
+agrees. That is the same trade [`install-commands.mjs`](install-commands.mjs)
+makes for the three copyable install commands.
+
+**It compares from the first heading down, and asks two different things.**
+Whatever sits above that heading is exempt, and has to be: the handbook tells
 its reader to copy the file, and a copy repeating that would tell every
-contributor here to copy it again. Everything below — including the guidance
-under each heading, which is most of both files — is compared.
+contributor here to copy it again — and the copy may carry YAML frontmatter the
+handbook has no use for, which is how GitHub is told what to call the template.
+Everything below, including the guidance under each heading, is compared. That
+guidance is most of both files, and it is the shape.
 
-The second question is why this is not merely a diff. **The heading set is held
-to What · Why · Verified · Open questions · Follow-ups**, so a change that edits
-both files together and grows the shape a sixth section is still a finding. A
-same-content check would pass that perfectly, and a shape that changed with
-nothing saying so is exactly what the check exists to prevent. An adopting
-project may add one section of its own; the set is exact here because this
-repository declares that it adds none.
+The second question is why this is not merely a diff. **Each pair's heading set
+is held to the one decided for it**, so a change that edits both files together
+and grows a shape a section is still a finding. A same-content check would pass
+that perfectly, and a shape that changed with nothing saying so is exactly what
+the check exists to prevent. An adopting project may add one section of its own;
+the sets are exact here because this repository declares that it adds none.
+
+**The pair list is itself a mechanism.** A pair that falls out of it is a
+comparison that stops happening while the run still reports success about the
+pairs that remain, so the counter-test asserts the list rather than deriving
+expectations from it, and an empty list is a finding.
 
 A file that cannot be read is a finding rather than a pass. Deleting the copy is
 the cheapest way to make a same-content check agree, so "there is nothing there"
@@ -341,7 +352,7 @@ further counter-tests —
 [`documented-version.test.mjs`](documented-version.test.mjs),
 [`install-commands.test.mjs`](install-commands.test.mjs),
 [`plugin-version.test.mjs`](plugin-version.test.mjs) and
-[`pull-request-template.test.mjs`](pull-request-template.test.mjs) — cover those
+[`copied-templates.test.mjs`](copied-templates.test.mjs) — cover those
 checks in turn and are deliberately not given figures of their own. One more
 advertised number would be one more thing to keep true, and nothing would be
 checking it.

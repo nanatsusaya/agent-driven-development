@@ -35,7 +35,7 @@ goes in its *Binding*, marked as such.
 ## Commands
 
 ```bash
-npm run lint    # line width, this repository's links and spelling, install commands, plugin version, documented version and counts, pull-request template
+npm run lint    # line width, this repository's links and spelling, install commands, plugin version, documented version and counts, copied templates
 npm test        # the counter-tests for all seven checks
 npm run mutate  # break each guard in turn; anything the suite still passes is uncovered
 ```

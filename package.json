@@ -1,6 +1,6 @@
 {
   "name": "agent-project-rules",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "private": true,
   "description": "A ruleset for running real projects with AI agents.",
   "license": "(MIT AND CC-BY-4.0)",
@@ -14,8 +14,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "lint": "node checks/line-width.mjs . && node checks/check-method.mjs . --lint --spelling british && node checks/install-commands.mjs && node checks/plugin-version.mjs && node checks/documented-version.mjs && node checks/documented-counts.mjs && node checks/pull-request-template.mjs",
-    "test": "node checks/check-method.test.mjs && node checks/line-width.test.mjs && node checks/install-commands.test.mjs && node checks/plugin-version.test.mjs && node checks/documented-version.test.mjs && node checks/documented-counts.test.mjs && node checks/pull-request-template.test.mjs",
+    "lint": "node checks/line-width.mjs . && node checks/check-method.mjs . --lint --spelling british && node checks/install-commands.mjs && node checks/plugin-version.mjs && node checks/documented-version.mjs && node checks/documented-counts.mjs && node checks/copied-templates.mjs",
+    "test": "node checks/check-method.test.mjs && node checks/line-width.test.mjs && node checks/install-commands.test.mjs && node checks/plugin-version.test.mjs && node checks/documented-version.test.mjs && node checks/documented-counts.test.mjs && node checks/copied-templates.test.mjs",
     "mutate": "node checks/mutate.mjs"
   }
 }

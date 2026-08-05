@@ -22,6 +22,33 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## Checks 0.5.2
+
+Against catalogue 0.5, which does not move. **Nothing here changes an adopter's
+result**, and it is listed only because the tools decide one more thing than
+they did: `check-method.mjs` is untouched, so a run against your project is
+unaffected in every particular.
+
+### Fixes with no effect on an adopter
+
+**The template check covers issue templates too, and is now named for what it
+does.** `checks/pull-request-template.mjs` became
+[`checks/copied-templates.mjs`](../checks/copied-templates.mjs) and now holds a
+list of pairs rather than one. This repository's
+`.github/ISSUE_TEMPLATE/task.md` had the same gap its pull-request template had:
+the handbook it should be a copy of existed, and the copy did not.
+
+Generalising on the second pair rather than writing a second check was the whole
+point. A second copy of that logic would have been the defect the check itself
+exists to catch, one level up.
+
+Two mechanisms came with it. **The pair list is asserted by the counter-test
+rather than used to derive its expectations** — a pair falling out of the list
+is a comparison that silently stops happening while the run still reports
+success about the rest — and **an empty list is a finding**. Whatever sits above
+the first heading stays exempt, which now also covers the YAML frontmatter a
+GitHub issue template needs and its handbook has no use for.
+
 ## Checks 0.5.1
 
 Against catalogue 0.5, which does not move: no rule was added, changed or
