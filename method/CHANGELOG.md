@@ -22,6 +22,74 @@ rule is withdrawn, [`withdrawn.md`](withdrawn.md) carries the entry and a check
 fails on documents still teaching it — this file does not replace that
 mechanism.
 
+## Checks 0.5.0
+
+Against catalogue 0.5, which does not move here: no rule was added, changed or
+withdrawn, so what your `method.json` pins to still means what it meant. The
+plugin does not move either — nothing that ships to users changed.
+
+What did change is the **manual**, and the manual carries no number of its own.
+That is why a shape you may have copied is described under a tools heading.
+
+### Worth re-reading
+
+**The pull-request template has a fixed shape.** If you copied
+[`agent-manual/pull-request.md`](../agent-manual/pull-request.md), the core set
+is now **What · Why · Verified · Open questions · Follow-ups** — and a project
+adds **exactly one** section of its own, declared with its reason in the
+template's opening comment. Two headings that existed in an earlier form are
+folded in rather than kept: *which issue or decision this follows* belongs under
+**Why**, which already asks for it and for the link, and *merge-order caveats*
+belong under **Follow-ups**, which already covers what a change leaves undone.
+One heading for a fact that has one already is a second authority for it.
+
+**An answered question is a comment, never an edit.** The manual used to say
+that once an `O1..On` question is answered you rewrite it in place as `R1..Rn`,
+without saying where. Agents carried that across to pull-request descriptions by
+analogy, and there it destroys the question it answers: the answer gets no
+permalink, notifies nobody, carries no timestamp except one typed by hand, and
+races whoever else is editing.
+
+The rewrite now belongs to **decision records only**, where the file's history
+is the record's history. In a pull request or an issue the answer is a
+**comment** naming the `O`-number, and the description keeps one line per
+question. If you copied the manual before this, that is the paragraph to
+replace.
+
+Why the instruction now names a destination rather than leaning harder on *do
+not answer them yourself* is measured rather than assumed, and the reasoning is
+in [`agent-manual/README.md`](../agent-manual/README.md).
+
+**Agent assistance is disclosed in the commit.** The manual now names an
+`Assisted-by:` trailer, on the pattern of curl's keyword list. A trailer
+survives a squash merge and cannot be edited afterwards; a line in a description
+can be, which makes it a claim rather than a record.
+
+### New, and optional
+
+**A seventh check, and it never runs against your project.**
+`checks/pull-request-template.mjs` holds this repository's own
+`.github/PULL_REQUEST_TEMPLATE.md` to the handbook it is a copy of. It is house
+style, like the five before it: `check-method.mjs` is unchanged, so a run
+against your project decides exactly what it decided at 0.4.0.
+
+It is worth one paragraph anyway, because the shape of it generalises. The check
+compares the two files from the first heading down — the opening comment differs
+by design — **and** holds the heading set to the core five. Without that second
+half, one change editing both files together would grow the shape and the two
+would still agree perfectly. A same-content check passes exactly the case it
+exists for.
+
+### Corrected documentation
+
+**The stated number of checks was wrong, and had been for two releases.**
+[`checks/README.md`](../checks/README.md) said "five of them" and "the other
+four" when there were six, and named three counter-tests without published
+figures when there were four. Nothing depended on those numbers, which is
+precisely why they went stale — the case for
+[`documented-counts.mjs`](../checks/documented-counts.mjs), restated by the two
+figures it does not cover.
+
 ## 0.5
 
 Thirty-two rules in eleven clusters. None added, none withdrawn, none
