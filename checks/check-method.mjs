@@ -477,11 +477,11 @@ if (!exists(declPath)) {
 }
 
 if (decl) {
-  if (decl.method !== 'agent-driven-development') {
+  if (decl.method !== 'agent-project-rules') {
     fail(
       'declaration',
       'method.json',
-      `"method" must be "agent-driven-development" (found ${JSON.stringify(decl.method)}).`
+      `"method" must be "agent-project-rules" (found ${JSON.stringify(decl.method)}).`
     );
   }
   if (typeof decl.version !== 'string') {
@@ -1264,7 +1264,7 @@ if (decl && inForce('C3')) {
 
 const bar = '─'.repeat(72);
 console.log(bar);
-console.log(`agent-driven-development · coherence check`);
+console.log(`agent-project-rules · coherence check`);
 console.log(`  project:   ${sanitise(project)}`);
 console.log(
   `  catalogue: ${sanitise(catalogueDir)} (${rules.size} rules, ${withdrawn.length} withdrawn)`

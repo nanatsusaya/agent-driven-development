@@ -55,7 +55,7 @@ function baseline(name, overrides = {}) {
 
   put(dir, 'method.json', JSON.stringify(
     {
-      method: 'agent-driven-development',
+      method: 'agent-project-rules',
       version: CATALOGUE_VERSION,
       artefacts: {
         'operating-rules': 'CLAUDE.md',
@@ -265,6 +265,20 @@ expect('a complete, coherent project passes', baseline('good'), true);
   // no way to see what makes the case a case.
   writeFileSync(join(d, 'method.json'), '\uFEFF' + decl, 'utf8');
   expect('a method.json with a byte-order mark still parses', d, true);
+}
+{
+  // Nothing covered this guard. The constant is compared against the baseline
+  // on every run, so changing it is caught — but deleting the comparison was
+  // not, and then any string at all would have declared a method that does not
+  // exist. The old name is the case worth naming rather than an arbitrary
+  // string: catalogue 0.5 renamed the method, so it is what every declaration
+  // written before the rename still carries. The passing half is the baseline
+  // above, which declares the current name.
+  const d = baseline('decl-old-method-name');
+  const decl = JSON.parse(readFileSync(join(d, 'method.json'), 'utf8'));
+  decl.method = 'agent-driven-development';
+  put(d, 'method.json', JSON.stringify(decl, null, 2));
+  expect('the pre-0.5 method name fails', d, false, ['declaration']);
 }
 
 // --- 2. artefacts
@@ -1395,12 +1409,12 @@ function embedClone(dir, rel) {
   // adopter ever made reported findings about files that were not theirs. The
   // command is fixed; this is the half that holds when somebody clones anyway.
   const d = baseline('embedded-method-clone');
-  embedClone(d, 'agent-driven-development');
+  embedClone(d, 'agent-project-rules');
   expect('a copy of the method inside the project is not scanned', d, true);
   expectSays(
     'the report names the copy it skipped',
     d,
-    /not verified here[\s\S]*copy\/ies of the method repository[\s\S]*agent-driven-development/
+    /not verified here[\s\S]*copy\/ies of the method repository[\s\S]*agent-project-rules/
   );
 }
 {

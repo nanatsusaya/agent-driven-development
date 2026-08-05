@@ -11,7 +11,7 @@ description: >-
 # Writing a decision record
 
 *Carries out rules D1, D2, D3 and G2. The
-[catalogue](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md)
+[catalogue](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md)
 is the authority; this file is only the procedure.*
 
 Authoring a decision is a repeatable procedure. Follow it exactly: decisions are
@@ -99,7 +99,7 @@ that is true the moment it lands.
 
 Do not leave the flip for a second change afterwards. Between the two merges
 the trunk would state `Proposed` about a decision that has in fact been
-accepted — stale documentation, which [C4](https://github.com/nanatsusaya/agent-driven-development/blob/main/method/rules.md#c4)
+accepted — stale documentation, which [C4](https://github.com/nanatsusaya/agent-project-rules/blob/main/method/rules.md#c4)
 calls a defect rather than untidiness — and it would cost a second trip through
 review to record something that already happened.
 

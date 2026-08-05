@@ -367,7 +367,7 @@ const MUTATIONS = [
     label: 'a copy of the method is recognised by directory name',
     file: 'checks/lib/markdown.mjs',
     from: "        exists(join(child, 'method', 'rules.md')) &&\n        exists(join(child, 'checks', 'check-method.mjs'))",
-    to: "        e.name === 'agent-driven-development'",
+    to: "        e.name === 'agent-project-rules'",
   },
 
   // --- the plugin's version against what changed under it

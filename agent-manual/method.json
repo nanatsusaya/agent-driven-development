@@ -6,7 +6,7 @@
     "catalogue is in force unless listed under adaptations."
   ],
 
-  "method": "agent-driven-development",
+  "method": "agent-project-rules",
   "version": "0.4",
 
   "artefacts": {
