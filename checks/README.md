@@ -1,7 +1,7 @@
 # Checks
 
-Five of them, and only the first is meant for your project.
-[`check-method.mjs`](check-method.mjs) is the coherence check. The other four
+Seven of them, and only the first is meant for your project.
+[`check-method.mjs`](check-method.mjs) is the coherence check. The other six
 are [this repository's own house style](#this-repositorys-own-checks) and know
 nothing about an adopting project.
 
@@ -185,7 +185,7 @@ read.
 ## This repository's own checks
 
 None of them is part of the method. They enforce conventions this repository
-holds itself to, and an adopting project is free to ignore all five.
+holds itself to, and an adopting project is free to ignore all six.
 
 ```bash
 node checks/line-width.mjs <project-path> [--limit 80]
@@ -276,6 +276,37 @@ report. It runs both counter-tests to find out, so it costs what they cost.
 That figure is the argument for trusting everything else on this page, and it
 had gone eighteen cases stale before anybody read it against a run.
 
+```bash
+node checks/pull-request-template.mjs
+```
+
+[`pull-request-template.mjs`](pull-request-template.mjs) holds
+`.github/PULL_REQUEST_TEMPLATE.md` to
+[`agent-manual/pull-request.md`](../agent-manual/pull-request.md). The shape has
+to exist twice — the handbook is what a project copies, and only the file under
+`.github/` is read by GitHub — so [C2](../method/rules.md#c2) makes the handbook
+the authority and a command decides whether the copy still agrees. That is the
+same trade [`install-commands.mjs`](install-commands.mjs) makes for the three
+copyable install commands.
+
+**It compares from the first heading down, and asks two different things.** The
+opening comment above that heading is exempt, and has to be: the handbook tells
+its reader to copy the file, and a copy repeating that would tell every
+contributor here to copy it again. Everything below — including the guidance
+under each heading, which is most of both files — is compared.
+
+The second question is why this is not merely a diff. **The heading set is held
+to What · Why · Verified · Open questions · Follow-ups**, so a change that edits
+both files together and grows the shape a sixth section is still a finding. A
+same-content check would pass that perfectly, and a shape that changed with
+nothing saying so is exactly what the check exists to prevent. An adopting
+project may add one section of its own; the set is exact here because this
+repository declares that it adds none.
+
+A file that cannot be read is a finding rather than a pass. Deleting the copy is
+the cheapest way to make a same-content check agree, so "there is nothing there"
+must not arrive as agreement.
+
 ## The counter-tests
 
 ```bash
@@ -288,13 +319,16 @@ which check fired. Asserting the exit code alone would pass a check that fails
 for the wrong reason.
 
 Those two figures are themselves checked, by
-[`documented-counts.mjs`](documented-counts.mjs) under `npm run lint`. Three
+[`documented-counts.mjs`](documented-counts.mjs) under `npm run lint`. Five
 further counter-tests —
 [`documented-counts.test.mjs`](documented-counts.test.mjs),
-[`install-commands.test.mjs`](install-commands.test.mjs) and
-[`plugin-version.test.mjs`](plugin-version.test.mjs) — cover those checks in
-turn and are deliberately not given figures of their own. One more advertised
-number would be one more thing to keep true, and nothing would be checking it.
+[`documented-version.test.mjs`](documented-version.test.mjs),
+[`install-commands.test.mjs`](install-commands.test.mjs),
+[`plugin-version.test.mjs`](plugin-version.test.mjs) and
+[`pull-request-template.test.mjs`](pull-request-template.test.mjs) — cover those
+checks in turn and are deliberately not given figures of their own. One more
+advertised number would be one more thing to keep true, and nothing would be
+checking it.
 
 This exists because of [E3](../method/rules.md#e3). The usual way a check breaks
 is not a wrong verdict but a pattern that silently matches nothing, reports

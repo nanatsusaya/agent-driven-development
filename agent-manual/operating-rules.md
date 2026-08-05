@@ -75,6 +75,10 @@ section is the transferable core.»
   dependency bumps into unrelated work. A change too large to answer those two
   questions about is a change that gets waved through.
 - «Commit and branch conventions: message format, branch prefixes.»
+- **Agent assistance is disclosed in the commit**, as an `Assisted-by:` trailer
+  naming what assisted. A trailer survives a squash merge and cannot be edited
+  afterwards; a line in a description can be, which makes it a claim rather than
+  a record.
 - **Definition of done:** «the local chain» is green; anything with observable
   behaviour has been **exercised**, not merely built; docs changed in the same
   commit; the change's own CI is green. **Report outcomes faithfully**,
@@ -92,8 +96,14 @@ guess who to ask will guess the nearest person or nobody.»
 - **Surface decisions that belong to a person rather than to the agent before
   acting**: direction and sequencing, anything legal or contractual, anything
   outward-facing, anything expensive to reverse. Number them `O1..On`,
-  recommend a default for each, and **do not answer them yourself**. Once
-  answered, rewrite them in place as `R1..Rn` with what was decided and why.
+  recommend a default for each, and **do not answer them yourself**.
+- **Where an answer is written down depends on what holds the question.** In a
+  decision record, rewrite `O1..On` in place as `R1..Rn` with what was decided
+  and why: the record is the artefact, and its history is the file's history. In
+  a pull request or an issue, the answer is a **comment** naming the
+  `O`-number — the description keeps one line per question and is not
+  rewritten. An answer edited over its own question destroys it, and has no
+  permalink and no timestamp except a typed one.
 - **Stop and ask** in particular before: «amending an accepted decision · going
   outward-facing (publishing, deploying, changing a public URL) · introducing
   external network calls, secrets or telemetry · a major dependency upgrade».

@@ -14,8 +14,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "lint": "node checks/line-width.mjs . && node checks/check-method.mjs . --lint --spelling british && node checks/install-commands.mjs && node checks/plugin-version.mjs && node checks/documented-version.mjs && node checks/documented-counts.mjs",
-    "test": "node checks/check-method.test.mjs && node checks/line-width.test.mjs && node checks/install-commands.test.mjs && node checks/plugin-version.test.mjs && node checks/documented-version.test.mjs && node checks/documented-counts.test.mjs",
+    "lint": "node checks/line-width.mjs . && node checks/check-method.mjs . --lint --spelling british && node checks/install-commands.mjs && node checks/plugin-version.mjs && node checks/documented-version.mjs && node checks/documented-counts.mjs && node checks/pull-request-template.mjs",
+    "test": "node checks/check-method.test.mjs && node checks/line-width.test.mjs && node checks/install-commands.test.mjs && node checks/plugin-version.test.mjs && node checks/documented-version.test.mjs && node checks/documented-counts.test.mjs && node checks/pull-request-template.test.mjs",
     "mutate": "node checks/mutate.mjs"
   }
 }

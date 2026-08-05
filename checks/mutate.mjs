@@ -42,6 +42,7 @@ const SUITES = {
   install: 'checks/install-commands.test.mjs',
   plugin: 'checks/plugin-version.test.mjs',
   version: 'checks/documented-version.test.mjs',
+  template: 'checks/pull-request-template.test.mjs',
 };
 
 /**
@@ -538,6 +539,68 @@ const MUTATIONS = [
     file: 'checks/lib/plugin-version.mjs',
     from: 'const STATED_VERSION = /manifests currently declare `([^`\\n]*)`/;',
     to: 'const STATED_VERSION = /`(\\d+\\.\\d+\\.\\d+)`/;',
+  },
+
+  // --- the pull-request shape, which has to exist in two files at once
+  {
+    // The mutation that says why the check is not only a diff. With the set
+    // unheld, one change editing both files grows the shape and the two still
+    // agree perfectly — the failure a same-content check is least able to see.
+    label: 'the heading set is no longer held to the core sections',
+    suite: 'template',
+    file: 'checks/lib/pull-request-template.mjs',
+    from: "if (got.join('\\n') !== CORE_SECTIONS.join('\\n')) {",
+    to: 'if (false) {',
+  },
+  {
+    // And the constant itself, which is why the counter-test writes the five
+    // out rather than importing them: an imported expectation moves with the
+    // thing it is supposed to hold.
+    label: 'the core set may grow a section',
+    suite: 'template',
+    file: 'checks/lib/pull-request-template.mjs',
+    from: "export const CORE_SECTIONS = ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups'];",
+    to: "export const CORE_SECTIONS = ['What', 'Why', 'Verified', 'Open questions', 'Follow-ups', 'Watched'];",
+  },
+  {
+    label: 'the two files may disagree below the first heading',
+    suite: 'template',
+    file: 'checks/lib/pull-request-template.mjs',
+    from: 'if (a.body !== b.body) {',
+    to: 'if (false) {',
+  },
+  {
+    label: 'a handbook with no shape is compared against anyway',
+    suite: 'template',
+    file: 'checks/lib/pull-request-template.mjs',
+    from: '  if (a === null) {',
+    to: '  if (false) {',
+  },
+  {
+    // Deleting the copy is the cheapest way to make a same-content check pass,
+    // so "there is nothing there" must not arrive as agreement.
+    label: 'a copy with no shape reads as a copy that agrees',
+    suite: 'template',
+    file: 'checks/lib/pull-request-template.mjs',
+    from: '  if (b === null) {',
+    to: '  if (false) {',
+  },
+  {
+    // The false-alarm half. Both files are mostly guidance inside `<!-- -->`,
+    // where a line may begin with a `#`; reading one as a heading reports a
+    // section nobody wrote.
+    label: 'a hash inside an HTML comment counts as a heading',
+    suite: 'template',
+    file: 'checks/lib/pull-request-template.mjs',
+    from: '    return !started && !opens;',
+    to: '    return true;',
+  },
+  {
+    label: 'line endings are not normalised before comparing',
+    suite: 'template',
+    file: 'checks/lib/pull-request-template.mjs',
+    from: "text.replace(/\\r\\n?/g, '\\n').replace(/\\s+$/, '')",
+    to: 'text',
   },
 ];
 

@@ -35,8 +35,8 @@ goes in its *Binding*, marked as such.
 ## Commands
 
 ```bash
-npm run lint    # line width, this repository's links and spelling, install commands, plugin version, documented counts
-npm test        # the counter-tests for all five checks
+npm run lint    # line width, this repository's links and spelling, install commands, plugin version, documented version and counts, pull-request template
+npm test        # the counter-tests for all seven checks
 npm run mutate  # break each guard in turn; anything the suite still passes is uncovered
 ```
 
@@ -90,8 +90,12 @@ check, point it at a project that has a `method.json`:
 
 - **Surface decisions that belong to the owner before acting.** Number them
   `O1..On`, recommend a default for each, and **do not answer them yourself**.
-  Once answered, rewrite them in place as `R1..Rn` with what was decided and
-  why.
+- **An answer goes where the question is held.** In a decision record, rewrite
+  `O1..On` in place as `R1..Rn` with what was decided and why. In a pull request
+  or an issue, the answer is a **comment** naming the `O`-number, and the
+  description is not rewritten — it keeps one line per question. The reasoning
+  is in
+  [`agent-manual/README.md`](agent-manual/README.md#an-answered-question-is-a-comment-never-an-edit).
 - **Stop and ask** before: changing or withdrawing a rule in the catalogue ·
   renaming a rule identifier · publishing anything (pushing to the public
   remote, changing the marketplace manifest, cutting a release) · changing the
@@ -103,6 +107,17 @@ check, point it at a project that has a `method.json`:
   spelling** (`colour`, `licence` as a noun, `analyse`, `-ise` rather than
   `-ize`). Direct conversation with the owner is in **German**. Identifiers
   mirroring an external interface keep that interface's spelling.
+
+## Delivery
+
+- **A pull request takes the shape in
+  [`agent-manual/pull-request.md`](agent-manual/pull-request.md)**, of which
+  [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) is the
+  copy GitHub reads. This repository adds no section of its own, and a check
+  holds the two files together.
+- **Agent assistance is disclosed in the commit**, as an `Assisted-by:` trailer
+  naming what assisted. It survives a squash merge and cannot be edited
+  afterwards.
 
 ## Guardrails
 
