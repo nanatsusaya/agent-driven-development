@@ -41,6 +41,7 @@ const SUITES = {
   coherence: 'checks/check-method.test.mjs',
   install: 'checks/install-commands.test.mjs',
   plugin: 'checks/plugin-version.test.mjs',
+  version: 'checks/documented-version.test.mjs',
 };
 
 /**
@@ -460,6 +461,30 @@ const MUTATIONS = [
     file: 'checks/lib/install-commands.mjs',
     from: 'if (!clones.length) {',
     to: 'if (false) {',
+  },
+
+  // --- the catalogue version this repository's own templates show
+  {
+    // Block scoping is the whole precision of that check. Without it every
+    // version string in the repository is compared against the catalogue, and
+    // package.json alone would produce a finding on every run — a false alarm,
+    // which E3 calls the half that teaches people to ignore a check when it is
+    // right.
+    label: 'every version string is compared, not only declarations',
+    suite: 'version',
+    file: 'checks/lib/documented-version.mjs',
+    from: 'if (!DECLARES_METHOD.test(block.body)) continue;',
+    to: 'if (false) continue;',
+  },
+  {
+    // The failure this one protects against is the check reporting success
+    // about documents it understood nothing in — after a rename moves the
+    // method's name, or after a template stops declaring a version at all.
+    label: 'a scan that read nothing reports agreement',
+    suite: 'version',
+    file: 'checks/lib/documented-version.mjs',
+    from: '  if (read === 0) {',
+    to: '  if (false) {',
   },
 ];
 
