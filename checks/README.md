@@ -286,11 +286,46 @@ result.
 node checks/documented-counts.mjs
 ```
 
-[`documented-counts.mjs`](documented-counts.mjs) compares the case counts
-stated under [the counter-tests](#the-counter-tests) against what the runs
-report. It runs both counter-tests to find out, so it costs what they cost.
-That figure is the argument for trusting everything else on this page, and it
-had gone eighteen cases stale before anybody read it against a run.
+[`documented-counts.mjs`](documented-counts.mjs) asks whether every number this
+repository states about itself is true. Two halves, with two different sources.
+
+**The case counts** stated under [the counter-tests](#the-counter-tests),
+against what the runs report. It runs both counter-tests to find out, so it
+costs what they cost — there is no cheaper source, because the cases are not
+statically countable. That figure is the argument for trusting everything else
+on this page, and it had gone eighteen cases stale before anybody read it
+against a run.
+
+**The inventory** — how many checks there are, how many sit inside
+`check-method.mjs`, how many counter-tests carry no published figure, and the
+number in [`CLAUDE.md`](../CLAUDE.md)'s `npm test` line — read from the file
+system and from the source rather than from a run. This half exists because this
+page was wrong in four places at once, and nothing failed: it undercounted the
+checks, undercounted them again in the sentence below, and named one fewer
+counter-test than there were.
+
+**Names are compared, not only totals.** The sub-check table is read for the
+check names in its first column and the counter-test sentence for the files it
+lists, because a total is the weaker claim — a table that lost one row and
+gained another keeps its count, and a list that omits a file reads as complete.
+That omission is exactly what happened.
+
+Three things follow from how it reads a document, and each is a decision rather
+than an accident. Counts are written as **words** here, so words are what it
+parses; a number it cannot turn into an integer is a finding, not a skip,
+because a scan that quietly understands nothing is the failure
+[E3](../method/rules.md#e3) is about. A claim
+**reworded out of the scan is also a finding** —
+otherwise deleting the sentence is the cheapest way out of a failing run. And
+fences cut both ways: a fenced copy of a claim on this page is an example rather
+than the page making it, while the `CLAUDE.md` number lives inside a fence
+legitimately, being the comment on a command, so that one claim is read from the
+raw text.
+
+What the counter-test does **not** hold is the gathering itself — which files
+count as a check, and that `mutate.mjs` is a harness rather than one. That lives
+in the command instead of the library, so it is held by this repository's own
+`npm run lint` rather than by a case.
 
 ```bash
 node checks/copied-templates.mjs
