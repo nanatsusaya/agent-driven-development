@@ -175,6 +175,23 @@ as a clean bill of health — which is the rule the tool exists to enforce, brok
 by the tool. [`checks/`](checks/README.md) has the ten checks, the options, and
 the limitations it will not pretend away.
 
+## Projects using this
+
+Two public adoptions, listed as pointers for a reader deciding whether any of
+this is worth trying. No rule here rests on them, and none cites them as
+evidence.
+
+- **[dot-panic](https://github.com/nanatsusaya/dot-panic)** — a browser toy in
+  TypeScript, with a build and a test suite.
+- **[lumora](https://github.com/nanatsusaya/lumora)** — the Obsidian vault
+  behind a novel, with no code in it at all.
+
+They sit at the two ends of the bar a rule has to clear to enter the catalogue:
+a software product, and a knowledge base with nothing to compile. Each declares
+its own `method.json`, so what it bound and which rules it narrowed is answered
+there rather than restated here — [C2](method/rules.md#c2) applies to this page
+as much as to anything else.
+
 ## The five procedures
 
 The moments a session turns over are where the seam actually bites, so each one
