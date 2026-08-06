@@ -63,6 +63,11 @@ check, point it at a project that has a `method.json`:
   purpose: every rule stands on its own reasoning, and evidence takes the form
   of the failure a rule prevents, never a case study. This applies to real
   projects, employers and anything recognisably derived from one.
+  **[`README.md`](README.md) is the one exception**, and only for listing
+  projects that have adopted the method, where a reader is deciding whether to
+  try it. No rule may cite one as evidence: a rule that leans on a named
+  repository stops holding when that repository changes, and a reader has no
+  way to tell which of the two moved.
 - **A rule enters the catalogue only if it holds independently of domain** — for
   a software product as much as for a knowledge base with no code in it. When in
   doubt, it belongs in [`method/adapting.md`](method/adapting.md) instead. The
